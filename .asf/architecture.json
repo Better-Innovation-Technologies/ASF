@@ -1,0 +1,42 @@
+{
+  "name": "{project_name}",
+  "version": "0.1.0-draft",
+  "status": "draft",
+  "createdAt": "{bootstrap_date}",
+  "methodology": "ASF",
+  "description": "<Functional description of the system>",
+
+  "techStack": [
+    { "layer": "frontend",   "technology": "", "version": "", "notes": "" },
+    { "layer": "backend",    "technology": "", "version": "", "notes": "" },
+    { "layer": "database",   "technology": "", "version": "", "notes": "" },
+    { "layer": "deployment", "technology": "Kubernetes", "version": "", "notes": "Namespaces: dev / staging / prod" },
+    { "layer": "auth",       "technology": "", "version": "", "notes": "" },
+    { "layer": "ci-cd",      "technology": "GitLab CI", "version": "", "notes": "K8s runner, namespace ci/" }
+  ],
+
+  "repoLayout": [
+    { "path": "docs/",  "purpose": "ASF Prompt Stack — the factory brain", "hasAgentsFile": true },
+    { "path": "fe/",    "purpose": "Frontend",                             "hasAgentsFile": true },
+    { "path": "be/",    "purpose": "Backend",                              "hasAgentsFile": true },
+    { "path": "api/",   "purpose": "OpenAPI contracts",                    "hasAgentsFile": true },
+    { "path": "infra/", "purpose": "IaC — owned by the Infrastructure Agent", "hasAgentsFile": false }
+  ],
+
+  "components": [],
+  "integrations": [],
+
+  "adLog": [],
+
+  "patterns": { "adopted": [], "antiPatterns": [] },
+  "domainRules": [],
+
+  "llmPolicy": {
+    "providerAgnostic": true,
+    "supported": ["anthropic", "openai-compatible", "ollama"],
+    "keySource": "environment variables — never in git, never in llm-config.json",
+    "dataResidency": "where residency is constrained, Ollama on the internal K8s cluster is the approved alternative"
+  },
+
+  "context_for_agents": ""
+}

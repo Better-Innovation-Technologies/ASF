@@ -1,0 +1,1461 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:pitch:package:1",
+  "title": "Pacchetto di pitch",
+  "description": "Cio' che un pitch consegna: cinque liste indipendenti di voci, i loro placeholder visuali, la roadmap dei punti fermi accettati, la copertura, le domande aperte e la provenienza per campo.\n\nTre invarianti decidono la forma di questo schema.\n\n1. **Nessuna gerarchia imposta.** Epiche, story, requisiti funzionali e non funzionali sono liste pari: nessuna possiede l'altra e nessuna porta riferimenti inline. Un collegamento esiste solo se qualcuno l'ha dichiarato, e allora sta in `links` con la sua provenienza. Una gerarchia dedotta e' una struttura che ha inventato l'agente.\n2. **Cio' che classifica e' enum, solo cio' che descrive e' testo.** Uno stato, una priorita', un pattern, una caratteristica di qualita' sono vocabolari chiusi: un valore libero in un campo di classificazione e' un valore che nessun consumatore a valle sa tradurre.\n3. **Nessun id definitivo.** Le chiavi sono locali al pacchetto (`fr-1`). La numerazione la assegna chi traduce verso un metodo, che e' l'unico a sapere cosa hanno gia' preso gli altri.\n\nNiente e' `required` dentro le voci durante la conversazione: un requisito a meta' e' il caso normale mentre si parla. Il profilo piu' severo per l'esportazione sta in `$defs/exportable`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "package",
+    "meta",
+    "context",
+    "roadmap",
+    "coverage",
+    "epics",
+    "stories",
+    "functional",
+    "nonfunctional",
+    "visuals",
+    "open_questions",
+    "provenance"
+  ],
+  "properties": {
+    "package": {
+      "const": "pitch/1",
+      "description": "Versione del formato. Un consumatore che non la riconosce si ferma invece di indovinare."
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "context": {
+      "$ref": "#/$defs/context"
+    },
+    "roadmap": {
+      "type": "array",
+      "description": "I punti fermi che l'interlocutore ha ACCETTATO, in ordine. Non e' un riassunto della conversazione: e' cio' su cui si puo' costruire senza chiedere di nuovo. Una cosa che l'agente ha dedotto e nessuno ha confermato non entra qui.",
+      "items": {
+        "$ref": "#/$defs/fixed_point"
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "description": "La mappa di cosa si e' visto e cosa manca, **dichiarata per intera all'apertura del pitch** e non costruita strada facendo: una checklist che compare a pezzi non dice mai cosa manca, che e' l'unica cosa per cui esiste. Chi ospita il pitch la semina da un profilo; l'agente ne cambia lo stato e puo' aggiungere una voce che emerge, ma non la ricostruisce.\n\n`not_applicable` e' un valore di prima classe: una checklist che non sa distinguere *non l'abbiamo visto* da *abbiamo deciso che non serve* diventa un elenco di rimproveri, e nessuno la riapre. La completezza si calcola da qui — coperte su totale meno le non pertinenti — e quando non resta niente di aperto l'agente non ha piu' niente da chiedere.",
+      "items": {
+        "$ref": "#/$defs/coverage_item"
+      }
+    },
+    "epics": {
+      "type": "array",
+      "description": "Raggruppamenti di valore, nella forma dell'epic hypothesis statement: cosa deve cessare o diventare possibile, l'ipotesi, e come si vede se e' successo. NON l'elenco di cio' che contiene.",
+      "items": {
+        "$ref": "#/$defs/epic"
+      }
+    },
+    "stories": {
+      "type": "array",
+      "description": "User story nella forma Connextra. Non appartengono a un'epica: se il legame e' stato dichiarato, sta in `links`.",
+      "items": {
+        "$ref": "#/$defs/story"
+      }
+    },
+    "functional": {
+      "type": "array",
+      "description": "Requisiti funzionali in forma EARS: il pattern della frase e' dichiarato, cosi' l'ambiguita' e' un difetto visibile invece che una sfumatura di prosa.",
+      "items": {
+        "$ref": "#/$defs/functional"
+      }
+    },
+    "nonfunctional": {
+      "type": "array",
+      "description": "Requisiti non funzionali: ISO/IEC 25010 dice *di che qualita' si parla*, Planguage dice *quanto* e *misurato come*. Un RNF senza `scale` e `meter` e' ammesso — con `quantified: false` — perche' rifiutarlo perderebbe l'informazione; ma e' un buco dichiarato, e va accompagnato da una domanda aperta.",
+      "items": {
+        "$ref": "#/$defs/nonfunctional"
+      }
+    },
+    "visuals": {
+      "type": "array",
+      "description": "I diagrammi e i loro PLACEHOLDER. Una voce nasce quando nasce il bisogno, anche con `source: null` e `status: placeholder`: un vuoto dichiarato e' lavoro visibile, un vuoto taciuto e' un requisito perso.",
+      "items": {
+        "$ref": "#/$defs/visual"
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "OPZIONALE, e vuoto per scelta fino a prova contraria. Un collegamento e' un'affermazione come tutte le altre: esiste solo se qualcuno l'ha fatta, e la sua provenienza si dichiara come per ogni altro campo. Questo e' l'unico posto dove i collegamenti stanno: riferimenti in due direzioni divergono, e il primo a divergere e' quello che nessuno valida.",
+      "items": {
+        "$ref": "#/$defs/link"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "Cio' che resta da chiedere, con il perche'. `blocking: true` significa: senza questa risposta il pacchetto non e' esportabile.",
+      "items": {
+        "$ref": "#/$defs/open_question"
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Da dove viene ogni valore, per campo, con un JSON Pointer. E' la proiezione del log delle patch, non una compilazione a mano. Un campo popolato che non compare qui e' una deduzione non dichiarata: un errore, non un campo in piu'.",
+      "items": {
+        "$ref": "#/$defs/provenance_entry"
+      }
+    }
+  },
+  "$defs": {
+    "key": {
+      "type": "string",
+      "pattern": "^[a-z]{2,4}-[a-z0-9][a-z0-9-]{0,31}$",
+      "description": "Chiave locale al pacchetto: prefisso di tipo piu' identificativo (`ep-1`, `fr-checkin-collo`). Non e' un id di metodo e non deve assomigliarci."
+    },
+    "state": {
+      "enum": [
+        "proposed",
+        "accepted",
+        "rejected",
+        "superseded"
+      ],
+      "default": "proposed",
+      "description": "`proposed`: l'ha messa l'agente, nessuno l'ha confermata. `accepted`: l'interlocutore l'ha confermata, ed e' cio' che la porta nella roadmap. `rejected`: scartata, e si tiene scartata — una voce cancellata e' una voce che l'agente ripropone al turno dopo. `superseded`: sostituita da un'altra voce, e resta. Niente si cancella: chi cambia idea produce una voce nuova e marca la vecchia, con `superseded_by` che dice quale."
+    },
+    "priority": {
+      "enum": [
+        "must",
+        "should",
+        "could",
+        "wont"
+      ],
+      "description": "MoSCoW. `wont` non e' un rifiuto: e' un fuori-ambito dichiarato, che e' un'informazione."
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "title",
+        "language",
+        "state"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 200
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+        },
+        "state": {
+          "enum": [
+            "in_progress",
+            "ready",
+            "exported"
+          ],
+          "description": "`ready` lo decide chi valida contro `$defs/exportable`, non l'agente: una completezza dichiarata da chi la produce non e' falsificabile."
+        },
+        "checklist": {
+          "enum": [
+            null,
+            "prodotto-nuovo",
+            "requisito",
+            "problema"
+          ],
+          "description": "Quale checklist di copertura governa questo pitch. Non e' una metodologia: e' quanto largo e' il giro di domande. `null` finche' non si sa — l'agente lo dichiara appena capisce di cosa si parla, e chi lo ospita completa `/coverage` con le voci che mancano. Chi apre il pitch puo' anche sceglierlo da subito, e allora non si deduce."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "method_profile": {
+          "type": "null",
+          "description": "Sempre null, e il tipo lo impone. Il metodo (ASF, Jira, SRS) e' di chi traduce a valle: un pacchetto che sa verso cosa sta andando e' un pacchetto che ha gia' perso l'universalita'."
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Di cosa si sta parlando. Esiste per evitare il difetto piu' comune di questo mestiere: venti requisiti raccolti prima di aver stabilito l'ambito.",
+      "properties": {
+        "topic": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "problem": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Il problema, non la soluzione. Se qui c'e' una soluzione, la conversazione e' partita dal posto sbagliato."
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "actors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "$ref": "#/$defs/key"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "system",
+                  "organization"
+                ]
+              },
+              "goals": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 300
+                }
+              },
+              "pains": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 300
+                }
+              },
+              "state": {
+                "$ref": "#/$defs/state"
+              }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "$ref": "#/$defs/key"
+              },
+              "statement": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "risk_if_false": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "state": {
+                "$ref": "#/$defs/state"
+              }
+            }
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "description": "Vincoli DATI, non scelte fatte. Una scelta e' una decisione e appartiene a chi progetta.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "$ref": "#/$defs/key"
+              },
+              "kind": {
+                "enum": [
+                  "technical",
+                  "regulatory",
+                  "organizational",
+                  "budget",
+                  "time",
+                  "contractual"
+                ]
+              },
+              "statement": {
+                "type": "string",
+                "maxLength": 500
+              },
+              "state": {
+                "$ref": "#/$defs/state"
+              }
+            }
+          }
+        },
+        "glossary": {
+          "type": "array",
+          "description": "I termini del dominio con i loro sinonimi: e' cio' che evita che «collo» e «pacco» diventino due requisiti diversi.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "term": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "definition": {
+                "type": "string",
+                "maxLength": 600
+              },
+              "aliases": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 80
+                }
+              },
+              "state": {
+                "$ref": "#/$defs/state"
+              }
+            }
+          }
+        }
+      }
+    },
+    "fixed_point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "statement"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 400,
+          "description": "Il punto fermo in una riga, come lo rileggerebbe chi riprende la sessione fra tre giorni."
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "supersedes": {
+          "$ref": "#/$defs/key"
+        },
+        "revoked": {
+          "type": "boolean",
+          "default": false,
+          "description": "Un punto fermo si revoca, non si cancella: cio' che vi poggiava va rivisto, e senza la traccia non si sa cosa."
+        }
+      }
+    },
+    "coverage_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "question",
+        "state"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300
+        },
+        "gruppo": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Il capitolo a cui la voce appartiene, per raggrupparle quando si mostrano. Lo scrive chi semina la checklist."
+        },
+        "state": {
+          "enum": [
+            "open",
+            "covered",
+            "not_applicable",
+            "deferred"
+          ]
+        },
+        "why": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Obbligatorio di fatto per `not_applicable` e `deferred`: senza, non si distingue una decisione da una dimenticanza."
+        }
+      }
+    },
+    "epic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "outcome": {
+          "type": "string",
+          "maxLength": 600,
+          "description": "Cosa deve CESSARE o diventare possibile. Non l'elenco di cio' che l'epica contiene."
+        },
+        "hypothesis": {
+          "type": "string",
+          "maxLength": 600,
+          "description": "«Se facciamo X, allora Y»: cio' che rende l'epica falsificabile invece che un titolo."
+        },
+        "indicators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "description": "Come si vede, dall'esterno, se l'ipotesi ha tenuto."
+        },
+        "priority": {
+          "$ref": "#/$defs/priority"
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce che ha preso il posto di questa. Obbligatoria di fatto con `state: superseded`: una voce sostituita che non dice da cosa e' un duplicato che nessuno sa risolvere."
+        }
+      },
+      "allOf": [
+        {
+          "description": "Una voce sostituita deve dire da cosa.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "superseded_by"
+            ]
+          }
+        }
+      ]
+    },
+    "story": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Forma Connextra. Le acceptance criteria stanno sull'unita' verificabile, di norma il requisito funzionale; qui c'e' `demo`, che e' cosa si mostra. Una story puo' portare le proprie `ac` quando non esiste alcun requisito funzionale collegato — e' il modo in cui il pacchetto funziona anche per chi non scrive requisiti.",
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "as_a": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "i_want": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "so_that": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "demo": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Cosa si mostra quando e' fatta. Non e' una AC: e' la scena."
+        },
+        "ac": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/acceptance_criterion"
+          }
+        },
+        "invest": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "not_independent",
+              "not_negotiable",
+              "no_value",
+              "not_estimable",
+              "too_big",
+              "not_testable"
+            ]
+          },
+          "description": "I difetti rilevati, non un punteggio. «Questa e' troppo grande» e' azionabile; «6,5 su 10» non lo e'."
+        },
+        "invest_note": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "size": {
+          "enum": [
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl",
+            "unknown"
+          ],
+          "default": "unknown"
+        },
+        "priority": {
+          "$ref": "#/$defs/priority"
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce che ha preso il posto di questa. Obbligatoria di fatto con `state: superseded`: una voce sostituita che non dice da cosa e' un duplicato che nessuno sa risolvere."
+        }
+      },
+      "allOf": [
+        {
+          "description": "Una voce sostituita deve dire da cosa.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "superseded_by"
+            ]
+          }
+        }
+      ]
+    },
+    "acceptance_criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "given",
+        "when",
+        "then"
+      ],
+      "description": "BDD. La tripletta e' obbligatoria dentro una AC: una AC senza `then` non e' verificabile, ed e' esattamente il difetto che questo formato esiste per rendere visibile.",
+      "properties": {
+        "given": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "when": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "then": {
+          "type": "string",
+          "maxLength": 400
+        }
+      }
+    },
+    "functional": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "pattern": {
+          "enum": [
+            "ubiquitous",
+            "event",
+            "state",
+            "option",
+            "unwanted",
+            "complex"
+          ],
+          "description": "EARS. `unwanted` e' quello che tutti dimenticano — SE succede la cosa sbagliata, ALLORA — e dichiararlo e' cio' che lo fa esistere."
+        },
+        "statement": {
+          "type": "string",
+          "maxLength": 800,
+          "description": "La frase intera, nella forma del pattern dichiarato."
+        },
+        "ears": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Le parti della frase, separate: e' cio' che permette a valle di riscriverla in un'altra lingua o in un altro formato senza rifare il parsing della prosa.",
+          "properties": {
+            "precondition": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 300
+            },
+            "trigger": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 300
+            },
+            "response": {
+              "type": "string",
+              "maxLength": 400
+            }
+          }
+        },
+        "ac": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/acceptance_criterion"
+          }
+        },
+        "priority": {
+          "$ref": "#/$defs/priority"
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce che ha preso il posto di questa. Obbligatoria di fatto con `state: superseded`: una voce sostituita che non dice da cosa e' un duplicato che nessuno sa risolvere."
+        }
+      },
+      "allOf": [
+        {
+          "description": "I pattern EARS che nascono da un evento o da una condizione indesiderata non esistono senza il loro trigger.",
+          "if": {
+            "properties": {
+              "pattern": {
+                "enum": [
+                  "event",
+                  "unwanted"
+                ]
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ears": {
+                "required": [
+                  "trigger"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "`state` e `option` sono definiti dalla condizione in cui valgono.",
+          "if": {
+            "properties": {
+              "pattern": {
+                "enum": [
+                  "state",
+                  "option"
+                ]
+              }
+            },
+            "required": [
+              "pattern"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ears": {
+                "required": [
+                  "precondition"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "Una voce sostituita deve dire da cosa.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "superseded_by"
+            ]
+          }
+        }
+      ]
+    },
+    "nonfunctional": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "characteristic": {
+          "enum": [
+            "functional_suitability",
+            "performance_efficiency",
+            "compatibility",
+            "interaction_capability",
+            "reliability",
+            "security",
+            "maintainability",
+            "flexibility",
+            "safety"
+          ],
+          "description": "ISO/IEC 25010, revisione 2023. Serve a classificare, non a decorare: e' cio' che permette di chiedere «di questa famiglia non abbiamo detto niente» invece di sperare che venga in mente a qualcuno."
+        },
+        "subcharacteristic": {
+          "type": "string",
+          "description": "Vincolata alla caratteristica scelta: vedi `allOf`."
+        },
+        "gist": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Planguage: la qualita' in parole, come l'ha detta l'interlocutore."
+        },
+        "scale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "Planguage: l'unita' di misura, esplicita. «millisecondi dal tocco alla conferma, p95» — non «velocita'»."
+        },
+        "meter": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "Planguage: con quale strumento si misura, e su quale finestra. Una soglia senza strumento non si verifica, quindi non vincola nessuno."
+        },
+        "thresholds": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "description": "Planguage: `must` e' il limite oltre il quale e' un difetto, `plan` l'obiettivo, `wish` cio' che si prenderebbe volentieri. Tre numeri distinti perche' confonderli e' il modo in cui un obiettivo diventa un contratto per sbaglio.",
+          "properties": {
+            "must": {
+              "type": [
+                "number",
+                "string"
+              ]
+            },
+            "plan": {
+              "type": [
+                "number",
+                "string"
+              ]
+            },
+            "wish": {
+              "type": [
+                "number",
+                "string"
+              ]
+            }
+          }
+        },
+        "baseline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300,
+          "description": "Planguage (Past): quanto vale oggi. Senza il punto di partenza una soglia non dice se e' un miglioramento o un regresso."
+        },
+        "scope": {
+          "enum": [
+            "system",
+            "feature",
+            "component",
+            "interface",
+            "data"
+          ]
+        },
+        "scope_note": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "rationale": {
+          "type": "string",
+          "maxLength": 600
+        },
+        "quantified": {
+          "type": "boolean",
+          "default": false,
+          "description": "Vero solo con `scale`, `meter` e almeno una soglia. Falso e' legittimo e va tenuto: un RNF non quantificato registrato e' un buco visibile, un RNF rifiutato e' un'informazione perduta."
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce che ha preso il posto di questa. Obbligatoria di fatto con `state: superseded`: una voce sostituita che non dice da cosa e' un duplicato che nessuno sa risolvere."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "functional_suitability"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "functional_completeness",
+                  "functional_correctness",
+                  "functional_appropriateness"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "performance_efficiency"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "time_behaviour",
+                  "resource_utilization",
+                  "capacity"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "compatibility"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "co_existence",
+                  "interoperability"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "interaction_capability"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "appropriateness_recognizability",
+                  "learnability",
+                  "operability",
+                  "user_error_protection",
+                  "user_engagement",
+                  "inclusivity",
+                  "user_assistance",
+                  "self_descriptiveness"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "reliability"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "faultlessness",
+                  "availability",
+                  "fault_tolerance",
+                  "recoverability"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "security"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "confidentiality",
+                  "integrity",
+                  "non_repudiation",
+                  "accountability",
+                  "authenticity",
+                  "resistance"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "maintainability"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "modularity",
+                  "reusability",
+                  "analysability",
+                  "modifiability",
+                  "testability"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "flexibility"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "adaptability",
+                  "scalability",
+                  "installability",
+                  "replaceability"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "characteristic": {
+                "const": "safety"
+              }
+            },
+            "required": [
+              "characteristic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subcharacteristic": {
+                "enum": [
+                  "operational_constraint",
+                  "risk_identification",
+                  "fail_safe",
+                  "hazard_warning",
+                  "safe_integration"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "Una voce sostituita deve dire da cosa.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "superseded_by"
+            ]
+          }
+        }
+      ]
+    },
+    "visual": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "kind": {
+          "enum": [
+            "process",
+            "sequence",
+            "state",
+            "data",
+            "journey",
+            "context",
+            "hierarchy",
+            "wireframe",
+            "chart",
+            "timeline"
+          ],
+          "description": "Cosa mostra, non con cosa e' disegnato. La notazione e' un'altra cosa e sta altrove."
+        },
+        "intent": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Cosa questo disegno deve far VEDERE. E' il campo che giustifica l'esistenza del placeholder: un diagramma senza intento e' decorazione."
+        },
+        "notation": {
+          "enum": [
+            "mermaid",
+            "excalidraw",
+            "none"
+          ],
+          "default": "none"
+        },
+        "dialect": {
+          "enum": [
+            "flowchart",
+            "sequenceDiagram",
+            "stateDiagram",
+            "erDiagram",
+            "classDiagram",
+            "journey",
+            "gantt",
+            "timeline",
+            "mindmap",
+            "C4Context",
+            "block"
+          ]
+        },
+        "status": {
+          "enum": [
+            "placeholder",
+            "proposed",
+            "confirmed"
+          ],
+          "default": "placeholder",
+          "description": "`placeholder`: il bisogno e' riconosciuto, il disegno no. `proposed`: disegnato dall'agente, da verificare. `confirmed`: l'interlocutore ha detto che il processo e' quello."
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 20000,
+          "description": "Il sorgente testuale nella notazione dichiarata. Null finche' e' un placeholder."
+        },
+        "open": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "description": "Cosa manca a questo disegno, detto dal disegno stesso: «manca il ramo del collo danneggiato». E' il punto in cui un diagramma diventa una domanda."
+        },
+        "state": {
+          "$ref": "#/$defs/state"
+        },
+        "superseded_by": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce che ha preso il posto di questa. Obbligatoria di fatto con `state: superseded`: una voce sostituita che non dice da cosa e' un duplicato che nessuno sa risolvere."
+        }
+      },
+      "allOf": [
+        {
+          "description": "Un sorgente mermaid senza dialetto non e' renderizzabile, e un disegno che non si vede non vale niente.",
+          "if": {
+            "properties": {
+              "notation": {
+                "const": "mermaid"
+              }
+            },
+            "required": [
+              "notation"
+            ]
+          },
+          "then": {
+            "required": [
+              "dialect"
+            ]
+          }
+        },
+        {
+          "description": "Un placeholder non porta sorgente, e un diagramma proposto o confermato non puo' esserne privo: altrimenti lo stato non dice niente.",
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "proposed",
+                  "confirmed"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "source"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "description": "Una voce sostituita deve dire da cosa.",
+          "if": {
+            "properties": {
+              "state": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "required": [
+              "superseded_by"
+            ]
+          }
+        }
+      ]
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "rel",
+        "to"
+      ],
+      "description": "Un collegamento DICHIARATO fra due voci, in una direzione sola. Non si deduce: se nessuno l'ha detto, non esiste.",
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/key"
+        },
+        "rel": {
+          "enum": [
+            "refines",
+            "realizes",
+            "constrains",
+            "depends_on",
+            "conflicts_with",
+            "illustrates",
+            "derives_from"
+          ],
+          "description": "`conflicts_with` e' il piu' utile dei sette: due requisiti che si contraddicono sono la cosa che costa piu' caro trovare tardi."
+        },
+        "to": {
+          "$ref": "#/$defs/key"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      }
+    },
+    "open_question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "question",
+        "why"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/key"
+        },
+        "about_key": {
+          "$ref": "#/$defs/key",
+          "description": "La chiave della voce a cui la domanda si riferisce, quando ce n'e' una. Non un argomento a parole: l'argomento sta gia' in `question`."
+        },
+        "question": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 400
+        },
+        "why": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300,
+          "description": "A cosa serve la risposta. Una domanda che non sa dirlo e' rumore, e all'ennesima l'interlocutore se ne va."
+        },
+        "blocking": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "provenance_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pointer",
+        "source"
+      ],
+      "properties": {
+        "pointer": {
+          "type": "string",
+          "pattern": "^/([^/~]|~[01])+(/([^/~]|~[01])*)*$",
+          "description": "JSON Pointer (RFC 6901) al campo dentro questo pacchetto."
+        },
+        "source": {
+          "enum": [
+            "answer",
+            "ingest",
+            "inference"
+          ],
+          "description": "`answer`: l'ha detto l'interlocutore. `ingest`: viene da un materiale entrato. `inference`: nessuno l'ha detto. La distinzione non e' contabile: un'interfaccia che presenta una deduzione con la stessa autorita' di una risposta mente per omissione a chi firma."
+        },
+        "ref": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "Id della domanda per `answer`, id del segmento per `ingest`. Assente per `inference`."
+        },
+        "quote": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Le parole esatte da cui viene il valore, quando esistono."
+        },
+        "why": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Obbligatorio di fatto per `inference`: su cosa si fonda. Una deduzione che non sa dire da cosa deriva va chiesta, non scritta."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "allOf": [
+        {
+          "description": "Una deduzione senza fondamento non e' tracciabile, ed e' proprio il caso in cui la tracciabilita' serve.",
+          "if": {
+            "properties": {
+              "source": {
+                "const": "inference"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "required": [
+              "why"
+            ]
+          }
+        }
+      ]
+    },
+    "exportable": {
+      "description": "Il profilo severo, applicato quando il pacchetto va consegnato a valle — non durante la conversazione, dove una voce a meta' e' il caso normale. Chi valida contro questo decide `meta.state: ready`; l'agente non lo dichiara.",
+      "allOf": [
+        {
+          "$ref": "#"
+        },
+        {
+          "properties": {
+            "meta": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "ready",
+                    "exported"
+                  ]
+                }
+              }
+            },
+            "context": {
+              "required": [
+                "topic",
+                "problem",
+                "goals"
+              ]
+            },
+            "coverage": {
+              "description": "Nessuna voce puo' restare `open`. Non significa che vada risposto tutto: significa che cio' che non e' stato chiesto va **dichiarato** — `deferred` col suo perche', o `not_applicable`. Un pacchetto consegnato con domande ancora aperte le nasconde a chi lo firma, ed e' esattamente cio' che la checklist esiste per impedire.",
+              "items": {
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "covered",
+                      "not_applicable",
+                      "deferred"
+                    ]
+                  }
+                }
+              }
+            },
+            "epics": {
+              "items": {
+                "required": [
+                  "key",
+                  "title",
+                  "outcome",
+                  "priority",
+                  "state"
+                ]
+              }
+            },
+            "stories": {
+              "items": {
+                "required": [
+                  "key",
+                  "as_a",
+                  "i_want",
+                  "so_that",
+                  "priority",
+                  "state"
+                ]
+              }
+            },
+            "functional": {
+              "items": {
+                "required": [
+                  "key",
+                  "pattern",
+                  "statement",
+                  "priority",
+                  "ac",
+                  "state"
+                ],
+                "properties": {
+                  "ac": {
+                    "minItems": 1
+                  }
+                }
+              }
+            },
+            "nonfunctional": {
+              "items": {
+                "required": [
+                  "key",
+                  "characteristic",
+                  "gist",
+                  "scope",
+                  "quantified",
+                  "state"
+                ]
+              }
+            },
+            "visuals": {
+              "items": {
+                "required": [
+                  "key",
+                  "kind",
+                  "intent",
+                  "status"
+                ]
+              }
+            },
+            "open_questions": {
+              "items": {
+                "properties": {
+                  "blocking": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

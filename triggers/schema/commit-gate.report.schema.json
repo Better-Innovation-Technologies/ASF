@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/triggers/commit-gate.report.schema.json",
+  "title": "ASF™ trigger — commit-gate (report)",
+  "description": "What the Commit Gate Agent returns for one commit. The report is advisory: it states a verdict and the actions that would resolve it, and carries no authority to merge, block or write.",
+  "type": "object",
+  "required": ["schema_version", "checklist_version", "action_catalog_version", "commit", "verdict", "checks", "items", "next_best_actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0" },
+    "checklist_version": { "type": "string" },
+    "action_catalog_version": {
+      "type": "string",
+      "description": "Which catalogue the emitted action codes belong to. A caller that has not implemented this version must say so rather than guess."
+    },
+    "produced_at": { "type": "string", "format": "date-time" },
+
+    "commit": {
+      "type": "object",
+      "required": ["sha", "branch", "repo"],
+      "properties": {
+        "sha": { "type": "string" },
+        "branch": { "type": "string" },
+        "repo": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+
+    "verdict": {
+      "type": "object",
+      "required": ["status", "blocking", "summary"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "warn", "block"],
+          "description": "block means at least one entry marked blocks_merge failed. It is a recommendation; the CI or MR rule decides what to do with it."
+        },
+        "blocking": { "type": "array", "items": { "type": "string" }, "description": "Ids of the checks that produced the blocking status." },
+        "summary": { "type": "string", "description": "One sentence, for a reader in a hurry." }
+      }
+    },
+
+    "checks": {
+      "type": "array",
+      "description": "One entry per enabled checklist item, in checklist order. Passing entries are reported too: a report that lists only failures cannot be distinguished from a report that ran only some checks.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "order", "category", "status", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "order": { "type": "integer" },
+          "category": { "type": "string", "enum": ["asf", "test", "quality", "docs", "security", "custom"] },
+          "status": {
+            "type": "string",
+            "enum": ["pass", "warn", "fail", "not_applicable", "not_verifiable"],
+            "description": "not_verifiable means the evidence could not be read — distinct from fail, which means it was read and is wrong. Collapsing the two produces reports that accuse an author of what the agent could not see."
+          },
+          "severity": { "type": "string", "enum": ["blocker", "high", "medium", "low"] },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "A judgement made on a partial diff is worth less than one made on a complete diff, and the reader is entitled to know which this is."
+          },
+          "expectation": { "type": "string" },
+          "observed": { "type": "string" },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["kind"],
+              "properties": {
+                "kind": { "type": "string", "enum": ["commit_message", "diff", "file", "state", "pipeline", "merge_request"] },
+                "ref": { "type": "string" },
+                "path": { "type": "string" },
+                "line": { "type": "integer" },
+                "excerpt": { "type": "string" }
+              }
+            }
+          },
+          "items": { "type": "array", "items": { "type": "string" } },
+          "next_best_actions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "items": {
+      "type": "array",
+      "description": "Flat, severity-ordered list of everything found wrong, each with somewhere to jump to. This is the navigable list a console renders.",
+      "items": {
+        "type": "object",
+        "required": ["id", "check_id", "severity", "title", "location"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^F-[0-9]{3,}$" },
+          "check_id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["blocker", "high", "medium", "low"] },
+          "title": { "type": "string" },
+          "detail": { "type": "string" },
+          "location": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": { "type": "string", "enum": ["file", "epic", "task", "state", "pipeline", "commit", "merge_request", "doc"] },
+              "repo": { "type": "string" },
+              "path": { "type": "string" },
+              "line": { "type": "integer" },
+              "ref": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          },
+          "next_best_actions": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "next_best_actions": {
+      "type": "array",
+      "description": "Ranked across the whole report, so that 'what to do next' is rank 1 and not a judgement left to the reader. Every entry is a catalogue code with its parameters filled: the caller dispatches it without parsing prose.",
+      "items": {
+        "type": "object",
+        "required": ["id", "rank", "code", "primitive", "parameters", "label", "priority", "executor"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^NBA-[0-9]{3,}$" },
+          "rank": { "type": "integer", "minimum": 1 },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z]+\\.[A-Z]+\\.[A-Z_]+$",
+            "description": "A code from the Action Catalogue. The agent selects; it never invents. An unknown code is a caller-side error, not an instruction to improvise."
+          },
+          "primitive": { "type": "string", "enum": ["LINK", "CREATE", "UPDATE", "RUN", "GENERATE", "REQUEST", "ESCALATE", "NONE"] },
+          "parameters": {
+            "type": "object",
+            "description": "Filled according to the catalogue entry's parameter schema. Every required property must be present, or the action is not emittable and the agent must say why instead."
+          },
+          "label": { "type": "string", "description": "The same action in one imperative line, for a human. Derived from the code, never a substitute for it." },
+          "why": { "type": "string" },
+          "priority": { "type": "string", "enum": ["blocker", "high", "medium", "low"] },
+          "effort": { "type": "string", "enum": ["trivial", "small", "medium", "large"] },
+          "blocks_merge": { "type": "boolean" },
+          "executor": {
+            "type": "object",
+            "required": ["kind"],
+            "description": "Who would carry it out. This agent never does: it names the executor and stops. The separation is what keeps the verdict independent of the remedy.",
+            "properties": {
+              "kind": { "type": "string", "enum": ["agent", "human", "ci", "none"] },
+              "agent": { "type": "string" },
+              "role": { "type": "string" }
+            }
+          },
+          "items": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "not_verifiable": {
+      "type": "array",
+      "description": "What could not be looked at, and why. Reported explicitly so that a silent gap is never read as a pass.",
+      "items": {
+        "type": "object",
+        "required": ["what", "why"],
+        "properties": {
+          "what": { "type": "string" },
+          "why": { "type": "string" },
+          "check_id": { "type": "string" }
+        }
+      }
+    }
+  }
+}

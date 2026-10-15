@@ -1,0 +1,401 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "frontmatter.schema.json",
+  "title": "ASF artifact frontmatter",
+  "description": "ASF 8.3 — the YAML frontmatter of the markdown artifacts under docs/. It holds only what state.json does not have: id, title and descriptive fields. Statuses, references and priorities are in state.json, and what can be computed is stored nowhere. Strict like state.json: a key not listed is an error, so a `status` in an RF, RNF, epic, task, bug or story fails. An artifact validates against the $def matching its directory: requirements/RF-* -> rf, requirements/RNF-* -> rnf, epics/ -> epic, tasks/ -> task, bugs/ -> bug, stories/ -> us, decisions/ADR-* -> adr, decisions/planning-archive.md -> archive. ADRs and the archive are not in state.json and keep their own status. The root is a pure $defs container: callers select a def with {\"$ref\": \"#/$defs/<kind>\"}.",
+  "$defs": {
+    "layer": {
+      "enum": [
+        "fe",
+        "be",
+        "api",
+        "core",
+        "worker",
+        "deployer",
+        "notify",
+        "infra",
+        "docs"
+      ]
+    },
+    "rf_id": {
+      "type": "string",
+      "pattern": "^RF-[0-9]{2,3}$"
+    },
+    "rnf_id": {
+      "type": "string",
+      "pattern": "^RNF-[0-9]{2,3}$"
+    },
+    "bug_id": {
+      "type": "string",
+      "pattern": "^BUG-[0-9]{2,3}$"
+    },
+    "us_id": {
+      "type": "string",
+      "pattern": "^US-[0-9]{2,3}$"
+    },
+    "epic_id": {
+      "type": "string",
+      "pattern": "^Epic[0-9]{3}$"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^Task\\.Epic[0-9]{3}\\.[0-9]+$"
+    },
+    "adr_id": {
+      "type": "string",
+      "pattern": "^ADR-[0-9]{3}$"
+    },
+    "dr_id": {
+      "type": "string",
+      "pattern": "^DR-[0-9]{4}$"
+    },
+    "rule_id": {
+      "type": "string",
+      "pattern": "^R-[0-9]{2}$"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "rf": {
+      "type": "object",
+      "description": "Functional requirement — docs/requirements/RF-NNN.md. A verifiable behaviour, with acceptance criteria in BDD form. Status and priority are in state.json (`requirements.functional[]`).",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/rf_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2,
+          "description": "Who answers for the requirement."
+        }
+      }
+    },
+    "rnf": {
+      "type": "object",
+      "description": "Non-functional requirement — docs/requirements/RNF-NNN.md. Status, verification signature and priority are in state.json (`requirements.non_functional[]`); its epics are those that cite it in `epics[].rnf_refs`.",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "verification"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/rnf_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "category": {
+          "enum": [
+            "performance",
+            "security",
+            "reliability",
+            "usability",
+            "maintainability",
+            "compliance",
+            "observability",
+            "portability",
+            "cost"
+          ],
+          "description": "Optional. What kind of quality it constrains, so that a report can group them."
+        },
+        "metric": {
+          "type": "string",
+          "description": "What is measured, e.g. «p95 latency of GET /projects». Optional: not every quality has a number, and inventing one is worse than saying how it is checked."
+        },
+        "threshold": {
+          "type": "string",
+          "description": "The value that separates satisfied from violated, e.g. «< 300 ms»."
+        },
+        "verification": {
+          "type": "string",
+          "description": "How satisfaction is established: a test, a pipeline check, a scan, a measurement, a documented review. Required, because an unverifiable non-functional requirement is a wish."
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2,
+          "description": "Who answers for the requirement."
+        }
+      }
+    },
+    "epic": {
+      "type": "object",
+      "description": "Planning unit — docs/epics/EpicNNN.md. Status, priority, kind, stories, RNFs and tasks are in state.json (`epics[]`).",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/epic_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "description": "Atomic execution unit — docs/tasks/Task.EpicNNN.N.md. Status, points, references, dependencies and files are in state.json (`epics[].tasks[]`).",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "adr",
+        "rules",
+        "reads"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/task_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "adr": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/adr_id"
+          },
+          "description": "ADRs the task must follow."
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule_id"
+          },
+          "description": "Rules (R-NN) the task must follow."
+        },
+        "reads": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "description": "Files to read before starting."
+        }
+      }
+    },
+    "bug": {
+      "type": "object",
+      "description": "A defect found in use — docs/bugs/BUG-NNN.md. Status, severity and references are in state.json (`bugs[]`); it enters an epic through the task that fixes it.",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/bug_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "area": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/layer"
+          },
+          "description": "Layers where the defect shows."
+        },
+        "found_in": {
+          "type": "string",
+          "description": "Where it was seen: a release, an environment, a commit. What makes the report reproducible by someone else."
+        },
+        "reported_by": {
+          "type": "string",
+          "description": "Who reported it."
+        },
+        "reported_at": {
+          "$ref": "#/$defs/date",
+          "description": "Day it was reported."
+        },
+        "regression_test": {
+          "type": "string",
+          "description": "The test that fails before the fix and passes after it. A bug closed without one is closed on trust."
+        }
+      }
+    },
+    "us": {
+      "type": "object",
+      "description": "A user story — docs/stories/US-NNN.md. The need as the user tells it. Its RFs and priority are in state.json (`user_stories[]`); its status is computed from its RFs.",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/us_id",
+          "description": "Same as the file name."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "actor": {
+          "type": "string",
+          "description": "Who has the need — the «as a …» of the story. A role, not a person."
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2,
+          "description": "Who answers for the story."
+        }
+      }
+    },
+    "adr": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "status",
+        "date",
+        "supersedes",
+        "superseded_by",
+        "affects",
+        "rules",
+        "dr"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/adr_id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "accepted",
+            "superseded"
+          ]
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "revised": {
+          "$ref": "#/$defs/date"
+        },
+        "supersedes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/adr_id"
+          }
+        },
+        "superseded_by": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/adr_id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "affects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/layer"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule_id"
+          }
+        },
+        "dr": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dr_id"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "superseded"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "superseded_by": {
+                "$ref": "#/$defs/adr_id"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "archive": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "normative",
+        "status",
+        "date"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "normative": {
+          "const": false
+        },
+        "status": {
+          "const": "archived"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "superseded_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

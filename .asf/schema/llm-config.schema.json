@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/llm-config.schema.json",
+  "title": "kStudio llm-config.json",
+  "description": "Per-project LLM provider configuration. Secret API keys live in env vars (KSTUDIO_LLM_<PROVIDER>_KEY) — never in this file.",
+  "type": "object",
+  "required": [
+    "default"
+  ],
+  "properties": {
+    "_comment": {
+      "type": "string"
+    },
+    "default": {
+      "type": "object",
+      "required": [
+        "provider",
+        "model"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "max_tokens": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "agents": {
+      "type": "object",
+      "description": "Per-agent overrides keyed by agent name.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "max_tokens": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

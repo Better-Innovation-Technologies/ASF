@@ -1,0 +1,43 @@
+{
+  "id": "prodotto-nuovo",
+  "titolo": "Prodotto nuovo",
+  "quando": "un'idea che non esiste ancora: si parte dal problema e si arriva all'architettura",
+  "nota": "Le voci vengono dalla pratica della raccolta requisiti (ISO/IEC/IEEE 29148 per il contenuto di una specifica, Volere per il contesto e i vincoli di progetto) piu' cio' che decide un'architettura e che quasi nessuno chiede in tempo: sistemi esistenti, integrazioni, identita', ambienti, competenze di chi manterra' il software.",
+  "voci": [
+    { "key": "cv-topic",       "gruppo": "Il problema",  "question": "Di cosa parliamo, e che tipo di lavoro e'" },
+    { "key": "cv-problema",    "gruppo": "Il problema",  "question": "Qual e' il problema — non la soluzione" },
+    { "key": "cv-oggi",        "gruppo": "Il problema",  "question": "Come si fa oggi, e cosa costa farlo cosi'" },
+    { "key": "cv-chi",         "gruppo": "Il problema",  "question": "Chi lo usa, chi ne subisce le conseguenze, chi paga" },
+    { "key": "cv-risultato",   "gruppo": "Il problema",  "question": "Cosa deve diventare possibile" },
+    { "key": "cv-successo",    "gruppo": "Il problema",  "question": "Come si misura che e' andata bene — un numero, non un'opinione" },
+    { "key": "cv-confini",     "gruppo": "Il problema",  "question": "Cosa NON e' in ambito" },
+
+    { "key": "cv-parole",      "gruppo": "Il dominio",   "question": "I termini del dominio che significano cose diverse per persone diverse" },
+    { "key": "cv-processo",    "gruppo": "Il dominio",   "question": "Il flusso da un capo all'altro: chi fa cosa, in che ordine" },
+    { "key": "cv-entita",      "gruppo": "Il dominio",   "question": "Le cose del dominio e come sono legate fra loro" },
+    { "key": "cv-stati",       "gruppo": "Il dominio",   "question": "I cicli di vita: come cambia stato un oggetto del dominio, e chi lo fa cambiare" },
+    { "key": "cv-regole",      "gruppo": "Il dominio",   "question": "Le regole di calcolo e di decisione: sconti, priorita', soglie, chi ha ragione quando due regole si contraddicono" },
+    { "key": "cv-numeri",      "gruppo": "Il dominio",   "question": "Volumi, frequenze, picchi, e quanto ci si aspetta che crescano" },
+    { "key": "cv-eccezioni",   "gruppo": "Il dominio",   "question": "Cosa puo' andare storto, e cosa deve succedere allora" },
+
+    { "key": "cv-esistente",   "gruppo": "Architettura", "question": "Cosa esiste gia', e chi e' la fonte di verita' di ogni dato" },
+    { "key": "cv-integrazioni","gruppo": "Architettura", "question": "Con cosa deve parlare, in che direzione, e con che vincoli di chi sta dall'altra parte" },
+    { "key": "cv-dati",        "gruppo": "Architettura", "question": "Dove stanno i dati oggi, cosa va portato dietro, e cosa succede durante la migrazione" },
+    { "key": "cv-canali",      "gruppo": "Architettura", "question": "Da dove ci si accede: web, mobile, offline, palmare, API, lavori notturni" },
+    { "key": "cv-stack",       "gruppo": "Architettura", "question": "Vincoli tecnologici dati: linguaggi, cloud o macchina propria, licenze, cosa e' vietato" },
+    { "key": "cv-forma",       "gruppo": "Architettura", "question": "Forma attesa del sistema: un pezzo solo o piu' servizi, un'installazione per cliente o una condivisa, sincrono o a code" },
+    { "key": "cv-ambienti",    "gruppo": "Architettura", "question": "Dove gira, chi lo installa, come si aggiorna, e cosa si fa quando cade" },
+
+    { "key": "cv-identita",    "gruppo": "Vincoli",      "question": "Chi puo' fare cosa: ruoli, autenticazione, da dove arrivano gli utenti" },
+    { "key": "cv-tracciabilita","gruppo": "Vincoli",     "question": "Cosa va registrato di chi ha fatto cosa, e per quanto si conserva" },
+    { "key": "cv-normative",   "gruppo": "Vincoli",      "question": "Leggi, contratti, privacy, conservazione obbligatoria" },
+    { "key": "cv-sicurezza",   "gruppo": "Vincoli",      "question": "Quali dati sono sensibili, e da cosa ci si deve difendere davvero" },
+    { "key": "cv-qualita",     "gruppo": "Vincoli",      "question": "Prestazioni, disponibilita', accessibilita': quali contano, e con che soglia misurabile" },
+
+    { "key": "cv-tempi",       "gruppo": "Il progetto",  "question": "Quando serve, e quali scadenze sono davvero vincolanti" },
+    { "key": "cv-budget",      "gruppo": "Il progetto",  "question": "Se c'e' un tetto di spesa, e cosa comprende" },
+    { "key": "cv-team",        "gruppo": "Il progetto",  "question": "Chi lo costruisce e chi lo manterra' dopo: e' un vincolo di architettura, non un dettaglio" },
+    { "key": "cv-rischi",      "gruppo": "Il progetto",  "question": "Cosa puo' far fallire l'iniziativa, indipendentemente dal software" },
+    { "key": "cv-prove",       "gruppo": "Il progetto",  "question": "Cosa esiste gia' da guardare: documenti, schermate, registrazioni, dati veri" }
+  ]
+}

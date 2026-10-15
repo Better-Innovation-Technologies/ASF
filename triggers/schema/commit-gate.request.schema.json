@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/triggers/commit-gate.request.schema.json",
+  "title": "ASF™ trigger — commit-gate (request)",
+  "description": "L4 activation payload for the Commit Gate Agent. Emitted by CI on every push, on any branch, and on merge request events. The agent reads only what this payload names.",
+  "type": "object",
+  "required": ["trigger", "repo", "commit", "range", "checklist"],
+  "additionalProperties": true,
+  "properties": {
+    "trigger": {
+      "type": "object",
+      "required": ["event", "at"],
+      "properties": {
+        "event": { "type": "string", "enum": ["push", "merge_request", "manual", "replay"] },
+        "at": { "type": "string", "format": "date-time" },
+        "triggered_by": { "type": "string" },
+        "idempotency_key": {
+          "type": "string",
+          "description": "Stable per (repo, commit_sha, checklist_version). A gate fires on every push; without this the same verdict is paid for twice."
+        }
+      }
+    },
+
+    "repo": {
+      "type": "object",
+      "required": ["url", "name", "layer"],
+      "properties": {
+        "url": { "type": "string" },
+        "name": { "type": "string" },
+        "layer": {
+          "type": "string",
+          "enum": ["fe", "be", "api", "infra", "docs"],
+          "description": "Which ASF layer repository this is. Checklist entries scope themselves by layer."
+        },
+        "default_branch": { "type": "string" }
+      }
+    },
+
+    "commit": {
+      "type": "object",
+      "required": ["sha", "branch", "message"],
+      "properties": {
+        "sha": { "type": "string" },
+        "short_sha": { "type": "string" },
+        "branch": { "type": "string" },
+        "author": { "type": "string" },
+        "authored_at": { "type": "string", "format": "date-time" },
+        "message": { "type": "string" },
+        "parents": { "type": "array", "items": { "type": "string" } },
+        "url": { "type": "string" }
+      }
+    },
+
+    "range": {
+      "type": "object",
+      "required": ["base", "head"],
+      "description": "What to compare. On a new branch the base is the divergence point from the default branch, not the previous commit, or the first push would be judged as the whole branch.",
+      "properties": {
+        "base": { "type": "string" },
+        "head": { "type": "string" }
+      }
+    },
+
+    "merge_request": {
+      "type": ["object", "null"],
+      "properties": {
+        "iid": { "type": "integer" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "target_branch": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+
+    "pipeline": {
+      "type": ["object", "null"],
+      "description": "Absent or null means the test evidence cannot be read, which is a different verdict from tests having failed.",
+      "properties": {
+        "status": { "type": "string", "enum": ["success", "failed", "running", "canceled", "none"] },
+        "url": { "type": "string" },
+        "jobs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "stage": { "type": "string" },
+              "status": { "type": "string" },
+              "coverage": { "type": ["number", "null"] }
+            }
+          }
+        }
+      }
+    },
+
+    "checklist": {
+      "type": "object",
+      "required": ["version", "items"],
+      "description": "The policy in force. Passed in rather than held by the agent, so that a verdict can be reproduced later against the exact policy that produced it.",
+      "properties": {
+        "version": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "https://schemas.bit-farm.it/asf/commit-gate-checklist.schema.json" }
+        }
+      }
+    },
+
+    "asf": {
+      "type": "object",
+      "properties": {
+        "state_file": { "type": "string", "default": "docs/.asf/state.json" },
+        "docs_repo_url": { "type": "string" },
+        "action_catalog_version": { "type": "string" }
+      }
+    }
+  }
+}

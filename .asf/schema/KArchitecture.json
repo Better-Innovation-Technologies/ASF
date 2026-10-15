@@ -1,0 +1,519 @@
+{
+  "schema": "https://schemas.kronoid.org/krs/v0/KResourceDefinition.schema.json",
+  "id": "karchitecture",
+  "type": "KArchitecture",
+  "displayName": "Architecture",
+  "meta": {
+    "title": {
+      "field": "name"
+    },
+    "subtitle": {
+      "field": "methodology"
+    },
+    "description": {
+      "field": "description"
+    },
+    "badges": [
+      {
+        "field": "status",
+        "label": "Stato",
+        "tone": "neutral"
+      },
+      {
+        "field": "methodology",
+        "label": "Metodologia",
+        "tone": "info"
+      },
+      {
+        "field": "version",
+        "label": "Versione",
+        "tone": "neutral"
+      }
+    ],
+    "searchableFields": [
+      "name",
+      "description",
+      "methodology"
+    ]
+  },
+  "legacyState": {
+    "field": "status",
+    "values": [
+      "draft",
+      "active",
+      "deprecated"
+    ]
+  },
+  "fields": {
+    "name": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "name",
+      "type": "string",
+      "description": "Nome del sistema",
+      "required": true
+    },
+    "version": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "version",
+      "type": "string",
+      "description": "Versione SemVer dell'architettura (es. 0.1.0-draft)",
+      "required": true
+    },
+    "status": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "status",
+      "type": "options",
+      "description": "Stato del documento architetturale",
+      "required": true,
+      "options": [
+        "draft",
+        "active",
+        "deprecated"
+      ]
+    },
+    "createdAt": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "createdAt",
+      "type": "string",
+      "description": "Data di creazione (ISO 8601)",
+      "required": true
+    },
+    "methodology": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "methodology",
+      "type": "options",
+      "description": "Metodologia di sviluppo adottata",
+      "required": true,
+      "options": [
+        "ASF",
+        "Scrum",
+        "Kanban",
+        "SAFe"
+      ]
+    },
+    "description": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "description",
+      "type": "string",
+      "description": "Descrizione funzionale del sistema",
+      "required": true
+    },
+    "components": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "components",
+      "type": "array",
+      "description": "Componenti logici del sistema (interni ed esterni)",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "Identificativo univoco del componente — usato come reference in integrations.from/to"
+          },
+          "name": {
+            "type": "string",
+            "required": true,
+            "description": "Nome leggibile del componente"
+          },
+          "type": {
+            "type": "options",
+            "required": true,
+            "description": "Categoria del componente",
+            "options": [
+              "spa",
+              "api",
+              "agent",
+              "worker",
+              "cli",
+              "infra",
+              "external"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "required": true,
+            "description": "Responsabilità principale del componente"
+          },
+          "techStack": {
+            "type": "array",
+            "required": false,
+            "description": "Stack tecnologico. Array vuoto per componenti external.",
+            "items": {
+              "type": "object",
+              "fields": {
+                "layer": {
+                  "type": "string",
+                  "required": true,
+                  "description": "Layer (framework, language, runtime, build, db, auth, ...)"
+                },
+                "name": {
+                  "type": "string",
+                  "required": true,
+                  "description": "Nome della tecnologia"
+                },
+                "version": {
+                  "type": "string",
+                  "required": false,
+                  "description": "Versione — null se non applicabile"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "integrations": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "integrations",
+      "type": "array",
+      "description": "Contratti di integrazione tra componenti. from e to referenziano component.id.",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "Identificativo univoco dell'integrazione"
+          },
+          "from": {
+            "type": "array",
+            "required": true,
+            "description": "Componenti sorgente — array di component.id",
+            "items": {
+              "type": "reference",
+              "scheme": "component"
+            }
+          },
+          "to": {
+            "type": "array",
+            "required": true,
+            "description": "Componenti destinazione — array di component.id",
+            "items": {
+              "type": "reference",
+              "scheme": "component"
+            }
+          },
+          "protocol": {
+            "type": "options",
+            "required": true,
+            "description": "Protocollo di comunicazione",
+            "options": [
+              "REST",
+              "GraphQL",
+              "CloudEvents",
+              "GitLab-CI",
+              "MCP",
+              "gRPC",
+              "internal"
+            ]
+          },
+          "contractRef": {
+            "type": "string",
+            "required": false,
+            "description": "Path relativo o URL al contratto (OpenAPI, JSON Schema, ecc.) — null se non disponibile"
+          },
+          "criticality": {
+            "type": "options",
+            "required": true,
+            "description": "Livello di criticità dell'integrazione",
+            "options": [
+              "critical",
+              "high",
+              "optional"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "required": false,
+            "description": "Note operative sull'integrazione"
+          }
+        }
+      }
+    },
+    "adLog": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "adLog",
+      "type": "array",
+      "description": "Architecture Decision Log. Self-contained: context, options weighed, decision and consequences live HERE. Until v8 the narrative lived in a separate architecture.md and only an index lived here, which meant the rationale and the state could disagree with nothing to say which was right.",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "id": {
+            "type": "string",
+            "required": true,
+            "description": "Identificativo progressivo (es. ADR-001)"
+          },
+          "title": {
+            "type": "string",
+            "required": true,
+            "description": "Titolo breve della decisione"
+          },
+          "date": {
+            "type": "string",
+            "required": true,
+            "description": "Data della decisione (ISO 8601)"
+          },
+          "status": {
+            "type": "options",
+            "required": true,
+            "description": "Stato corrente della decisione",
+            "options": [
+              "accepted",
+              "deprecated",
+              "superseded"
+            ]
+          },
+          "supersededBy": {
+            "type": "string",
+            "required": false,
+            "description": "ID dell'ADR che sostituisce questo — null se non applicabile"
+          },
+          "docRef": {
+            "type": "string",
+            "required": false,
+            "description": "DEPRECATED since v8.0. The narrative is in context/rationale/consequences. Kept only to read archives written before v8."
+          },
+          "context": {
+            "type": "string",
+            "required": true,
+            "description": "Why the decision had to be taken. Markdown, long form."
+          },
+          "options": {
+            "type": "array",
+            "required": false,
+            "description": "The alternatives weighed, and why each was kept or dropped. An ADR with no discarded option records a preference, not a decision.",
+            "items": {
+              "type": "object",
+              "fields": {
+                "title": {
+                  "type": "string",
+                  "required": true
+                },
+                "pros": {
+                  "type": "string",
+                  "required": false
+                },
+                "cons": {
+                  "type": "string",
+                  "required": false
+                },
+                "chosen": {
+                  "type": "boolean",
+                  "required": true
+                }
+              }
+            }
+          },
+          "rationale": {
+            "type": "string",
+            "required": true,
+            "description": "What was decided and why, in full. Markdown, long form — this field carries what a page of prose used to carry, and a two-line rationale is a defect, not brevity."
+          },
+          "consequences": {
+            "type": "string",
+            "required": true,
+            "description": "Effect on the codebase and on the agents that generate it. Markdown, long form."
+          }
+        }
+      }
+    },
+    "techStack": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "techStack",
+      "type": "array",
+      "description": "Technology per layer. Was a table in architecture.md.",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "layer": {
+            "type": "options",
+            "required": true,
+            "options": [
+              "frontend",
+              "backend",
+              "database",
+              "deployment",
+              "auth",
+              "ci-cd",
+              "observability",
+              "other"
+            ]
+          },
+          "technology": {
+            "type": "string",
+            "required": true
+          },
+          "version": {
+            "type": "string",
+            "required": false
+          },
+          "notes": {
+            "type": "string",
+            "required": false
+          }
+        }
+      }
+    },
+    "repoLayout": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "repoLayout",
+      "type": "array",
+      "description": "The repositories this project is split across, and what each holds. An agent sees one of them and must know that the others exist.",
+      "required": true,
+      "items": {
+        "type": "object",
+        "fields": {
+          "path": {
+            "type": "string",
+            "required": true
+          },
+          "purpose": {
+            "type": "string",
+            "required": true
+          },
+          "hasAgentsFile": {
+            "type": "boolean",
+            "required": false,
+            "description": "Whether the repository carries its own AGENTS.md layer. Quality Gate L1 point 4 requires it for every layer repository."
+          }
+        }
+      }
+    },
+    "patterns": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "patterns",
+      "type": "object",
+      "description": "Patterns adopted and anti-patterns forbidden, project-wide. Populated during Startup and promoted at each Retrospective.",
+      "required": false,
+      "fields": {
+        "adopted": {
+          "type": "array",
+          "required": false,
+          "items": {
+            "type": "object",
+            "fields": {
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "required": true
+              },
+              "promotedAt": {
+                "type": "string",
+                "required": false,
+                "description": "The retrospective that promoted it."
+              }
+            }
+          }
+        },
+        "antiPatterns": {
+          "type": "array",
+          "required": false,
+          "items": {
+            "type": "object",
+            "fields": {
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "required": true
+              },
+              "why": {
+                "type": "string",
+                "required": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "domainRules": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "domainRules",
+      "type": "array",
+      "description": "Business rules that generated code must never violate. Critical: every code-generating agent reads this before writing. Populated with the PM during Startup.",
+      "required": false,
+      "items": {
+        "type": "object",
+        "fields": {
+          "id": {
+            "type": "string",
+            "required": true
+          },
+          "rule": {
+            "type": "string",
+            "required": true
+          },
+          "rationale": {
+            "type": "string",
+            "required": false
+          },
+          "appliesTo": {
+            "type": "array",
+            "required": false,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "llmPolicy": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "llmPolicy",
+      "type": "object",
+      "description": "Policy on LLM providers. The per-project configuration lives in .asf/llm-config.json; what belongs here is the rule, not the setting.",
+      "required": false,
+      "fields": {
+        "providerAgnostic": {
+          "type": "boolean",
+          "required": true,
+          "description": "Agents are provider-agnostic. False needs an ADR saying why."
+        },
+        "supported": {
+          "type": "array",
+          "required": false,
+          "items": {
+            "type": "string"
+          }
+        },
+        "keySource": {
+          "type": "string",
+          "required": false,
+          "description": "Where API keys come from. Never in git and never in llm-config.json."
+        },
+        "dataResidency": {
+          "type": "string",
+          "required": false,
+          "description": "Residency constraint and the approved alternative when one applies."
+        }
+      }
+    },
+    "context_for_agents": {
+      "schema": "https://schemas.kronoid.org/krs/v0/KFieldDefinition.schema.json",
+      "id": "context_for_agents",
+      "type": "string",
+      "description": "Free-form architectural context an agent should hold before generating code. Present in instances since the first template and never defined here — which is why it was never validated.",
+      "required": false
+    }
+  },
+  "rendering": {},
+  "revisions": {
+    "enabled": true,
+    "trackFields": [
+      "status",
+      "components",
+      "integrations",
+      "adLog"
+    ]
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "id": "requisito",
+  "titolo": "Requisito su un sistema esistente",
+  "quando": "una cosa nuova, o un comportamento da cambiare, su qualcosa che gia' gira",
+  "nota": "Niente stack, forma, ambienti ne' budget: quelle decisioni sono gia' state prese e chiederle di nuovo fa perdere fiducia. Restano le integrazioni e il sistema esistente, perche' e' li' che un requisito nuovo si rompe.",
+  "voci": [
+    {
+      "key": "cv-topic",
+      "gruppo": "Il problema",
+      "question": "Di cosa parliamo, e che tipo di lavoro e'"
+    },
+    {
+      "key": "cv-problema",
+      "gruppo": "Il problema",
+      "question": "Qual e' il problema — non la soluzione"
+    },
+    {
+      "key": "cv-oggi",
+      "gruppo": "Il problema",
+      "question": "Come si fa oggi, e cosa costa farlo cosi'"
+    },
+    {
+      "key": "cv-chi",
+      "gruppo": "Il problema",
+      "question": "Chi lo usa, chi ne subisce le conseguenze, chi paga"
+    },
+    {
+      "key": "cv-risultato",
+      "gruppo": "Il problema",
+      "question": "Cosa deve diventare possibile"
+    },
+    {
+      "key": "cv-confini",
+      "gruppo": "Il problema",
+      "question": "Cosa NON e' in ambito"
+    },
+    {
+      "key": "cv-parole",
+      "gruppo": "Il dominio",
+      "question": "I termini del dominio che significano cose diverse per persone diverse"
+    },
+    {
+      "key": "cv-processo",
+      "gruppo": "Il dominio",
+      "question": "Il flusso da un capo all'altro: chi fa cosa, in che ordine"
+    },
+    {
+      "key": "cv-regole",
+      "gruppo": "Il dominio",
+      "question": "Le regole di calcolo e di decisione: sconti, priorita', soglie, chi ha ragione quando due regole si contraddicono"
+    },
+    {
+      "key": "cv-numeri",
+      "gruppo": "Il dominio",
+      "question": "Volumi, frequenze, picchi, e quanto ci si aspetta che crescano"
+    },
+    {
+      "key": "cv-eccezioni",
+      "gruppo": "Il dominio",
+      "question": "Cosa puo' andare storto, e cosa deve succedere allora"
+    },
+    {
+      "key": "cv-esistente",
+      "gruppo": "Architettura",
+      "question": "Cosa esiste gia', e chi e' la fonte di verita' di ogni dato"
+    },
+    {
+      "key": "cv-integrazioni",
+      "gruppo": "Architettura",
+      "question": "Con cosa deve parlare, in che direzione, e con che vincoli di chi sta dall'altra parte"
+    },
+    {
+      "key": "cv-identita",
+      "gruppo": "Vincoli",
+      "question": "Chi puo' fare cosa: ruoli, autenticazione, da dove arrivano gli utenti"
+    },
+    {
+      "key": "cv-qualita",
+      "gruppo": "Vincoli",
+      "question": "Prestazioni, disponibilita', accessibilita': quali contano, e con che soglia misurabile"
+    },
+    {
+      "key": "cv-prove",
+      "gruppo": "Il progetto",
+      "question": "Cosa esiste gia' da guardare: documenti, schermate, registrazioni, dati veri"
+    }
+  ]
+}

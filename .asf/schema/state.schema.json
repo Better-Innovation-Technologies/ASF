@@ -1,0 +1,1035 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "state.schema.json",
+  "title": "ASF state.json",
+  "description": "ASF 8.3 single source of truth of a project: statuses, references, priorities and signatures of every artifact. The `.md` files hold only what state.json does not have (id, title, descriptive fields), and what can be computed is stored nowhere. Strict: a key not listed here is an error. Rules across entries and files (unique ids, resolving references, task id prefix, cycles, artifact files) are enforced by tools/validate-stack.py.",
+  "type": "object",
+  "required": [
+    "meta",
+    "project",
+    "epics",
+    "requirements"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Path of this schema: `schema/state.schema.json`."
+    },
+    "meta": {
+      "type": "object",
+      "description": "Versions of the file and of the standard. Who wrote the file and when is told by its git history.",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "asf_version"
+      ],
+      "properties": {
+        "schema_version": {
+          "enum": [
+            "2.0.0"
+          ],
+          "description": "Version of state.schema.json (semver). An addition bumps the minor, a breaking change the major."
+        },
+        "asf_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+          "description": "ASF version followed (`8.3`). Only an adoption changes it."
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "description": "Project identity, independent of KStudio.",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project name."
+        },
+        "repos": {
+          "type": "array",
+          "description": "Clonable URLs of the project repositories (GitLab or GitHub). The repo name is the last segment without `.git`.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/repo_url"
+          }
+        }
+      }
+    },
+    "prompt_stack": {
+      "type": "array",
+      "description": "The L0 and L1 files, one per entry, each with its signature. ADRs are not here.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "An L0 or L1 file of the Prompt Stack, with its signature. It is signed when it has `validated_by`.",
+        "additionalProperties": false,
+        "required": [
+          "filename"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string",
+            "pattern": "^[^/]",
+            "not": {
+              "pattern": "\\.\\."
+            },
+            "description": "The file, relative to the docs repo root (`product.md`, `.asf/architecture.json`…). No leading `/`, no `..`."
+          },
+          "validated_by": {
+            "$ref": "#/$defs/persona",
+            "description": "Who signed the file; never an agent. Always together with `validated_at`."
+          },
+          "validated_at": {
+            "$ref": "#/$defs/date",
+            "description": "Day of the signature. Always together with `validated_by`."
+          }
+        },
+        "dependentRequired": {
+          "validated_by": [
+            "validated_at"
+          ],
+          "validated_at": [
+            "validated_by"
+          ]
+        }
+      }
+    },
+    "sprints": {
+      "type": "array",
+      "description": "Declared sprints, each with its epics. At most one is `active`; there may be none.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "A declared sprint, called «Sprint <id>». Velocity, target and burndown are computed from points, statuses and dates, never stored.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Sprint number."
+          },
+          "status": {
+            "$ref": "#/$defs/sprint_status",
+            "description": "Sprint status; at most one sprint is `active`."
+          },
+          "start_date": {
+            "$ref": "#/$defs/date",
+            "description": "First day. Required when `active`."
+          },
+          "end_date": {
+            "$ref": "#/$defs/date",
+            "description": "Planned last day. Required when `active`."
+          },
+          "closed_on": {
+            "$ref": "#/$defs/date",
+            "description": "Actual closing day. Required when `closed`, forbidden otherwise."
+          },
+          "goal": {
+            "type": "string",
+            "description": "Sprint goal."
+          },
+          "epic_refs": {
+            "type": "array",
+            "description": "Epics of the sprint. An epic is in at most one sprint; an epic in no sprint is in the backlog.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/epic_id"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "active"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "start_date",
+                "end_date"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "closed"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "closed_on"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "closed_on"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "contains": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "const": "active"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "minContains": 0,
+      "maxContains": 1
+    },
+    "roadmap": {
+      "type": "array",
+      "description": "Delivery milestones in order, each with period and epics. The narrative is in `Roadmap.md`.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "A delivery milestone with its period and epics. Its status and progress are computed from dates and epics.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Milestone id, e.g. `R1`."
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Milestone name; it has no `.md` of its own."
+          },
+          "start_date": {
+            "$ref": "#/$defs/date",
+            "description": "First day."
+          },
+          "end_date": {
+            "$ref": "#/$defs/date",
+            "description": "Planned delivery day."
+          },
+          "epic_refs": {
+            "type": "array",
+            "description": "Epics of the milestone. An epic is in at most one milestone.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/epic_id"
+            }
+          }
+        }
+      }
+    },
+    "epics": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "An epic: status, priority, its tasks, the stories it delivers and the RNFs it must respect. Its RFs are those cited by its tasks; its sprint and milestone are those that list it. Title and text are in `epics/<id>.md`.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "tasks"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/epic_id",
+            "description": "Epic id."
+          },
+          "status": {
+            "$ref": "#/$defs/work_status",
+            "description": "Epic status; `done` if and only if the epic is signed (`validated_by` and `validated_at`)."
+          },
+          "product_priority": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Priority decided by the PM."
+          },
+          "kind": {
+            "enum": [
+              "feature",
+              "container"
+            ],
+            "description": "`container` collects the tasks that fix the bugs of the sprint."
+          },
+          "depends_on": {
+            "type": "array",
+            "description": "Epics to close first.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/epic_id"
+            }
+          },
+          "user_story_refs": {
+            "type": "array",
+            "description": "Stories it delivers. A story is in at most one epic.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/us_id"
+            }
+          },
+          "rnf_refs": {
+            "type": "array",
+            "description": "RNFs that all its tasks must respect. An RNF may be in several epics, or in none.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/rnf_id"
+            }
+          },
+          "validated_by": {
+            "$ref": "#/$defs/persona",
+            "description": "Who validated the epic; never an agent. Required when `done`, forbidden otherwise; always together with `validated_at`."
+          },
+          "validated_at": {
+            "$ref": "#/$defs/date",
+            "description": "Day of the validation. Always together with `validated_by`."
+          },
+          "tasks": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "description": "A task. It exists only inside its epic and its id starts with the epic id (checked by the validator). Title, context and ACs are in `tasks/<id>.md`.",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/$defs/task_id",
+                  "description": "Task id; starts with the id of the containing epic."
+                },
+                "status": {
+                  "$ref": "#/$defs/work_status",
+                  "description": "Task status; `done` in the same commit as the `Task.md`."
+                },
+                "points": {
+                  "$ref": "#/$defs/points",
+                  "description": "Estimate. The points of the epic are the sum of its tasks."
+                },
+                "rf_refs": {
+                  "type": "array",
+                  "description": "RFs whose ACs it implements, possibly of another epic.",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/rf_id"
+                  }
+                },
+                "bug_refs": {
+                  "type": "array",
+                  "description": "Bugs it fixes: this is how a bug enters an epic.",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/bug_id"
+                  }
+                },
+                "depends_on": {
+                  "type": "array",
+                  "description": "Tasks to close first.",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/task_id"
+                  }
+                },
+                "files": {
+                  "type": "array",
+                  "description": "Files the task expects to touch, as globs whose first segment is the repo name. Two tasks with no file in common and no `depends_on` between them can run in parallel. A forecast: once closed, the commits are authoritative.",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/file_glob"
+                  }
+                }
+              }
+            },
+            "description": "Its tasks, in number order. At least one: the epic enters state.json together with its tasks."
+          }
+        },
+        "dependentRequired": {
+          "validated_by": [
+            "validated_at"
+          ],
+          "validated_at": [
+            "validated_by"
+          ]
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "done"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "validated_by",
+                "validated_at"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "validated_by"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "validated_at"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "not": {
+                "required": [
+                  "rnf_refs"
+                ]
+              }
+            },
+            "then": {
+              "properties": {
+                "tasks": {
+                  "items": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "rf_refs"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "bug_refs"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "description": "Epics, each with its tasks."
+    },
+    "requirements": {
+      "type": "object",
+      "description": "RFs and RNFs, in two arrays. A requirement exists even without an epic.",
+      "additionalProperties": false,
+      "required": [
+        "functional"
+      ],
+      "properties": {
+        "functional": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "description": "A functional requirement. Its text is in `requirements/<id>.md` or, without a file, in the RF index of `product.md`.",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/rf_id",
+                "description": "RF id."
+              },
+              "status": {
+                "$ref": "#/$defs/work_status",
+                "description": "RF status; `done` only with every AC implemented and tested."
+              },
+              "priority": {
+                "$ref": "#/$defs/priority",
+                "description": "Priority decided by the PM."
+              }
+            }
+          },
+          "description": "Functional requirements (RF)."
+        },
+        "non_functional": {
+          "type": "array",
+          "description": "Non-functional requirements (RNF).",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "description": "A non-functional requirement. Its text, metric, threshold and verification are in `requirements/<id>.md`.",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "status"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/rnf_id",
+                "description": "RNF id."
+              },
+              "status": {
+                "$ref": "#/$defs/rnf_status",
+                "description": "RNF status; never `done`."
+              },
+              "verified_at": {
+                "$ref": "#/$defs/date",
+                "description": "Day of the last measurement. Required with `satisfied`, `at_risk` and `violated`, forbidden with `unverified`, optional with `waived`; always together with `verified_by`."
+              },
+              "verified_by": {
+                "$ref": "#/$defs/persona",
+                "description": "Who measured; never an agent. Always together with `verified_at`."
+              },
+              "priority": {
+                "$ref": "#/$defs/priority",
+                "description": "Priority decided by the PM, as for RFs."
+              }
+            },
+            "dependentRequired": {
+              "verified_by": [
+                "verified_at"
+              ],
+              "verified_at": [
+                "verified_by"
+              ]
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "enum": [
+                        "satisfied",
+                        "at_risk",
+                        "violated"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "verified_at",
+                    "verified_by"
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "status": {
+                      "const": "unverified"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                },
+                "then": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "verified_at"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "verified_by"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "user_stories": {
+      "type": "array",
+      "description": "User stories.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "A user story: the RFs that satisfy it. The story is in `stories/<id>.md`; its status is computed from its RFs.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rf_refs"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/us_id",
+            "description": "Story id."
+          },
+          "rf_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/rf_id"
+            },
+            "description": "RFs that satisfy the story; at least one. The story has no ACs of its own: they are those of its RFs."
+          },
+          "priority": {
+            "$ref": "#/$defs/priority",
+            "description": "Priority decided by the PM."
+          }
+        }
+      }
+    },
+    "bugs": {
+      "type": "array",
+      "description": "Bugs.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "description": "A bug: status, severity and what it breaks. It enters an epic through the task that fixes it (`bug_refs`). Report, cause, environment and regression test are in `bugs/<id>.md`.",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "severity"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/bug_id",
+            "description": "Bug id."
+          },
+          "status": {
+            "$ref": "#/$defs/bug_status",
+            "description": "Bug status."
+          },
+          "severity": {
+            "$ref": "#/$defs/severity",
+            "description": "Severity, confirmed at triage."
+          },
+          "rf_refs": {
+            "type": "array",
+            "description": "RFs it breaks.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/rf_id"
+            }
+          },
+          "rnf_refs": {
+            "type": "array",
+            "description": "RNFs it violates.",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/rnf_id"
+            }
+          },
+          "duplicate_of": {
+            "$ref": "#/$defs/bug_id",
+            "description": "The earlier bug it duplicates. Required when `duplicate`, forbidden otherwise."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "duplicate"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "duplicate_of"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "duplicate_of"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "pipeline": {
+      "description": "v8.2 dashboard section, optional, kept with its v8.2 shape; to be reviewed together with the dashboard.",
+      "type": "object",
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "last_run_at": {
+                "type": "null"
+              },
+              "status": {
+                "type": "string"
+              },
+              "duration_sec": {
+                "type": "null"
+              },
+              "gitlab_job_url": {
+                "type": "null"
+              },
+              "summary": {
+                "type": "null"
+              },
+              "artifacts": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "agent": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "product_log": {
+      "description": "v8.2 dashboard section, optional, kept with its v8.2 shape; to be reviewed together with the dashboard.",
+      "type": "object",
+      "properties": {
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "gitlab_file_path": {
+          "type": "string"
+        },
+        "last_commit_sha": {
+          "type": "null"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "sprint_target": {
+                "type": "integer"
+              },
+              "state": {
+                "type": "string"
+              },
+              "epic_ref": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "alerts": {
+      "description": "v8.2 dashboard section, optional, kept with its v8.2 shape; to be reviewed together with the dashboard.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resolved": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "releases": {
+      "description": "v8.2 dashboard section, optional, kept with its v8.2 shape; to be reviewed together with the dashboard.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "mrs_merged": {
+            "type": "integer"
+          },
+          "story_points": {
+            "type": "integer"
+          },
+          "staging_url": {
+            "type": "string"
+          },
+          "gitlab_release_url": {
+            "type": "null"
+          },
+          "epics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "inbox": {
+      "description": "v8.2 dashboard section, optional, kept with its v8.2 shape; to be reviewed together with the dashboard.",
+      "type": "array"
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date",
+      "description": "Calendar day, ISO 8601 (YYYY-MM-DD)."
+    },
+    "persona": {
+      "type": "string",
+      "pattern": "^[^<>]+ <[^<>\\s@]+@[^<>\\s]+>$",
+      "not": {
+        "pattern": "^agent:"
+      },
+      "description": "A person, written as a commit author: `Name <email>`. Never an agent (`agent:…`): only a person signs."
+    },
+    "rf_id": {
+      "type": "string",
+      "pattern": "^RF-[0-9]{2,3}$",
+      "description": "Functional requirement id."
+    },
+    "rnf_id": {
+      "type": "string",
+      "pattern": "^RNF-[0-9]{2,3}$",
+      "description": "Non-functional requirement id."
+    },
+    "epic_id": {
+      "type": "string",
+      "pattern": "^Epic[0-9]{3}$",
+      "description": "Epic id."
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^Task\\.Epic[0-9]{3}\\.[0-9]+$",
+      "description": "Task id: the id of its epic, then its number."
+    },
+    "bug_id": {
+      "type": "string",
+      "pattern": "^BUG-[0-9]{2,3}$",
+      "description": "Bug id."
+    },
+    "us_id": {
+      "type": "string",
+      "pattern": "^US-[0-9]{2,3}$",
+      "description": "User story id."
+    },
+    "work_status": {
+      "enum": [
+        "todo",
+        "in_progress",
+        "review",
+        "done",
+        "blocked"
+      ],
+      "description": "Work status of RF, epics and tasks. `review` = delivered, waiting for the signature."
+    },
+    "bug_status": {
+      "enum": [
+        "triage",
+        "todo",
+        "in_progress",
+        "review",
+        "done",
+        "blocked",
+        "not_reproducible",
+        "wont_fix",
+        "duplicate"
+      ],
+      "description": "Bug status: every work status, plus `triage`, `not_reproducible`, `wont_fix` and `duplicate`."
+    },
+    "rnf_status": {
+      "enum": [
+        "unverified",
+        "satisfied",
+        "at_risk",
+        "violated",
+        "waived"
+      ],
+      "description": "Satisfaction of a non-functional requirement. Never `done`."
+    },
+    "sprint_status": {
+      "enum": [
+        "planned",
+        "active",
+        "closed"
+      ],
+      "description": "Sprint status. At most one sprint is `active`."
+    },
+    "priority": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "description": "Priority decided by the PM."
+    },
+    "severity": {
+      "enum": [
+        "blocker",
+        "critical",
+        "high",
+        "low",
+        "trivial"
+      ],
+      "description": "How bad the defect is, confirmed at triage."
+    },
+    "points": {
+      "type": "integer",
+      "enum": [
+        1,
+        2,
+        3,
+        5,
+        8
+      ],
+      "description": "Story points (Fibonacci, at most 8)."
+    },
+    "repo_url": {
+      "type": "string",
+      "pattern": "^(?:https://[A-Za-z0-9.-]+(?::[0-9]+)?/|git@[A-Za-z0-9.-]+:)[A-Za-z0-9._~-]+(?:/[A-Za-z0-9._~-]+)*$",
+      "not": {
+        "pattern": "://[^/]*@"
+      },
+      "description": "Clonable git URL, `https://host/path[.git]` or `git@host:path[.git]`. Never credentials in the URL. The repo name is the last segment without `.git`."
+    },
+    "file_glob": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]+/\\S*$",
+      "not": {
+        "pattern": "\\.\\."
+      },
+      "description": "Glob relative to the folder that contains the repos; the first segment is the repo name (`api/core/app/asf/**`). No leading `/`, no `..`."
+    }
+  }
+}

@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<!-- ASF™ Operating Model — the diagram. Versioned in the standard repository so it cannot
+     drift silently, which is what happened to it between v4 and v8.2. Companion to
+     official/ASF_Operating_Model_v8.3.md; where the two disagree, the files of the standard win. -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASF™ — Augmented Software Factory · v8.3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --red:#BF0025;--red-dim:#1a0008;--red-text:#ff6680;--red-border:#BF002550;
+  --gold:#BFBF09;--gold-dim:#1a1500;--gold-text:#d4d400;--gold-border:#BFBF0950;
+  --blue:#185FA5;--blue-dim:#070e1a;--blue-text:#5aabff;--blue-border:#185FA550;
+  --teal:#0F6E56;--teal-dim:#061510;--teal-text:#3ddd9a;--teal-border:#0F6E5650;
+  --amber:#854F0B;--amber-dim:#130d02;--amber-text:#ffb340;--amber-border:#854F0B50;
+  --purple:#534AB7;--purple-dim:#0a0914;--purple-text:#9898ff;--purple-border:#534AB750;
+  --orange:#B85C00;--orange-dim:#1a0d00;--orange-text:#ff9940;--orange-border:#B85C0050;
+  --bg:#080808;--bg2:#0d0d0d;--border:#1c1c1c;--muted:#4a4a4a;--muted2:#666;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-sans:'Inter',system-ui,sans-serif;
+  --cs:#1a5c8a;--cs-dim:#040d14;--cs-text:#4ab3ff;--cs-border:#1a5c8a50;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#050505;color:#ccc;font-family:var(--font-sans);min-height:100vh;padding:20px;}
+
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal{background:#0f0f0f;border:0.5px solid #2a2a2a;border-radius:8px;max-width:520px;width:90%;padding:0;overflow:hidden;}
+#modal-header{padding:16px 20px 12px;border-bottom:0.5px solid #1e1e1e;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+#modal-title{font-size:14px;font-weight:600;font-family:var(--font-mono);}
+#modal-subtitle{font-size:11px;margin-top:3px;}
+#modal-close{background:none;border:none;color:#444;cursor:pointer;font-size:18px;line-height:1;padding:0;flex-shrink:0;}
+#modal-close:hover{color:#aaa;}
+#modal-body{padding:16px 20px 20px;}
+#modal-section{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);margin-bottom:8px;}
+#modal-desc{font-size:13px;line-height:1.7;color:#aaa;}
+#modal-meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
+.meta-item{font-size:11px;padding:3px 8px;border-radius:4px;border:0.5px solid var(--border);background:#111;color:#666;}
+
+/* POSTER */
+.poster{background:var(--bg);border:0.5px solid #1e1e1e;border-radius:8px;overflow:hidden;width:100%;}
+
+/* TOP BAR */
+.topbar{background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:8px 18px;}
+.topbar-title{font-size:16px;font-weight:600;color:#fff;font-family:var(--font-mono);letter-spacing:.02em;}
+.topbar-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;}
+.topbar-logo{font-size:10px;color:rgba(255,255,255,.4);text-align:right;line-height:1.6;font-family:var(--font-mono);}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:68px 1fr;}
+
+/* LABELS */
+.labels{display:flex;flex-direction:column;}
+.ll{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0;}
+.ll-strat  {background:#0c0c00;color:var(--gold-text);  height:52px;}
+.ll-people {background:#0d0004;color:var(--red-text);   height:190px;}
+.ll-startup{background:#050e06;color:var(--teal-text);  height:72px;}
+.ll-infra  {background:#140a00;color:var(--orange-text); height:112px;}
+.ll-method {background:#050912;color:var(--blue-text);  flex:1;min-height:0;}
+.ll-tech   {background:#040a04;color:var(--teal-text);  height:90px;}
+
+/* CONTENT */
+.content{display:flex;flex-direction:column;}
+
+/* ── STRATEGIC ── */
+.lane-strat{
+  height:52px;background:#0b0b00;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:5px;padding:0 14px;overflow-x:auto;
+}
+.strat-item{display:flex;align-items:center;gap:4px;background:#161600;border:0.5px solid var(--gold-border);border-radius:4px;padding:3px 8px;font-size:10px;color:var(--gold-text);white-space:nowrap;flex-shrink:0;}
+.strat-item.origin{border-color:var(--gold);font-weight:600;}
+.strat-arr{color:#3a3a00;font-size:13px;flex-shrink:0;}
+.strat-kpis{margin-left:auto;display:flex;gap:12px;flex-shrink:0;padding-left:10px;}
+.kpi{text-align:center;}
+.kpi-v{font-size:15px;font-weight:700;color:var(--gold-text);line-height:1;font-family:var(--font-mono);}
+.kpi-k{font-size:8px;color:var(--muted);margin-top:1px;}
+
+/* ── PEOPLE ── */
+.lane-people{height:216px;background:#0a0003;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1px 1fr;}
+.pdiv{background:var(--border);}
+.psec{padding:10px 12px;}
+.psec-title{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.pt-h{color:var(--red-text);}
+.pt-a{color:var(--gold-text);}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.rgrid3{grid-template-columns:1fr 1fr 1fr;}
+.rc{border-radius:4px;padding:5px 8px;border:0.5px solid;cursor:pointer;transition:opacity .15s;}
+.rc:hover{opacity:.8;}
+.rc-h{background:var(--red-dim);border-color:var(--red-border);}
+.rc-a{background:var(--gold-dim);border-color:var(--gold-border);}
+.rc-name{font-size:9px;font-weight:600;line-height:1.2;}
+.rc-h .rc-name{color:var(--red-text);}
+.rc-a .rc-name{color:var(--gold-text);}
+.rc-sub{font-size:8px;color:var(--muted2);margin-top:2px;line-height:1.3;}
+
+/* ── STARTUP ── */
+.lane-startup{
+  height:72px;background:#050e06;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:7px;overflow-x:auto;
+}
+.startup-label{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-text);white-space:nowrap;}
+.startup-box{background:#081a0a;border:0.5px solid var(--teal-border);border-radius:4px;padding:5px 9px;flex-shrink:0;}
+.startup-box-title{font-size:9px;font-weight:600;color:var(--teal-text);margin-bottom:4px;}
+.startup-chips{display:flex;flex-wrap:wrap;gap:3px;}
+.startup-arr{color:#1a2a1a;font-size:12px;flex-shrink:0;}
+.badges-inline{display:flex;gap:3px;flex-shrink:0;}
+
+/* ── INFRA BOOTSTRAP LANE ── */
+.lane-infra{
+  height:112px;background:#100800;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:4px 14px;gap:5px;
+  flex-wrap:wrap;align-content:center;
+  position:relative;
+}
+.infra-label{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--orange-text);white-space:nowrap;}
+.infra-box{background:#1a0d00;border:0.5px solid var(--orange-border);border-radius:4px;padding:5px 9px;flex-shrink:0;}
+.infra-box-title{font-size:9px;font-weight:600;color:var(--orange-text);margin-bottom:4px;}
+.infra-chips{display:flex;flex-wrap:wrap;gap:3px;}
+.infra-arr{color:#2a1a00;font-size:12px;flex-shrink:0;}
+.infra-gate{
+  display:flex;align-items:center;gap:4px;
+  background:#0d0500;border:0.5px dashed var(--orange-border);
+  border-radius:4px;padding:3px 7px;flex-shrink:0;
+}
+.infra-gate-txt{font-size:8px;color:var(--orange-text);font-family:var(--font-mono);}
+.infra-recurring{
+  margin-left:auto;flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  font-size:7.5px;color:var(--muted);font-style:italic;
+  border-left:0.5px solid var(--border);padding-left:10px;
+}
+.chip-orange{background:var(--orange-dim);color:var(--orange-text);border-color:var(--orange-border);}
+
+/* ── METHODOLOGY ── */
+.lane-method{flex:1;background:#04060e;border-bottom:1px solid var(--border);display:grid;grid-template-columns:126px 1fr;}
+
+/* PROMPT STACK */
+.ps-col{border-right:1px solid var(--border);padding:10px 9px;display:flex;flex-direction:column;gap:4px;}
+.ps-head{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-text);margin-bottom:4px;font-family:var(--font-mono);}
+.pslayer{border-radius:3px;padding:5px 7px;border-left:2px solid;}
+.psl0{background:var(--red-dim);border-color:var(--red);}
+.psl1{background:var(--blue-dim);border-color:var(--blue);margin-left:5px;}
+.psl2{background:var(--teal-dim);border-color:var(--teal);margin-left:10px;}
+.psl3{background:var(--amber-dim);border-color:var(--amber);margin-left:15px;}
+.psl-label{font-size:8px;font-weight:600;font-family:var(--font-mono);}
+.psl0 .psl-label{color:var(--red-text);}
+.psl1 .psl-label{color:var(--blue-text);}
+.psl2 .psl-label{color:var(--teal-text);}
+.psl3 .psl-label{color:var(--amber-text);}
+.psl-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;}
+.ps-arrow{text-align:left;font-size:9px;color:#222;line-height:1;padding-left:7px;}
+.ps-gov{margin-top:auto;padding-top:6px;border-top:0.5px solid var(--border);font-size:7px;color:var(--muted);line-height:1.7;font-family:var(--font-mono);}
+
+/* SCRUM FLOW */
+.scrum-col{padding:10px 12px;}
+.sf-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sf-title{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-text);font-family:var(--font-mono);}
+.sf-cadence{font-size:8px;color:var(--muted);border:0.5px solid var(--border);border-radius:3px;padding:2px 7px;font-family:var(--font-mono);}
+.phases{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:7px;}
+.ph{border-radius:4px;border:0.5px solid var(--border);background:#060810;overflow:hidden;}
+.ph-top{padding:4px 5px 3px;text-align:center;border-bottom:0.5px solid var(--border);font-size:9px;font-weight:600;font-family:var(--font-mono);}
+.ph-plan   .ph-top{background:#180005;color:var(--red-text);}
+.ph-exec   .ph-top{background:#05091a;color:var(--blue-text);}
+.ph-review .ph-top{background:#051408;color:var(--teal-text);}
+.ph-retro  .ph-top{background:#140e02;color:var(--amber-text);}
+.ph-next   .ph-top{background:#0a0a0a;color:#2a2a2a;}
+.ph-body{padding:5px;}
+.pr{display:flex;align-items:flex-start;gap:3px;margin-bottom:3px;font-size:8px;color:var(--muted2);line-height:1.3;}
+.pr-label{flex-shrink:0;}
+.pr-chips{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:3px;}
+.ph-next-inner{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 8px;text-align:center;}
+.ph-next-icon{font-size:22px;color:#1e1e2e;line-height:1;}
+.ph-next-txt{font-size:8px;color:#252535;margin-top:4px;font-family:var(--font-mono);}
+
+/* INFRA CHANGE REQUEST in method lane */
+.icr{display:flex;align-items:center;gap:6px;border:0.5px dashed var(--orange-border);border-radius:4px;padding:5px 10px;background:#0d0500;margin-bottom:5px;}
+.icr-label{font-size:9px;font-weight:600;color:var(--orange-text);white-space:nowrap;font-family:var(--font-mono);}
+.icr-desc{font-size:8px;color:var(--muted2);flex:1;}
+.icr-flow{display:flex;align-items:center;gap:3px;margin-left:auto;flex-shrink:0;}
+.icr-arr{font-size:9px;color:#2a2a2a;}
+
+/* CR */
+.cr{display:flex;align-items:center;gap:6px;border:0.5px dashed var(--red-border);border-radius:4px;padding:5px 10px;background:#0d0002;}
+.cr-label{font-size:9px;font-weight:600;color:var(--red-text);white-space:nowrap;font-family:var(--font-mono);}
+.cr-desc{font-size:8px;color:var(--muted2);flex:1;}
+.cr-flow{display:flex;align-items:center;gap:3px;margin-left:auto;flex-shrink:0;}
+.cr-arr{font-size:9px;color:#2a2a2a;}
+
+/* ── TECH ── */
+.lane-tech{height:90px;background:#040d04;display:flex;}
+.tech-items{display:flex;flex:1;}
+.ti{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 5px;border-right:0.5px solid #0e1e0e;gap:3px;}
+.ti:last-child{border-right:none;}
+.ti-name{font-size:8px;font-weight:600;color:var(--teal-text);text-align:center;line-height:1.3;font-family:var(--font-mono);}
+.ti-role{font-size:7px;color:var(--muted);text-align:center;line-height:1.3;}
+.ti-chips{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-top:2px;}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:8px;font-weight:500;padding:1px 5px;border-radius:3px;white-space:nowrap;border:0.5px solid;cursor:pointer;font-family:var(--font-mono);transition:opacity .15s;}
+.chip:hover{opacity:.75;}
+.chip-red   {background:var(--red-dim);  color:var(--red-text);  border-color:var(--red-border);}
+.chip-blue  {background:var(--blue-dim); color:var(--blue-text); border-color:var(--blue-border);}
+.chip-teal  {background:var(--teal-dim); color:var(--teal-text); border-color:var(--teal-border);}
+.chip-amber {background:var(--amber-dim);color:var(--amber-text);border-color:var(--amber-border);}
+.chip-purple{background:var(--purple-dim);color:var(--purple-text);border-color:var(--purple-border);}
+.chip-gold  {background:var(--gold-dim); color:var(--gold-text); border-color:var(--gold-border);}
+.chip-gray  {background:#111;color:#666;border-color:#222;}
+.chip-orange{background:var(--orange-dim);color:var(--orange-text);border-color:var(--orange-border);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:3px;font-size:8px;font-weight:700;flex-shrink:0;font-family:var(--font-mono);}
+.badge-h{background:var(--red-dim); color:var(--red-text); border:0.5px solid var(--red-border);}
+.badge-a{background:var(--gold-dim);color:var(--gold-text);border:0.5px solid var(--gold-border);}
+.badge-g{background:var(--purple-dim);color:var(--purple-text);border:0.5px solid var(--purple-border);}
+.badge-s{background:#101010;color:#888;border:0.5px solid #2a2a2a;}
+.badge-i{background:var(--orange-dim);color:var(--orange-text);border:0.5px solid var(--orange-border);}
+.badge-cs{background:var(--cs-dim);color:var(--cs-text);border:0.5px solid var(--cs-border);}
+.chip-cs{background:var(--cs-dim);color:var(--cs-text);border-color:var(--cs-border);}
+
+/* LEGEND */
+.legend{background:#0a0a0a;border-top:1px solid var(--border);padding:9px 18px;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;}
+.leg-group{display:flex;flex-direction:column;gap:5px;}
+.leg-title{font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-family:var(--font-mono);}
+.leg-items{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--muted2);}
+.leg-divider{width:1px;background:var(--border);align-self:stretch;}
+
+/* BOTTOM */
+.botbar{background:#0d0d0d;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:6px 18px;}
+.bb-l{font-size:8px;color:#333;font-family:var(--font-mono);}
+.bb-c{font-size:11px;font-weight:600;color:#aaa;letter-spacing:.02em;font-family:var(--font-mono);}
+.bb-r{font-size:8px;color:#252525;text-align:right;font-family:var(--font-mono);}
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div id="modal">
+    <div id="modal-header">
+      <div>
+        <div id="modal-title"></div>
+        <div id="modal-subtitle"></div>
+      </div>
+      <button id="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body">
+      <div id="modal-section"></div>
+      <div id="modal-desc"></div>
+      <div id="modal-meta"></div>
+    </div>
+  </div>
+</div>
+
+<div class="poster">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">ASF™ — Augmented Software Factory</div>
+    <div class="topbar-sub">Better Innovation Technologies · ASF Operating Model · v8.3</div>
+  </div>
+  <div class="topbar-logo">bit-farm.it<br>2026</div>
+</div>
+
+<div class="grid">
+
+<!-- LABELS -->
+<div class="labels">
+  <div class="ll ll-strat" style="height:52px;">Strategic</div>
+  <div class="ll ll-people" style="height:216px;">Skills &amp; Roles</div>
+  <div class="ll ll-startup" style="height:72px;">Startup</div>
+  <div class="ll ll-infra" style="height:112px;">Infra Bootstrap</div>
+  <div class="ll ll-method" style="flex:1;">SCRUM-AI™</div>
+  <div class="ll ll-tech" style="height:90px;">Tech Stack</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ── STRATEGIC ── -->
+<div class="lane-strat">
+  <div class="strat-item origin" onclick="showInfo(&#39;stakeholders&#39;)">Stakeholders</div>
+  <div class="strat-arr">›</div>
+  <div class="strat-item" onclick="showInfo(&#39;bisogni&#39;)">Needs / Vision</div>
+  <div class="strat-arr">›</div>
+  <span class="chip chip-cs" onclick="showRole(&#39;pitchAgent&#39;)"><span class="badge badge-a">A</span>Pitch</span>
+  <div class="strat-arr">›</div>
+  <div class="strat-item" onclick="showInfo(&#39;requisiti&#39;)">Requirements</div>
+  <div class="strat-arr">›</div>
+  <span class="chip chip-blue" onclick="showChip(&#39;product&#39;)"><span class="badge badge-s">S</span>product.md</span>
+  <div class="strat-arr">›</div>
+  <span class="chip chip-gold" onclick="showChip(&#39;roadmap&#39;)"><span class="badge badge-s">S</span>Roadmap.md</span>
+  <div class="strat-arr">›</div>
+  <span class="chip chip-gold" onclick="showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>ProductLog.md</span>
+  <div class="strat-arr">›</div>
+  <div class="strat-item" style="color:var(--teal-text);border-color:var(--teal-border);background:#061408;" onclick="showInfo(&#39;delivery&#39;)">Software delivery</div>
+  <div class="strat-kpis">
+    <div class="kpi"><div class="kpi-v">30d</div><div class="kpi-k">first delivery</div></div>
+    <div class="kpi"><div class="kpi-v">1w</div><div class="kpi-k">sprint</div></div>
+    <div class="kpi"><div class="kpi-v">12m</div><div class="kpi-k">engagement</div></div>
+  </div>
+</div>
+
+<!-- ── PEOPLE ── -->
+<div class="lane-people">
+  <div class="psec">
+    <div class="psec-title pt-h">Human FTEs — accountability that cannot be delegated</div>
+    <div class="rgrid">
+      <div class="rc rc-h" onclick="showRole(&#39;pm&#39;)">
+        <div class="rc-name">Product Owner / PM</div>
+        <div class="rc-sub">Client relationship · Roadmap · CR approval</div>
+      </div>
+      <div class="rc rc-h" onclick="showRole(&#39;devlead&#39;)">
+        <div class="rc-name">Dev Lead / Architect</div>
+        <div class="rc-sub">Architecture · MR gate · Infra gate · L0–L1 · Action Catalogue</div>
+      </div>
+      <div class="rc rc-h" onclick="showRole(&#39;developer&#39;)">
+        <div class="rc-name">Senior Developer</div>
+        <div class="rc-sub">Validates agent output · Domain · Edge cases</div>
+      </div>
+      <div class="rc rc-h" onclick="showRole(&#39;qa&#39;)">
+        <div class="rc-name">QA Lead</div>
+        <div class="rc-sub">Test strategy · AC definition · Acceptance</div>
+      </div>
+    </div>
+  </div>
+  <div class="pdiv"></div>
+  <div class="psec">
+    <div class="psec-title pt-a">AI Agent FTEs — structured automation</div>
+    <div class="rgrid rgrid3">
+      <div class="rc rc-a" onclick="showRole(&#39;scrumAgent&#39;)">
+        <div class="rc-name">Scrum Master Agent</div>
+        <div class="rc-sub">Ceremonies · Tracking · Velocity</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;epicAgent&#39;)">
+        <div class="rc-name">Epic &amp; Task Agent</div>
+        <div class="rc-sub">Generates MD · CR cascade · Sprint setup</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;codeAgent&#39;)">
+        <div class="rc-name">Code Generation Agent</div>
+        <div class="rc-sub">First draft from the stack + Task.md</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;reviewAgent&#39;)">
+        <div class="rc-name">Code Review Agent</div>
+        <div class="rc-sub">MR analysis · Pattern check · GitLab Duo</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;testAgent&#39;)">
+        <div class="rc-name">Test Agent</div>
+        <div class="rc-sub">Playwright/Pytest from AC · CI</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;infraAgent&#39;)">
+        <div class="rc-name" style="color:var(--orange-text);">Infrastructure Agent</div>
+        <div class="rc-sub">K8s provisioning · GitLab setup · deployment.md</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;ribAgent&#39;)">
+        <div class="rc-name">RIB Delta Engine</div>
+        <div class="rc-sub">CR impact · Epic generation from the delta</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;commitGate&#39;)">
+        <div class="rc-name" style="color:var(--purple-text);">Commit Gate Agent</div>
+        <div class="rc-sub">Every push · verdict + action codes</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;compliance&#39;)">
+        <div class="rc-name" style="color:var(--purple-text);">ASF Compliance Agent</div>
+        <div class="rc-sub">Conformance · Quality Gate L1 status</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;areaAgent&#39;)">
+        <div class="rc-name" style="color:var(--purple-text);">ASF Area Agent</div>
+        <div class="rc-sub">One area, for a caller that cannot hold it</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;devAgent&#39;)">
+        <div class="rc-name" style="color:var(--teal-text);">ASF Dev Agent</div>
+        <div class="rc-sub">Bounded objective · answers to the diff</div>
+      </div>
+      <div class="rc rc-a" onclick="showRole(&#39;pitchAgent&#39;)">
+        <div class="rc-name" style="color:var(--cs-text);">Pitch Agent</div>
+        <div class="rc-sub">Requirements as a conversation · no tools</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STARTUP ── -->
+<div class="lane-startup">
+  <div class="startup-label">Startup phase</div>
+  <span class="badge badge-h">H</span>
+  <div class="startup-arr">›</div>
+  <div class="startup-box">
+    <div class="startup-box-title">Product definition</div>
+    <div class="startup-chips">
+      <span class="chip chip-blue" onclick="showChip(&#39;product&#39;)"><span class="badge badge-s">S</span>product.md</span>
+      <span class="chip chip-purple" onclick="showGitlab(&#39;issues&#39;)"><span class="badge badge-g">G</span>Issues</span>
+    </div>
+  </div>
+  <div class="startup-arr">›</div>
+  <div class="badges-inline"><span class="badge badge-h">H</span><span style="font-size:8px;color:var(--muted);margin:0 2px;">+</span><span class="badge badge-a">A</span></div>
+  <div class="startup-box">
+    <div class="startup-box-title">Roadmap &amp; epic setup</div>
+    <div class="startup-chips">
+      <span class="chip chip-gold" onclick="showChip(&#39;roadmap&#39;)"><span class="badge badge-s">S</span>Roadmap.md</span>
+      <span class="chip chip-gold" onclick="showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>ProductLog.md</span>
+      <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>Epic001.md</span>
+      <span class="chip chip-purple" onclick="showGitlab(&#39;epicboard&#39;)"><span class="badge badge-g">G</span>Epic Board</span>
+    </div>
+  </div>
+  <div class="startup-arr">›</div>
+  <div class="startup-box">
+    <div class="startup-box-title">Prompt Stack init</div>
+    <div class="startup-chips">
+      <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>AGENTS.md</span>
+      <span class="chip chip-blue" onclick="showChip(&#39;architecture&#39;)"><span class="badge badge-s">S</span>architecture.json</span>
+    </div>
+  </div>
+  <div class="startup-arr">↓</div>
+  <span class="chip chip-cs" onclick="showKStudio(&#39;product&#39;)" style="flex-shrink:0;"><span class="badge badge-cs">KS</span>KStudio</span>
+  <div class="startup-arr">→</div>
+  <div style="font-size:8px;color:var(--orange-text);font-style:italic;white-space:nowrap;font-family:var(--font-mono);">→ Infra Bootstrap</div>
+</div>
+
+<!-- ── INFRA BOOTSTRAP ── -->
+<div class="lane-infra">
+
+  <!-- ROW 1: label + block 1 + gate + block 2 -->
+  <div style="display:flex;align-items:center;gap:5px;width:100%;flex-shrink:0;">
+    <div class="infra-label" style="min-width:42px;">Infra<br>Bootstrap</div>
+    <div class="badges-inline" style="flex-direction:column;gap:2px;">
+      <span class="badge badge-i">I</span>
+      <span class="badge badge-h">H</span>
+    </div>
+    <div class="infra-arr">›</div>
+
+    <!-- Blocco 1 -->
+    <div class="infra-box" onclick="showInfra(&#39;deploymentGen&#39;)">
+      <div class="infra-box-title">① Generate deployment.md</div>
+      <div class="infra-chips">
+        <span class="chip chip-orange"><span class="badge badge-i">I</span>Infra Agent</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;deployment&#39;)"><span class="badge badge-s">S</span>deployment.md</span>
+      </div>
+    </div>
+
+    <!-- Gate 1 -->
+    <div class="infra-gate">
+      <span class="badge badge-h">H</span>
+      <span class="infra-gate-txt">Dev Lead ✓</span>
+    </div>
+    <div class="infra-arr">›</div>
+
+    <!-- Blocco 2 -->
+    <div class="infra-box" onclick="showInfra(&#39;k8sProvision&#39;)">
+      <div class="infra-box-title">② K8s Provisioning</div>
+      <div class="infra-chips">
+        <span class="chip chip-orange">Pulumi / Terraform</span>
+        <span class="chip chip-orange">K8s cluster</span>
+        <span class="chip chip-orange">Namespaces</span>
+      </div>
+    </div>
+
+    <!-- Gate 2 -->
+    <div class="infra-gate">
+      <span class="badge badge-h">H</span>
+      <span class="infra-gate-txt">Plan ✓ apply</span>
+    </div>
+  </div>
+
+  <!-- ROW 2: spacer + block 3 + gate 3 + done -->
+  <div style="display:flex;align-items:center;gap:5px;width:100%;flex-shrink:0;padding-left:68px;">
+    <div class="infra-arr">›</div>
+
+    <!-- Blocco 3 -->
+    <div class="infra-box" onclick="showInfra(&#39;gitlabBootstrap&#39;)">
+      <div class="infra-box-title">③ GitLab Project Bootstrap</div>
+      <div class="infra-chips">
+        <span class="chip chip-purple" onclick="showGitlab(&#39;gitlabApi&#39;)"><span class="badge badge-g">G</span>GitLab API</span>
+        <span class="chip chip-purple"><span class="badge badge-g">G</span>Group + Repos</span>
+        <span class="chip chip-purple"><span class="badge badge-g">G</span>Pipelines</span>
+        <span class="chip chip-purple"><span class="badge badge-g">G</span>Runners K8s</span>
+      </div>
+    </div>
+
+    <!-- Gate 3 -->
+    <div class="infra-gate">
+      <span class="badge badge-h">H</span>
+      <span class="infra-gate-txt">Smoke test ✓</span>
+    </div>
+    <div class="infra-arr">›</div>
+
+    <div style="font-size:8px;color:var(--teal-text);font-style:italic;white-space:nowrap;font-family:var(--font-mono);">→ first sprint</div>
+    <div class="infra-arr">+</div>
+    <span class="chip chip-cs" onclick="showKStudio(&#39;overview&#39;)" style="flex-shrink:0;"><span class="badge badge-cs">KS</span>KStudio</span>
+
+    <!-- Recurring indicator -->
+    <div class="infra-recurring" style="margin-left:auto;">
+      <span class="badge badge-i" style="font-size:7px;">I</span>
+      <span>Also during DevSecOps<br>gate: Dev Lead / Architect</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── METHODOLOGY ── -->
+<div class="lane-method">
+
+  <!-- PROMPT STACK -->
+  <div class="ps-col">
+    <div class="ps-head">Prompt stack</div>
+
+    <div class="pslayer psl0">
+      <div class="psl-label">L0 · Company</div>
+      <div class="psl-chips">
+        <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>AGENTS.md</span>
+      </div>
+    </div>
+    <div class="ps-arrow">↓</div>
+    <div class="pslayer psl1">
+      <div class="psl-label">L1 · Project</div>
+      <div class="psl-chips">
+        <span class="chip chip-blue" onclick="showChip(&#39;architecture&#39;)"><span class="badge badge-s">S</span>architecture.json</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;product&#39;)"><span class="badge badge-s">S</span>product.md</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;deployment&#39;)"><span class="badge badge-s">S</span>deployment.md</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;instructions&#39;)"><span class="badge badge-s">S</span>instructions.md</span>
+        <span class="chip chip-gold" onclick="showChip(&#39;roadmap&#39;)"><span class="badge badge-s">S</span>Roadmap.md</span>
+        <span class="chip chip-gold" onclick="showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>ProductLog.md</span>
+      </div>
+    </div>
+    <div class="ps-arrow">↓</div>
+    <div class="pslayer psl2" style="background:#071010;border-left-color:#0a9070;margin-left:7px;">
+      <div class="psl-label" style="color:#3ddd9a;font-size:7.5px;">L1.5 · Requirement detail</div>
+      <div class="psl-chips">
+        <span class="chip chip-teal" onclick="showChip(&#39;rffile&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>RF-XX.md</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;rnffile&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>RNF-XX.md</span>
+      </div>
+    </div>
+    <div class="ps-arrow">↓</div>
+    <div class="pslayer psl2">
+      <div class="psl-label">L2 · Feature</div>
+      <div class="psl-chips">
+        <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>EpicXXX.md</span>
+      </div>
+    </div>
+    <div class="ps-arrow">↓</div>
+    <div class="pslayer psl3">
+      <div class="psl-label">L3 · Task</div>
+      <div class="psl-chips">
+        <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>Task.EpicXX.N.md</span>
+      </div>
+    </div>
+    <div class="ps-arrow">↓</div>
+    <div class="pslayer psl3" style="background:#100a14;border-left-color:#534AB7;">
+      <div class="psl-label" style="color:var(--purple-text);">L4 · Activation</div>
+      <div class="psl-chips">
+        <span class="chip chip-purple" onclick="showChip(&#39;trigger&#39;)"><span class="badge badge-s">S</span>triggers/*.json</span>
+      </div>
+    </div>
+
+    <div class="ps-gov">
+      Owner<br>
+      <span style="color:var(--red-text);">L0–L1</span> Dev Lead · PM<br>
+      <span style="color:var(--teal-text);">L1.5</span> RF: KS+Agent+DL · RNF: PM<br>
+      <span style="color:var(--teal-text);">L2</span> Agent+DL<br>
+      <span style="color:var(--amber-text);">L3</span> Agent auto<br>
+      <span style="color:var(--purple-text);">L4</span> deleted on read<br>
+      <span style="color:var(--orange-text);">deploy.md</span> Infra
+    </div>
+  </div>
+
+  <!-- SCRUM FLOW -->
+  <div class="scrum-col">
+    <div class="sf-header">
+      <div class="sf-title">SCRUM-AI™ — Discovery + sprint loop</div>
+      <div class="sf-cadence">↻ one week · four phases</div>
+    </div>
+
+    <!-- DISCOVERY (continuous) — feeds the sprint loop · v8.3 §8.4 -->
+    <div class="cr" style="border-color:var(--purple-border);background:#0a0914;margin-bottom:6px;" onclick="showInfo(&#39;discovery&#39;)">
+      <div class="cr-label" style="color:var(--purple-text);">🔍 Discovery</div>
+      <div class="cr-desc">Continuous · Backlog refinement · gate: PM + Dev Lead · output: signed RF/RNF + epics ready</div>
+      <div class="cr-flow">
+        <span class="badge badge-h">H</span>
+        <span class="cr-arr">→</span>
+        <span class="chip chip-purple">Elicitation</span>
+        <span class="cr-arr">›</span>
+        <span class="chip chip-purple">Needs analysis</span>
+        <span class="cr-arr">›</span>
+        <span class="chip chip-teal" onclick="event.stopPropagation();showChip(&#39;rffile&#39;)"><span class="badge badge-s">S</span>RF/RNF</span>
+        <span class="cr-arr">›</span>
+        <span class="chip chip-blue" onclick="event.stopPropagation();showChip(&#39;product&#39;)"><span class="badge badge-s">S</span>product.md</span>
+        <span class="cr-arr">›</span>
+        <span class="chip chip-gold" onclick="event.stopPropagation();showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>Candidate epics</span>
+      </div>
+    </div>
+
+    <div class="phases">
+
+      <!-- SPRINT PLANNING -->
+      <div class="ph ph-plan">
+        <div class="ph-top">Sprint Planning<div style="font-size:7px;color:var(--muted);font-weight:400;">Day 1 · ~2h</div></div>
+        <div class="ph-body">
+          <div class="pr"><span class="badge badge-h pr-label">H</span>PM prioritises epics</div>
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Dev Lead approves ✓</div>
+          <div class="pr"><span class="badge badge-a pr-label">A</span>Epic + Task.md → state.json</div>
+          <div class="pr-chips">
+            <span class="chip chip-gold" onclick="showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>ProductLog</span>
+            <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>Epic.md</span>
+            <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>Task.md</span>
+            <span class="chip chip-cs" onclick="showChip(&#39;statejson&#39;)" style="font-size:7px;"><span class="badge badge-cs">KS</span>state.json</span>
+          </div>
+          <div class="pr-chips">
+            <span class="chip chip-purple" onclick="showGitlab(&#39;epicboard&#39;)"><span class="badge badge-g">G</span>Epic Board</span>
+            <span class="chip chip-purple" onclick="showGitlab(&#39;iterations&#39;)"><span class="badge badge-g">G</span>Iterations</span>
+            <span class="chip chip-purple" onclick="showGitlab(&#39;issues&#39;)"><span class="badge badge-g">G</span>Issues</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXECUTION / DEVSECOPS -->
+      <div class="ph ph-exec">
+        <div class="ph-top">Sprint Execution<div style="font-size:7px;color:var(--muted);font-weight:400;">Days 2–5 · daily</div></div>
+        <div class="ph-body">
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Dev validates output</div>
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Dev Lead: MR ✓</div>
+          <div class="pr"><span class="badge badge-a pr-label">A</span>Code+Review+Test</div>
+          <div class="pr-chips">
+            <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>AGENTS</span>
+            <span class="chip chip-blue" onclick="showChip(&#39;architecture&#39;)"><span class="badge badge-s">S</span>arch</span>
+            <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>Epic</span>
+            <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>Task</span>
+          </div>
+          <div class="pr-chips">
+            <span class="chip chip-purple" onclick="showGitlab(&#39;mr&#39;)"><span class="badge badge-g">G</span>MR+CI/CD</span>
+            <span class="chip chip-purple" onclick="showGitlab(&#39;duo&#39;)"><span class="badge badge-g">G</span>Duo</span>
+            <span class="chip chip-orange" onclick="showInfra(&#39;devsecops&#39;)"><span class="badge badge-i">I</span>DevSecOps</span>
+          </div>
+          <div class="pr"><span class="badge badge-a pr-label">A</span>Commit Gate · every push</div>
+          <div class="pr-chips">
+            <span class="chip chip-purple" onclick="showRole(&#39;commitGate&#39;)"><span class="badge badge-a">A</span>verdict</span>
+            <span class="chip chip-purple" onclick="showChip(&#39;actions&#39;)"><span class="badge badge-s">S</span>action codes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW -->
+      <div class="ph ph-review">
+        <div class="ph-top">Sprint Review<div style="font-size:7px;color:var(--muted);font-weight:400;">Day 5 · max 1h</div></div>
+        <div class="ph-body">
+          <div class="pr"><span class="badge badge-h pr-label">H</span>PM presents to the client</div>
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Acceptance ✓</div>
+          <div class="pr"><span class="badge badge-a pr-label">A</span>Release notes</div>
+          <div class="pr-chips">
+            <span class="chip chip-gold" onclick="showChip(&#39;roadmap&#39;)"><span class="badge badge-s">S</span>Roadmap</span>
+            <span class="chip chip-gold" onclick="showChip(&#39;productlog&#39;)"><span class="badge badge-s">S</span>ProductLog</span>
+          </div>
+          <div class="pr-chips">
+            <span class="chip chip-purple" onclick="showGitlab(&#39;milestones&#39;)"><span class="badge badge-g">G</span>Milestones</span>
+            <span class="chip chip-purple" onclick="showGitlab(&#39;release&#39;)"><span class="badge badge-g">G</span>Release</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RETROSPECTIVE -->
+      <div class="ph ph-retro">
+        <div class="ph-top">Retrospective<div style="font-size:7px;color:var(--muted);font-weight:400;">Day 5 · 45′</div></div>
+        <div class="ph-body">
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Pattern emerged?</div>
+          <div class="pr"><span class="badge badge-h pr-label">H</span>Promote to L0 ✓</div>
+          <div class="pr"><span class="badge badge-a pr-label">A</span>Commit synthesis</div>
+          <div class="pr-chips">
+            <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>AGENTS.md</span>
+            <span class="chip chip-blue" onclick="showChip(&#39;deployment&#39;)"><span class="badge badge-s">S</span>deploy.md</span>
+          </div>
+          <div class="pr-chips">
+            <span class="chip chip-purple" onclick="showGitlab(&#39;analytics&#39;)"><span class="badge badge-g">G</span>Analytics</span>
+            <span class="chip chip-purple" onclick="showGitlab(&#39;mr&#39;)"><span class="badge badge-g">G</span>MR comments</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEXT -->
+      <div class="ph ph-next">
+        <div class="ph-top">→</div>
+        <div class="ph-next-inner">
+          <div class="ph-next-icon">↻</div>
+          <div class="ph-next-txt">next sprint</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INFRA CHANGE during DevSecOps -->
+    <div class="icr" onclick="showInfra(&#39;infraChange&#39;)">
+      <div class="icr-label">🔧 Infra Change</div>
+      <div class="icr-desc">Trigger: new application layer · scaling · cluster config · pipeline update</div>
+      <div class="icr-flow">
+        <span class="badge badge-i">I</span>
+        <span class="icr-arr">→</span>
+        <span class="chip chip-orange" onclick="showInfra(&#39;infraChange&#39;)">Infra Agent plan</span>
+        <span class="icr-arr">→</span>
+        <span class="badge badge-h">H</span>
+        <span class="icr-arr">→</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;deployment&#39;)"><span class="badge badge-s">S</span>deployment.md</span>
+      </div>
+    </div>
+
+    <!-- CR -->
+    <div class="cr">
+      <div class="cr-label">⚡ Change Request</div>
+      <div class="cr-desc">Asynchronous trigger · the PM opens the analysis via <span class="chip chip-cs" onclick="showKStudio(&#39;product&#39;)" style="font-size:7px;padding:1px 4px;">KS</span> · <span class="chip chip-gold" onclick="showRole(&#39;ribAgent&#39;)" style="font-size:7px;padding:1px 4px;"><span class="badge badge-a">A</span>RIB</span> computes the impact · PM + Dev Lead approve · top-down cascade</div>
+      <div class="cr-flow">
+        <span class="chip chip-gold" onclick="showRole(&#39;ribAgent&#39;)" style="font-size:8px;"><span class="badge badge-a">A</span>RIB Delta</span>
+        <span class="cr-arr">→</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;product&#39;)"><span class="badge badge-s">S</span>product.md</span>
+        <span class="cr-arr">→</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>EpicXXX.md</span>
+        <span class="cr-arr">→</span>
+        <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>Task.md</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TECH ── -->
+<div class="lane-tech">
+  <div class="tech-items">
+    <div class="ti">
+      <div class="ti-name">VS Code<br>+ Claude Code</div>
+      <div class="ti-role">IDE · code gen</div>
+      <div class="ti-chips">
+        <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>AGENTS.md</span>
+        <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>Task.md</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">GitLab<br>Premium</div>
+      <div class="ti-role">ASF™ central hub</div>
+      <div class="ti-chips">
+        <span class="chip chip-purple" onclick="showGitlab(&#39;iterations&#39;)"><span class="badge badge-g">G</span>Iterations</span>
+        <span class="chip chip-purple" onclick="showGitlab(&#39;epicboard&#39;)"><span class="badge badge-g">G</span>Epic Board</span>
+        <span class="chip chip-purple" onclick="showGitlab(&#39;mr&#39;)"><span class="badge badge-g">G</span>MR+CI/CD</span>
+        <span class="chip chip-purple" onclick="showGitlab(&#39;duo&#39;)"><span class="badge badge-g">G</span>Duo</span>
+        <span class="chip chip-purple" onclick="showGitlab(&#39;analytics&#39;)"><span class="badge badge-g">G</span>Analytics</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">Pulumi /<br>Terraform</div>
+      <div class="ti-role">Infrastructure as code</div>
+      <div class="ti-chips">
+        <span class="chip chip-orange" onclick="showInfra(&#39;k8sProvision&#39;)">K8s clusters</span>
+        <span class="chip chip-orange" onclick="showInfra(&#39;k8sProvision&#39;)">namespaces</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">K8s +<br>Argo CD</div>
+      <div class="ti-role">Runtime · GitOps</div>
+      <div class="ti-chips">
+        <span class="chip chip-orange" onclick="showInfra(&#39;gitops&#39;)">dev/staging/prod</span>
+        <span class="chip chip-orange" onclick="showInfra(&#39;gitops&#39;)">GitOps loop</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">LLM<br>multi-provider</div>
+      <div class="ti-role">Agent engine</div>
+      <div class="ti-chips">
+        <span class="chip chip-gold" onclick="showInfo(&#39;claudeapi&#39;)">Anthropic</span>
+        <span class="chip chip-gold" onclick="showInfo(&#39;claudeapi&#39;)">OpenAI</span>
+        <span class="chip chip-gold" onclick="showInfo(&#39;claudeapi&#39;)">Ollama</span>
+        <span class="chip chip-gold" onclick="showChip(&#39;llmconfig&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>llm-config.json</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">Playwright<br>/ Pytest</div>
+      <div class="ti-role">Test generation</div>
+      <div class="ti-chips">
+        <span class="chip chip-purple" onclick="showGitlab(&#39;mr&#39;)"><span class="badge badge-g">G</span>CI/CD</span>
+      </div>
+    </div>
+    <div class="ti">
+      <div class="ti-name">docs/<br>repo</div>
+      <div class="ti-role">Prompt Stack · state</div>
+      <div class="ti-chips">
+        <span class="chip chip-red" onclick="showChip(&#39;claude&#39;)"><span class="badge badge-s">S</span>L0</span>
+        <span class="chip chip-blue" onclick="showChip(&#39;architecture&#39;)"><span class="badge badge-s">S</span>L1</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;rffile&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>L1.5</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;epic&#39;)"><span class="badge badge-s">S</span>L2</span>
+        <span class="chip chip-amber" onclick="showChip(&#39;task&#39;)"><span class="badge badge-s">S</span>L3</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;story&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>stories/</span>
+        <span class="chip chip-teal" onclick="showChip(&#39;bug&#39;)" style="font-size:7px;"><span class="badge badge-s">S</span>bugs/</span>
+        <span class="chip chip-cs" onclick="showChip(&#39;statejson&#39;)" style="font-size:7px;"><span class="badge badge-cs">KS</span>state.json</span>
+      </div>
+    </div>
+    <div class="ti" style="border-left:1px solid var(--cs-border);background:#030a10;">
+      <div class="ti-name" style="color:var(--cs-text);">KStudio</div>
+      <div class="ti-role">ASF™ operating surface</div>
+      <div class="ti-chips">
+        <span class="chip chip-cs" onclick="showKStudio(&#39;overview&#39;)">Bootstrap</span>
+        <span class="chip chip-cs" onclick="showKStudio(&#39;product&#39;)">Product</span>
+        <span class="chip chip-cs" onclick="showKStudio(&#39;dashboard&#39;)">Dashboard</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-group">
+    <div class="leg-title">Actors</div>
+    <div class="leg-items">
+      <div class="leg-item"><span class="badge badge-h">H</span>Human — decision gate</div>
+      <div class="leg-item"><span class="badge badge-a">A</span>AI agent — automation</div>
+      <div class="leg-item"><span class="badge badge-i">I</span>Infrastructure Agent</div>
+    </div>
+  </div>
+  <div class="leg-divider"></div>
+  <div class="leg-group">
+    <div class="leg-title">Tags</div>
+    <div class="leg-items">
+      <div class="leg-item"><span class="badge badge-g">G</span>GitLab feature</div>
+      <div class="leg-item"><span class="badge badge-s">S</span>Prompt Stack — files</div>
+    </div>
+  </div>
+  <div class="leg-divider"></div>
+  <div class="leg-group">
+    <div class="leg-title">Prompt Stack layers</div>
+    <div class="leg-items">
+      <div class="leg-item"><span class="chip chip-red">L0 · AGENTS.md</span>company-wide</div>
+      <div class="leg-item"><span class="chip chip-blue">L1 · arch/req/deploy/instr</span>project</div>
+      <div class="leg-item"><span class="chip chip-teal" style="font-size:7px;">L1.5 · RF/RNF-XX.md</span>requirement detail</div>
+      <div class="leg-item"><span class="chip chip-teal">L2 · EpicXXX.md</span>feature</div>
+      <div class="leg-item"><span class="chip chip-amber">L3 · Task.md</span>atomic task</div>
+      <div class="leg-item"><span class="chip chip-gold">L1 · PM docs</span>Roadmap · ProductLog (PM signs)</div>
+      <div class="leg-item"><span class="chip chip-orange">Infra</span>K8s · Pulumi · Argo</div>
+      <div class="leg-item"><span class="chip chip-cs">KStudio</span>ASF™ operating surface</div>
+    </div>
+  </div>
+  <div class="leg-divider"></div>
+  <div class="leg-group">
+    <div class="leg-title">Symbols</div>
+    <div class="leg-items">
+      <div class="leg-item" style="font-size:9px;font-family:var(--font-mono);">✓ human gate, not delegable</div>
+      <div class="leg-item" style="font-size:9px;font-family:var(--font-mono);">↻ recurring cycle</div>
+      <div class="leg-item" style="font-size:9px;font-family:var(--font-mono);">⚡ asynchronous change request</div>
+      <div class="leg-item" style="font-size:9px;font-family:var(--font-mono);">🔧 infra change during DevSecOps</div>
+    </div>
+  </div>
+  <div style="margin-left:auto;font-size:9px;color:#222;font-family:var(--font-mono);align-self:center;">click any tag for detail</div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="botbar">
+  <div class="bb-l">ASF™ Operating Model · Better Innovation Technologies · where this disagrees with the files in the standard, the files are right</div>
+  <div class="bb-c">bit-farm.it</div>
+  <div class="bb-r">Confidential · v8.3 · October 2026</div>
+</div>
+
+</div>
+
+<script>
+const DATA = {
+  chips: {
+    claude: {
+      title:'AGENTS.md',color:'var(--red-text)',layer:'L0 — Company-wide',
+      desc:'The first file every agent loads before any operation, and the most strategic in the factory: universal engineering principles, patterns validated across projects, anti-patterns to avoid always, quality standards, the identity model, the gate, and authority over documents. Nothing specific to one project. It changes rarely — only when a pattern scales from project to universal, by explicit deliberation. It was called CLAUDE.md until v8.0; the rename was not cosmetic, because the file is read by every agent and not by one vendor’s. CLAUDE.md remains as a pointer, never as a copy.',
+      meta:['Owner: Dev Lead','Change: explicit deliberation','Scope: every project','Layer: 0']
+    },
+    architecture: {
+      title:'architecture.json',color:'var(--blue-text)',layer:'L1 — Project (KArchitecture)',
+      desc:'The structured architectural artifact: logical components with their tech stack, integration contracts with criticality and protocol, and the Architecture Decision Log — a structured index of every decision taken. The narrative of each ADR lives in the file its docRef points to. Since v8.0 this is the ONLY architectural artifact: the Markdown that used to sit beside it was absorbed, because two files describing one architecture disagree, and the disagreement is found by whoever trusted the wrong one.',
+      meta:['Owner: Dev Lead / Architect','Format: JSON (KArchitecture)','Change: architectural decision · structural CR · infra change','Layer: 1']
+    },
+    product: {
+      title:'product.md',color:'var(--blue-text)',layer:'L1 — Project',
+      desc:'Product identity: vision, target user, expected look and feel, core flows. Carries the signed index of the functional requirements — id and title, exactly the RFs of state.json — while the detail of each requirement lives in docs/requirements/RF-XX.md (L1.5) and its status lives in state.json. RF resolution rule, mandatory for every agent: look for RF-XX.md, fall back to the product.md entry, raise an explicit error if neither exists. A missing requirement is a blocking error, never something to infer.',
+      meta:['Owner: PM (signs it)','Detail: docs/requirements/RF-XX.md (L1.5)','Status: state.json, never the index','Change: every CR · review feedback','Layer: 1']
+    },
+    deployment: {
+      title:'deployment.md',color:'var(--blue-text)',layer:'L1 — Project',
+      desc:'The operational runbook generated by the Infrastructure Agent during Infra Bootstrap and updated on every infra change: cloud provider, cluster and environments, namespaces, configuration variables, deploy and rollback procedures, runner access. It is the readable complement of infra/ — the two must stay aligned, and every pipeline change updates it.',
+      meta:['Owner: Dev Lead / Architect','Generated by: Infrastructure Agent (Dev Lead validates)','Change: every approved infra change','Layer: 1']
+    },
+    instructions: {
+      title:'instructions.md',color:'var(--blue-text)',layer:'L1 — Project',
+      desc:'The project’s operating instructions that belong to neither architecture nor deployment: testing conventions, non-standard naming rules, local process decisions, sprint execution and artifact formats. The fourth L1 file, and the one that keeps the other three from accumulating what does not belong in them.',
+      meta:['Owner: Dev Lead / PM','Change: Retrospective · local process decision','Layer: 1']
+    },
+    rffile: {
+      title:'RF-XX.md',color:'var(--teal-text)',layer:'L1.5 — Requirement detail',
+      desc:'One file per functional requirement, with acceptance criteria in BDD form — given, when, then — granular enough for the Test Generation Agent to turn into executable tests. The decoupling from product.md is what lets an agent load only the requirements the running task needs, instead of swallowing the whole document. The frontmatter keeps id, title and owner and nothing else: the status lives in state.json, and an RF is done only when all its acceptance criteria are implemented and tested. The epics that realise it are the epics of the tasks that cite it — derived, never written in the file.',
+      meta:['Owner: KStudio backend · Epic & Task Agent on CR','Gate: Dev Lead','AC: BDD','State: requirements.functional[] in state.json','Layer: 1.5']
+    },
+    rnffile: {
+      title:'RNF-XX.md',color:'var(--teal-text)',layer:'L1.5 — Requirement detail · v8.3',
+      desc:'One file per non-functional requirement, in docs/requirements/ beside the functional ones: the requirement, how it is measured, and its scope, with category, metric, threshold, verification and owner in the frontmatter. A non-functional requirement without a threshold and a way to measure it constrains nobody. It is never done: state.json records whether it is satisfied, at risk or violated, and who verified it and when.',
+      meta:['Folder: docs/requirements/ — no nfr/','State: requirements.non_functional[] in state.json','Status: unverified · satisfied · at_risk · violated · waived','Layer: 1.5']
+    },
+    story: {
+      title:'US-XXX.md',color:'var(--teal-text)',layer:'Artifact — user story · v8.3',
+      desc:'One file per user story in docs/stories/: "As a … I want … so that …", with id, title, actor and owner in the frontmatter. In state.json a story cites at least one RF, and its status is derived from theirs — never stored. An epic lists the stories it serves. Not a layer of the Prompt Stack: an agent loads it when the work in hand needs it.',
+      meta:['Folder: docs/stories/','State: user_stories[] in state.json','Status: derived from its RFs']
+    },
+    bug: {
+      title:'BUG-XXX.md',color:'var(--teal-text)',layer:'Artifact — bug · v8.3',
+      desc:'One file per bug in docs/bugs/: symptom, cause, expected behaviour and the regression test, with id, title, area, found_in, reported_by, reported_at and regression_test in the frontmatter. Status, severity and the RF or RNF it breaks live in state.json, set when the bug is reported. It enters an epic through the task that fixes it; the tasks that fix a sprint’s bugs are collected in a container epic. Not a layer of the Prompt Stack: an agent loads it when the work in hand needs it.',
+      meta:['Folder: docs/bugs/','State: bugs[] in state.json','Fixed by: the task that cites it in bug_refs','Points: those of its fixing tasks — derived']
+    },
+    epic: {
+      title:'EpicXXX.md',color:'var(--teal-text)',layer:'L2 — Feature',
+      desc:'The text of a feature: objective, scope and the epic’s acceptance criteria. Its tasks, dependencies, stories, sprint, status and signature live in state.json, not in the file, whose frontmatter keeps only id and title. Generated by the Epic & Task Agent after planning, validated by the Dev Lead before commit; the epic enters state.json together with all its tasks, in one commit. It is done only when a person signs it there. The objective says what must CEASE or become possible — not what the epic contains.',
+      meta:['Owner: Epic & Task Agent (Dev Lead validates)','Change: Sprint Planning · approved CR','Done: signed in state.json (validated_by + validated_at)','Layer: 2']
+    },
+    task: {
+      title:'Task.EpicXX.N.md',color:'var(--amber-text)',layer:'L3 — Atomic task',
+      desc:'The atomic unit of work: technical context, granular acceptance criteria, and the prompt seed the coding agent starts from. Its status, points, references and the files it is expected to touch live in state.json; the frontmatter keeps id, title, adr, rules and reads. Closing it is one commit: the status goes to done in state.json and its criteria are checked in the file — nothing else. Generated autonomously after planning; a manual edit during the sprint is allowed and carries a mandatory note in the Retrospective, so that the change is visible to whoever reads the sprint afterwards.',
+      meta:['Owner: Epic & Task Agent','Mirrors: a GitLab issue','State: epics[].tasks[] in state.json','Manual edit: allowed, with a Retrospective note','Layer: 3']
+    },
+    trigger: {
+      title:'triggers/*.json',color:'var(--purple-text)',layer:'L4 — Activation',
+      desc:'A CI activation file: it carries the parameters of one activation, the pipeline fires on the path change, and the pipeline DELETES the trigger it consumed. That deletion is what stops one event firing a pipeline twice. It is a layer of the Prompt Stack and not a detail — the only one removed by the thing that reads it. Payload and report schemas live in triggers/schema/.',
+      meta:['Owner: whoever fires it','Deleted by: the pipeline that consumes it','Schemas: triggers/schema/','Layer: 4']
+    },
+    actions: {
+      title:'Action Catalogue',color:'var(--purple-text)',layer:'v8.0 — .asf/action-catalog.json',
+      desc:'A closed set of remediation codes in the form DOMAIN.PRIMITIVE.OBJECT, each with an executor, a target, an idempotency flag and a schema for its parameters. An analysis agent SELECTS a code and never invents one: a situation the catalogue does not cover is reported as a finding with no action, and the catalogue gains an entry. A finding that says "link this commit to its epic" can be read by a person and dispatched by nobody — which is the whole reason the catalogue exists. Nine codes currently name an executor that does not exist yet, and they declare it.',
+      meta:['Owner: Dev Lead — it defines what agents may propose at all','Eight primitives: LINK · CREATE · UPDATE · RUN · GENERATE · REQUEST · ESCALATE · NONE','Unimplemented executors: declared, not hidden']
+    },
+    llmconfig: {
+      title:'llm-config.json',color:'var(--gold-text)',layer:'Configuration',
+      desc:'Which model each agent runs on, at what reasoning effort and within what budget, per project. Changing provider or model is configuration, not a release. A prompt is configuration of an installation and not source code of a product: the same agent deployed for two clients has two different prompts.',
+      meta:['Owner: Dev Lead','Providers: Anthropic · OpenAI-compatible · local endpoints','Change: no release needed']
+    },
+    statejson: {
+      title:'docs/.asf/state.json',color:'var(--cs-text)',layer:'The project contract',
+      desc:'The single source of truth for the state of a project: statuses, planning decisions, references and signatures — sprints, roadmap stages, epics with their tasks, requirements, user stories, bugs, and the signatures of the Prompt Stack files. The .md files hold only text, and nothing is copied between the two. What can be derived is not stored: velocity, burndown, the points of an epic, the RFs of an epic, Quality Gate L1, who changed what and when — git and the file are enough. The schema is strict: a key it does not list is an error, and tools/validate-stack.py checks the rules across entries and files. Writes go through double bifurcation: read with the commit SHA, mutate, commit against that SHA; if another writer got there first, GitLab answers 409 and the write starts again. meta.schema_version must match the schema being validated against, and an agent that writes it COMMITS IN THE SAME CI JOB — a write without a commit is a state nobody else can see.',
+      meta:['Schema: .asf/schema/state.schema.json — the contract; tools follow it','Validated by: tools/validate-stack.py','Atomicity: double bifurcation, no locks','Derived, never stored: velocity · points · Quality Gate L1','One source: no .md repeats a status or a reference']
+    },
+    roadmap: {
+      title:'Roadmap.md',color:'var(--gold-text)',layer:'L1 — Strategic',
+      desc:'The product’s view over time in the stakeholders’ language: quarters, milestones, strategic objectives. Updated after every Sprint Review without exception — it is the continuing proof, shown each cycle, that the factory is building what matters. The delivery stages and their epics are in state.json, where their progress is derived; the file keeps the narrative. Its relation to GitLab milestones is narration to tracking.',
+      meta:['Owner: PM (signs it)','Change: mandatory after every Sprint Review','Stages: roadmap[] in state.json','Mirrors: GitLab milestones']
+    },
+    productlog: {
+      title:'ProductLog.md',color:'var(--gold-text)',layer:'L1 — Strategic',
+      desc:'The prioritised ordering of what gets built, in the factory’s language: the narrative of the epics and of why they come in that order. Their status and priority live in state.json and are not repeated here. It and the Epic Board are not two copies — the file is the prioritised narrative, the board is the operational planning view, and keeping them aligned is the PM’s responsibility.',
+      meta:['Owner: PM (signs it)','Mirrors: the GitLab Epic Board','Change: refinement · Sprint Review']
+    }
+  },
+  gitlab: {
+    iterations: {
+      title:'Iterations',color:'var(--purple-text)',layer:'GitLab — Scrum',
+      desc:'One week per iteration — a deliberate deviation from the two GitLab recommends, made possible by AI acceleration on execution. Automatic rollover carries incomplete issues forward; four iterations are created ahead; capacity comes from the velocity of the last three sprints.',
+      meta:['Cadence: 1 week','Rollover: automatic','Target: 4–10 stories per sprint']
+    },
+    epicboard: {
+      title:'Epic Board',color:'var(--purple-text)',layer:'GitLab — Planning',
+      desc:'Group-level epic board with priority::later → next → now. The PM prioritises by drag and drop during refinement; the Epic & Task Agent reads it to find the candidates for the next planning.',
+      meta:['Level: group','Columns: later · next · now','Read by: Epic & Task Agent']
+    },
+    issues: {
+      title:'Issues',color:'var(--purple-text)',layer:'GitLab — Execution',
+      desc:'The operational workflow of a task: assignee, labels, iteration, story points. The file holds the technical context for the agent; the issue holds the workflow for the team. Mandatory labels: a status::, a priority::, a type:: and at least one area::. The agent:: label is applied by the agent at intervention time, never by hand.',
+      meta:['Generated from: Task.EpicXX.N.md','Moved by: Scrum Master Agent','Blocked: fills itself after 24h without movement']
+    },
+    milestones: {
+      title:'Milestones',color:'var(--purple-text)',layer:'GitLab — Tracking',
+      desc:'Measure progress against the roadmap with an automatic completion percentage. Created during bootstrap and linked to the epics; recalculated at every review.',
+      meta:['Mirrors: Roadmap.md','Completion: automatic']
+    },
+    mr: {
+      title:'Merge Request + CI/CD',color:'var(--purple-text)',layer:'GitLab — Delivery',
+      desc:'Every merge request runs the pipeline: build, test, security scan, staging deploy. The Dev Lead’s signature is the only thing that opens a merge to main — not delegable, no exceptions. Since v8.0 the Commit Gate has already reported on the commits, before the merge request existed.',
+      meta:['Gate: Dev Lead, always','Stages: build · test · SAST/DAST · deploy','Production: manual approval']
+    },
+    duo: {
+      title:'GitLab Duo',color:'var(--purple-text)',layer:'GitLab — Review',
+      desc:'Analyses the diff and produces structured comments before the human review. It comments; it does not approve. The Dev Lead reads it alongside the security report and the Commit Gate verdict.',
+      meta:['Role: Code Review Agent','Cannot: approve a merge']
+    },
+    analytics: {
+      title:'Iteration Analytics',color:'var(--purple-text)',layer:'GitLab — Measurement',
+      desc:'Velocity, cycle time, and the merge requests with the most comments — which is the signal of underestimated complexity, and the most useful number a Retrospective has.',
+      meta:['Read by: Scrum Master Agent','Feeds: capacity planning']
+    },
+    board: {
+      title:'Boards',color:'var(--purple-text)',layer:'GitLab — Views',
+      desc:'Four boards, created at group level during bootstrap so they cascade to every child repository: Release Planning for prioritising epics, Sprint Board for the current iteration, Sprint Planning for issues with no iteration yet, and Agent Monitor — grouped by agent:: label, an audit view for spot checks and for debugging an agent that produced something unexpected.',
+      meta:['Level: group','Created by: Infrastructure Agent, Block 3','Agent Monitor: audit, not workflow']
+    },
+    release: {
+      title:'Release',color:'var(--purple-text)',layer:'GitLab — Delivery',
+      desc:'A tagged release on staging with its notes, generated by the Documentation Agent from the iteration’s merge requests and used by the PM as the thread of the review.',
+      meta:['Notes: Documentation Agent','Trigger: release-ready.json']
+    },
+    gitlabApi: {
+      title:'GitLab API',color:'var(--purple-text)',layer:'GitLab — Automation',
+      desc:'How the Infrastructure Agent builds the whole project structure in one pass, and how KStudio reads and writes everything it shows. There is no second database: a team that stopped using KStudio tomorrow would find its project intact.',
+      meta:['Used by: Infrastructure Agent · KStudio backend','Token: held only by the backend']
+    }
+  },
+  roles: {
+    pm: {
+      title:'Product Owner / PM',color:'var(--red-text)',layer:'Human — accountability',
+      desc:'Holds the strategic layer and the cycle together: the point of contact with stakeholders and the translator of their needs into structured requirements. Owns product.md, Roadmap.md and ProductLog.md. Presents candidate epics at planning, validates the generated tasks before they become issues, presents the results on staging at review, and updates the roadmap — not optional, it is how the factory certifies the direction still matches the need. Every Change Request needs their signature before any agent touches the Prompt Stack. In ASF™ the PM also absorbs the Scrum Master role: routine ceremonies are automated, and the PM handles the exceptions.',
+      meta:['Gates: CR approval · sprint scope · client acceptance','Owns and signs: product.md · Roadmap.md · ProductLog.md','Active: the whole engagement']
+    },
+    devlead: {
+      title:'Dev Lead / Architect',color:'var(--red-text)',layer:'Human — accountability',
+      desc:'Guardian of the factory’s technical coherence. Signs AGENTS.md, architecture.json, instructions.md and deployment.md — Quality Gate Layer 1 passes when every L0/L1 file is signed, the PM’s included, and the first sprint does not open before; a file changed after its signature needs signing again. Signs every merge request before it reaches main; decides in Retrospective which patterns rise into the Prompt Stack. Owner of L0 and of the technical L1 files, and of the two things that decide what agents may do at all — the Action Catalogue and the commit gate checklist. In their absence no merge request merges and no structural change propagates.',
+      meta:['Gates: their L0/L1 signatures (Quality Gate L1) · every MR · every infra plan','Signs: AGENTS.md · architecture.json · instructions.md · deployment.md','Owns: Action Catalogue · commit gate checklist','Not delegable']
+    },
+    developer: {
+      title:'Senior Developer',color:'var(--red-text)',layer:'Human — accountability',
+      desc:'Works in the fastest loop of the factory: opens a task, runs a session with the whole stack as context, validates and refines the first draft, handles the edge cases that need domain judgement, opens the merge request. The distinctive skill is not typing speed — it is recognising when the output is syntactically correct and semantically wrong: when the code does what was asked and not what is needed. Exists per layer, and each owns their layer’s AGENTS.md.',
+      meta:['Per layer: fe · be · api','Owns: the layer’s AGENTS.md','Validates: every generated draft']
+    },
+    qa: {
+      title:'QA Lead',color:'var(--red-text)',layer:'Human — accountability',
+      desc:'Works on two horizons: upstream, defining acceptance criteria granular enough to be turned into executable tests; downstream, validating that the coverage produced is strategically adequate — not that the tests pass, but that they cover what matters. The quality of the criteria determines the quality of the generated tests: vague criteria produce shallow tests.',
+      meta:['Gate: acceptance before the client review','Defines: the AC the test agent consumes','Does not write: the tests themselves']
+    },
+    scrumAgent: {
+      title:'Scrum Master Agent',color:'var(--gold-text)',layer:'AI agent — acts',
+      desc:'Orchestrates the routine ceremonies: creates issues from approved tasks, assigns them to the iteration with their points, moves states as commits land, raises a notification when an issue sits still beyond twenty-four hours, closes the iteration and carries the incomplete work forward, and prepares the objective part of the Retrospective from the commit history and the merge request comments.',
+      meta:['Trigger: GitLab events · schedule · sprint close','Cannot: change backlog priority, approve a CR, split an epic']
+    },
+    epicAgent: {
+      title:'Epic & Task Agent',color:'var(--gold-text)',layer:'AI agent — acts',
+      desc:'Turns approved scope into artifacts: epic files with objective, scope and criteria, and task files with the prompt seed — and, in the same commit, the epic with all its tasks in state.json. On an approved Change Request it propagates the cascade top-down — product.md, the affected requirements, the epics, the tasks. The direction is not negotiable: a change applied bottom-up leaves the requirement saying one thing and the code doing another.',
+      meta:['Trigger: epic-ready.json · cr-approved.json','Gate: Dev Lead validates before commit','Cannot: modify L0/L1, approve an epic on its own']
+    },
+    codeAgent: {
+      title:'Code Generation Agent',color:'var(--gold-text)',layer:'AI agent — interactive',
+      desc:'Produces the first draft in the developer’s session, with the whole Prompt Stack as context — from L0 down to the current task. It is interactive by design: a human is present, reads what it wrote, and decides. It merges nothing.',
+      meta:['Context: L0 → L3, every session','Present: a human, always','Cannot: merge']
+    },
+    reviewAgent: {
+      title:'Code Review Agent',color:'var(--gold-text)',layer:'AI agent — reads',
+      desc:'Analyses the diff of every merge request and produces structured comments before the human review: patterns, conventions, obvious defects. It comments and does not approve — a finding and its remedy must come from different actors.',
+      meta:['Implementation: GitLab Duo','Cannot: approve, merge']
+    },
+    testAgent: {
+      title:'Test Generation Agent',color:'var(--gold-text)',layer:'AI agent — acts',
+      desc:'Turns the acceptance criteria of a task into executable Playwright/Pytest tests, run by the pipeline on every push. It does not define the test strategy — that is the QA Lead’s, and the difference matters: an agent that chose what to test would be marking its own exam.',
+      meta:['Trigger: commit on a feature branch','Input: the AC of the task','Cannot: define the strategy']
+    },
+    ribAgent: {
+      title:'RIB Delta Engine',color:'var(--gold-text)',layer:'AI agent — computes',
+      desc:'Computes the impact of a Change Request before anyone decides anything: which requirements, epics and tasks are touched, and what it costs. It measures; it does not decide whether the change is worth it.',
+      meta:['Trigger: a CR opened in KStudio','Output: the impact delta','Runs: before the approval, never after']
+    },
+    infraAgent: {
+      title:'Infrastructure Agent',color:'var(--orange-text)',layer:'AI agent — acts',
+      desc:'Three blocks separated by non-negotiable gates: generate deployment.md as the shared specification, provision the cluster from declarative code, build the GitLab project structure. It also works during the cycle: every infra change is a plan it proposes and a human approves. It proposes, plans, generates and documents — the decision to apply a change to a production environment always belongs to a human.',
+      meta:['Gates: the specification · every plan · the smoke test','Tools: Pulumi/Terraform · Helm · Argo CD · GitLab API','Cannot: apply anything without a gate']
+    },
+    commitGate: {
+      title:'Commit Gate Agent',color:'var(--purple-text)',layer:'AI agent — reads · v8.0',
+      desc:'Runs on EVERY push, on any branch, including the first push of a new branch — before a merge request exists. It judges one commit against a configurable checklist: is it attached to its epic and task, did the change need tests, were they run, does it warrant static analysis, does it invalidate documentation. Five outcomes and not two: pass, warn, fail, not_applicable, and not_verifiable — evidence it could not read. Collapsing the last into a failure accuses people of what the agent could not see. The verdict is ADVISORY: whether a block stops a merge is a CI rule the project owns, because an agent that both judged and enforced would leave no independent record of what it found.',
+      meta:['Trigger: any push, any branch','Checklist: versioned configuration, not prompt content','Output: verdict + findings + ranked action codes','Cannot: write, block a merge, execute what it emits']
+    },
+    compliance: {
+      title:'ASF Compliance Agent',color:'var(--purple-text)',layer:'AI agent — reads · v8.0',
+      desc:'Judges how far a whole project conforms to ASF and where it stands against Quality Gate Layer 1: the phase it is in, the health of state.json, a verdict per area, and the actions in order. Run on demand — before a gate review, or when someone takes over a project and needs to know what they have inherited.',
+      meta:['Trigger: on demand','Delegates to: ASF Area Agent','Cannot: write, create the missing artifacts, sign an L0/L1 file']
+    },
+    areaAgent: {
+      title:'ASF Area Agent',color:'var(--purple-text)',layer:'AI agent — reads · delegate',
+      desc:'Inspects ONE area on behalf of a caller whose context cannot hold it, and returns about fifteen lines: status, priority, counts, what was found, what is missing, and what it could not read. It exists for a budget reason and not a knowledge reason — it knows nothing its caller does not; what it has is a context window that is thrown away when it finishes.',
+      meta:['Called by: another agent, sharing its workspace','Returns: counts, not impressions','Distinguishes: "not there" from "not read"']
+    },
+    devAgent: {
+      title:'ASF Dev Agent',color:'var(--teal-text)',layer:'AI agent — acts · v8.0',
+      desc:'Carries out one bounded implementation objective by driving a coding CLI in a sandbox, and answers against the DIFF rather than against its own account of what it did. It clones by name the repositories a mandate spans — a mandate comes from an epic or a task, and those routinely cross fe, be and api together.',
+      meta:['Trigger: a bounded objective, or a dispatched CODE.GENERATE.CHANGE','Answers to: the diff','Cannot: commit, push, open or approve an MR, modify L0/L1, plan its own work']
+    },
+    pitchAgent: {
+      title:'Pitch Agent',color:'var(--cs-text)',layer:'AI agent — converses · v8.1',
+      desc:'Interviews a person about what a system must do and writes the document while they talk, so the interlocutor sees the effect of every answer instead of answering into a void. Every value says where it came from: the person said it, a material carried it, or THE AGENT INFERRED IT AND NOBODY SAID IT — and a requirement is never inferred. Its coverage checklist is declared when the pitch opens, every entry open, so it knows when it has finished asking. It holds NO TOOL AT ALL: it touches no repository, and its whole surface is one validated envelope per turn. What it produces is a package that knows nothing about ASF; turning one into artifacts is a separate agent.',
+      meta:['Trigger: a person, through a host that owns the conversation','Needs: a host that applies its patches and hands back the rejections','Cannot: hold a tool, touch a repository, assign an identifier, sign']
+    }
+  },
+  info: {
+    discovery: {
+      title:'Discovery',color:'var(--gold-text)',layer:'Continuous',
+      desc:'Elicitation never closes. The strategic layer stays active for the whole engagement: the PM keeps intercepting needs, handling change requests and updating the roadmap. The system never stops to wait for new requirements — it absorbs them through a mechanism with a defined shape.',
+      meta:['Gate: PM + Dev Lead','Output: signed RF/RNF + epics ready','Since v8.1: a pitch can conduct it as a conversation']
+    },
+    stakeholders: {
+      title:'Stakeholders',color:'var(--red-text)',layer:'Strategic — origin',
+      desc:'Clients, business owners, end users: whoever has a problem to solve or an opportunity to take. They do not interact with the factory directly — their interface is the PM, and that is deliberate: a need is implicit, contradictory and liable to change, while a requirement is explicit, structured and actionable.',
+      meta:['Interface: Product Owner / PM','Produce: needs, not requirements']
+    },
+    bisogni: {
+      title:'Needs / Vision',color:'var(--red-text)',layer:'Strategic — input',
+      desc:'What arrives before anything is workable. We write "need" and not "requirement" because the distinction is operational: a need becomes an input the system can work on only after someone has understood it, put it in context, and turned it into a structured artifact.',
+      meta:['Owner: PM','Becomes: requirements, through elicitation']
+    },
+    requisiti: {
+      title:'Requirements',color:'var(--blue-text)',layer:'Strategic — output',
+      desc:'Functional requirements are RF-XX, non-functional ones RNF-XX, each in its own file under docs/requirements/; user stories are US-XXX, in docs/stories/. The index of the functional requirements is signed and lives in product.md; the detail of each lives in its own file with acceptance criteria in BDD form. Statuses live in state.json: an RF is done when all its acceptance criteria are implemented and tested; an RNF is never done — it is satisfied, at risk or violated at a date. A non-functional requirement without a threshold and a way to measure it constrains nobody — "it must be fast" is not a requirement until somebody says how fast, of what, measured how.',
+      meta:['Index: product.md (L1, signed)','Detail: docs/requirements/RF-XX.md · RNF-XX.md (L1.5)','State: requirements in state.json','AC: BDD — given / when / then']
+    },
+    delivery: {
+      title:'Software delivery',color:'var(--teal-text)',layer:'Strategic — result',
+      desc:'Working, tested software the client owns. Thirty days to the first delivery on staging — not a prototype and not a demo. At month twelve the client does not receive a finished project: they receive the factory, with current manuals, trained operators and a production line that has been run.',
+      meta:['30 days: first delivery on staging','12 months: the transfer is complete','What is delivered: the factory, not only the project']
+    },
+    claudeapi: {
+      title:'LLM providers',color:'var(--gold-text)',layer:'Tech stack',
+      desc:'The cognitive engine of every automated agent, configured per project. Which model an agent runs on, at what effort and within what budget, is configuration and not a release — and the same agent deployed for two clients has two different prompts, because a prompt is configuration of an installation and not source code of a product.',
+      meta:['Config: llm-config.json','Providers: Anthropic · OpenAI-compatible · local','Called by: the backend and the CI jobs, never the browser']
+    }
+  },
+  infra: {
+    deploymentGen: {
+      title:'① Generate deployment.md',color:'var(--orange-text)',layer:'Infra Bootstrap — block 1',
+      desc:'The agent gathers the project’s parameters from architecture.json and from what was agreed, and produces the runbook: cluster topology, namespaces per environment, deploy and rollback, configuration variables, runner access. It is the specification that governs every step after it, and no infrastructure code is written until it is approved.',
+      meta:['Gate: the Dev Lead signs before block 2','If incomplete: block 1 repeats']
+    },
+    k8sProvision: {
+      title:'② K8s provisioning',color:'var(--orange-text)',layer:'Infra Bootstrap — block 2',
+      desc:'Declarative code in infra/ describes the whole cloud infrastructure. Before the apply the agent runs the plan, and the Dev Lead reads the human-readable output and approves explicitly. No cloud resource is created without that approval. After the apply: separated environments, Argo CD as the GitOps controller, automatic TLS, HTTP routing, and the kubeconfig stored as a protected variable.',
+      meta:['Gate: the plan, per environment — dev, then staging, then prod','Tools: Pulumi/Terraform · Helm · Argo CD']
+    },
+    gitlabBootstrap: {
+      title:'③ GitLab project bootstrap',color:'var(--orange-text)',layer:'Infra Bootstrap — block 3',
+      desc:'The whole organisational structure in one automated pass: the group, the five repositories, the label system that cascades, branch protection, the initial milestones, the four boards, the protected variables, the runners, and a pipeline template per repository.',
+      meta:['Gate: a smoke test per repository — a test MR with a green pipeline','Then: the first Sprint Planning can be called']
+    },
+    devsecops: {
+      title:'DevSecOps',color:'var(--orange-text)',layer:'Pipeline',
+      desc:'Build, test, security scan, staging deploy, production behind manual approval. SAST and DAST run inside the pipeline, which means every merge request is analysed for vulnerabilities before the merge: security is an automatic artifact of every merge request, not a separate process at the end of the sprint. Since v8.0 the Commit Gate reports alongside, on every push.',
+      meta:['Runners: kubernetes executor, one pod per job','Production: manual approval, always','Security: in the cycle, not an audit at the end']
+    },
+    infraChange: {
+      title:'Infra change',color:'var(--orange-text)',layer:'During the cycle',
+      desc:'Infrastructure is not static: a new service needs a namespace, load grows, a version needs upgrading. Every change is a plan the agent proposes and the Dev Lead approves, tracked as a merge request on infra/ with its own label — which gives a complete audit trail of who proposed it, who approved it, and what the state was before and after.',
+      meta:['Gate: the Dev Lead, every time','Trail: an MR on infra/','Drift: detected by Argo CD']
+    },
+    gitops: {
+      title:'GitOps loop',color:'var(--orange-text)',layer:'Runtime',
+      desc:'Argo CD keeps the cluster synchronised with what infra/ declares. Every merge propagates; any drift between the declared state and the real one is detected and raised; a rollback is a git revert. The cluster is not configured — it is declared.',
+      meta:['Controller: Argo CD','Rollback: git revert','Drift: detected, not discovered']
+    }
+  }
+};
+
+const KSTUDIO = {
+  overview: {
+    title:'KStudio — the ASF™ operating surface',color:'var(--cs-text)',
+    desc:'KStudio is the application that makes ASF™ deliverable as an industrialised service. It removes the manual glue between GitLab, the LLM providers, the infrastructure code and the Prompt Stack files, and replaces it with a structured surface and CI pipelines that activate agents deterministically. There is NO proprietary database: GitLab is the system of record, and the state of a project lives in docs/.asf/state.json. KStudio keeps at most an exact cache of that file and writes to it only through commits; operational data that is not part of the state stays in KStudio, never in state.json. A team that stopped using KStudio tomorrow would find its project intact, with no dependency on BIT infrastructure — that property is the point, not a side effect. It was called CronStudio until v8.0.',
+    meta:['Stack: React + FastAPI','Deployment: a namespace in the project cluster','Auth: GitLab OAuth — no parallel credential system','State: docs/.asf/state.json','Token: held only by the backend']
+  },
+  product: {
+    title:'KStudio — requirements and Prompt Stack',color:'var(--cs-text)',
+    desc:'The structured editor of Layer 1, where the PM works for the whole engagement: vision, target user, core flows, requirements, attachments. Guided sections rather than a free editor, because each maps to a place under docs/requirements/ and a field of product.md. EVERY SAVE IS A COMMIT — the history of the requirements is the history of the commits on docs/. Marking a section ready commits a trigger and starts the Epic & Task Agent; a Change Request runs the RIB Delta Engine first, and only after PM and Dev Lead approve does the cascade propagate top-down.',
+    meta:['Actor: PM','A saved requirement: docs/requirements/RF-XX.md (L1.5)','Triggers: epic-ready.json · cr-approved.json','Writes: double bifurcation, atomic']
+  },
+  dashboard: {
+    title:'KStudio — project dashboard',color:'var(--cs-text)',
+    desc:'The aggregate view of every active project. It does not duplicate GitLab — it reads it and translates it into the language of ASF™: the current sprint with velocity, burndown and the blocks detected after twenty-four hours of silence — velocity and burndown computed from state.json and the git history, never stored; the state of each Layer 1 artifact and any divergence from the last agent run; the agent pipeline with its logs; the current release. Open gates appear as persistent banners, because a gate nobody sees is a gate nobody signs.',
+    meta:['Reads: docs/.asf/state.json · git history','Agent log: the pipeline section of state.json','Open gates: persistent banners','Audience: PM · Dev Lead (gates) · Developer (read)']
+  }
+};
+
+function showKStudio(id){const d=KSTUDIO[id];if(d)openModal(d.title,d.color,'KStudio — ASF™ Operational Layer',d.desc,d.meta);}
+
+function openModal(title,color,layer,desc,meta){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-title').style.color=color||'#ccc';
+  document.getElementById('modal-subtitle').textContent=layer||'';
+  document.getElementById('modal-subtitle').style.color='#555';
+  document.getElementById('modal-section').textContent='Description';
+  document.getElementById('modal-desc').textContent=desc;
+  const metaEl=document.getElementById('modal-meta');
+  metaEl.innerHTML='';
+  (meta||[]).forEach(m=>{const s=document.createElement('span');s.className='meta-item';s.textContent=m;metaEl.appendChild(s);});
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function showChip(id){const d=DATA.chips[id];if(d)openModal(d.title,d.color,d.layer,d.desc,d.meta);}
+function showGitlab(id){const d=DATA.gitlab[id];if(d)openModal(d.title,d.color,'GitLab Premium Feature',d.desc,d.meta);}
+function showRole(id){const d=DATA.roles[id];if(d)openModal(d.title,d.color,'Ruolo ASF™',d.desc,d.meta);}
+function showInfo(id){const d=DATA.info[id];if(d)openModal(d.title,d.color,'',d.desc,d.meta);}
+function showInfra(id){const d=DATA.infra[id];if(d)openModal(d.title,d.color,'Infrastructure Automation',d.desc,d.meta);}
+</script>
+
+
+
+</body></html>

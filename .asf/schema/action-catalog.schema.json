@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/action-catalog.schema.json",
+  "title": "ASF™ Action Catalogue",
+  "description": "The closed set of remediation actions an ASF analysis agent may emit, and the primitives they are built from. An agent selects a code from this catalogue; it never invents one. A caller maps a code to an API function, which is what makes an action dispatchable rather than merely readable.",
+  "type": "object",
+  "required": [
+    "version",
+    "primitives",
+    "actions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Catalogue version. Every report states the version it was produced against, so that a stored verdict stays interpretable after the catalogue moves on."
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "primitives": {
+      "type": "array",
+      "description": "The verbs from which every action code is built. A caller that implements the primitives can dispatch any action, including ones added later.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "description"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "LINK",
+              "CREATE",
+              "UPDATE",
+              "RUN",
+              "GENERATE",
+              "REQUEST",
+              "ESCALATE",
+              "NONE"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "primitive",
+          "title",
+          "executor_kind",
+          "parameters"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9]*\\.[A-Z]+\\.[A-Z0-9_]+$",
+            "description": "Stable identifier, DOMAIN.PRIMITIVE.OBJECT. Codes are never reused for a different meaning: a caller's mapping must stay valid across catalogue versions. Digits are allowed in the domain and object segments (E2E, L1)."
+          },
+          "primitive": {
+            "type": "string",
+            "enum": [
+              "LINK",
+              "CREATE",
+              "UPDATE",
+              "RUN",
+              "GENERATE",
+              "REQUEST",
+              "ESCALATE",
+              "NONE"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "description": "One imperative line, for humans."
+          },
+          "executor_kind": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "human",
+              "ci",
+              "none"
+            ],
+            "description": "Who can carry the action out. This is the boundary between agents that read and agents that act: an analysis agent emits the action, and never executes it."
+          },
+          "default_executor": {
+            "type": "string",
+            "description": "Agent slug or human role, when the catalogue has a sensible default."
+          },
+          "target_kind": {
+            "type": "string",
+            "enum": [
+              "file",
+              "epic",
+              "task",
+              "state",
+              "gate",
+              "mr",
+              "pipeline",
+              "doc",
+              "none"
+            ]
+          },
+          "idempotent": {
+            "type": "boolean",
+            "description": "Whether dispatching it twice is harmless. A gate fires on every commit, so a non-idempotent action needs a caller that de-duplicates."
+          },
+          "blocks_merge": {
+            "type": "boolean",
+            "description": "Catalogue default; a checklist entry may override it."
+          },
+          "parameters": {
+            "type": "object",
+            "description": "JSON Schema for the parameters the caller needs in order to dispatch. An emitting agent must fill every required property, or the action is not emittable."
+          },
+          "executor_implemented": {
+            "type": "boolean",
+            "description": "Whether the default_executor exists as an installable agent today. False means the action is defined and the thing that would carry it out is not yet built: a caller may emit the code, but dispatching it will find nobody home. Absent means true."
+          }
+        }
+      }
+    }
+  }
+}

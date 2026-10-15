@@ -1,0 +1,477 @@
+{
+  "version": "8.3",
+  "updated_at": "2026-10-03",
+  "description": "ASF Action Catalogue. The closed set of remediation actions an analysis agent may emit. An agent selects a code; it never invents one. The caller maps the code to an API function, so an action is dispatchable without parsing prose. An action whose executor_implemented is false is declared but not yet dispatchable: the agent named as its executor has no specification under agents/ and no importable definition. A code removed from the catalogue is never reused: 8.3 removed ASF.UPDATE.VELOCITY, because velocity is derived from the task statuses in state.json and is never recorded.",
+  "primitives": [
+    {
+      "id": "LINK",
+      "description": "Associate two entities that already exist."
+    },
+    {
+      "id": "CREATE",
+      "description": "Bring a new artifact into existence."
+    },
+    {
+      "id": "UPDATE",
+      "description": "Change an artifact that already exists."
+    },
+    {
+      "id": "RUN",
+      "description": "Execute an automated process that is already defined."
+    },
+    {
+      "id": "GENERATE",
+      "description": "Produce an artifact through an agent, for human review."
+    },
+    {
+      "id": "REQUEST",
+      "description": "Ask a named human role for a decision, review or signature."
+    },
+    {
+      "id": "ESCALATE",
+      "description": "Raise the matter to a gate or a role with authority over it."
+    },
+    {
+      "id": "NONE",
+      "description": "Nothing is required. Emitted explicitly so that silence is never ambiguous."
+    }
+  ],
+  "actions": [
+    {
+      "code": "ASF.LINK.COMMIT_TO_EPIC",
+      "primitive": "LINK",
+      "title": "Link a commit to its epic: reword or amend the commit message so it names the epic",
+      "executor_kind": "agent",
+      "default_executor": "epic-task-agent",
+      "target_kind": "mr",
+      "idempotent": true,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "description": "The link lives in the commit message, which the asf.linkage check reads; state.json stores no commit link.",
+        "required": [
+          "commit_sha",
+          "epic_id"
+        ],
+        "properties": {
+          "commit_sha": {
+            "type": "string"
+          },
+          "epic_id": {
+            "type": "string",
+            "pattern": "^Epic[0-9]{3}$"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "ASF.LINK.COMMIT_TO_TASK",
+      "primitive": "LINK",
+      "title": "Link a commit to its task: reword or amend the commit message so it names the task",
+      "executor_kind": "agent",
+      "default_executor": "epic-task-agent",
+      "target_kind": "mr",
+      "idempotent": true,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "description": "The link lives in the commit message, which the asf.linkage check reads; state.json stores no commit link.",
+        "required": [
+          "commit_sha",
+          "task_id"
+        ],
+        "properties": {
+          "commit_sha": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string",
+            "pattern": "^Task\\.Epic[0-9]{3}\\.[0-9]+$"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "ASF.UPDATE.TASK_STATUS",
+      "primitive": "UPDATE",
+      "title": "Move a task to the status the work actually reached",
+      "executor_kind": "agent",
+      "default_executor": "epic-task-agent",
+      "target_kind": "state",
+      "idempotent": true,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "status",
+          "state_file"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "todo",
+              "in_progress",
+              "review",
+              "done",
+              "blocked"
+            ]
+          },
+          "state_file": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "ASF.CREATE.TASK",
+      "primitive": "CREATE",
+      "title": "Create the missing task this work belongs to",
+      "executor_kind": "agent",
+      "default_executor": "task-generation-agent",
+      "target_kind": "task",
+      "idempotent": false,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "epic_id",
+          "title"
+        ],
+        "properties": {
+          "epic_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "ASF.ESCALATE.GATE",
+      "primitive": "ESCALATE",
+      "title": "Raise the matter to a quality gate owner",
+      "executor_kind": "human",
+      "default_executor": "dev-lead",
+      "target_kind": "gate",
+      "idempotent": true,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "gate",
+          "reason"
+        ],
+        "properties": {
+          "gate": {
+            "type": "string",
+            "enum": [
+              "L1",
+              "MR",
+              "release"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "code": "TEST.GENERATE.UNIT",
+      "primitive": "GENERATE",
+      "title": "Generate unit tests for the changed units",
+      "executor_kind": "agent",
+      "default_executor": "test-generation-agent",
+      "target_kind": "file",
+      "idempotent": false,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "repo",
+          "paths"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "task_id": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "TEST.GENERATE.E2E",
+      "primitive": "GENERATE",
+      "title": "Generate end-to-end tests from the task acceptance criteria",
+      "executor_kind": "agent",
+      "default_executor": "test-generation-agent",
+      "target_kind": "file",
+      "idempotent": false,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "TEST.RUN.PIPELINE",
+      "primitive": "RUN",
+      "title": "Run the test pipeline for this commit",
+      "executor_kind": "ci",
+      "default_executor": "gitlab-ci",
+      "target_kind": "pipeline",
+      "idempotent": true,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "repo",
+          "commit_sha"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": "string"
+          },
+          "job": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "code": "CODE.GENERATE.CHANGE",
+      "primitive": "GENERATE",
+      "title": "Carry out a bounded implementation objective on the code",
+      "executor_kind": "agent",
+      "default_executor": "asf-dev",
+      "target_kind": "file",
+      "idempotent": false,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "repo",
+          "objective"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "objective": {
+            "type": "string",
+            "description": "One bounded objective, in plain words. Not a plan and not a backlog."
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "task_id": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": true
+    },
+    {
+      "code": "QUALITY.RUN.STATIC_ANALYSIS",
+      "primitive": "RUN",
+      "title": "Run static analysis over the changed files",
+      "executor_kind": "ci",
+      "default_executor": "gitlab-ci",
+      "target_kind": "pipeline",
+      "idempotent": true,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "repo",
+          "commit_sha"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "commit_sha": {
+            "type": "string"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "profile": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "code": "QUALITY.REQUEST.REVIEW",
+      "primitive": "REQUEST",
+      "title": "Ask for a qualitative review of this change",
+      "executor_kind": "human",
+      "default_executor": "dev-lead",
+      "target_kind": "mr",
+      "idempotent": true,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "mr_iid": {
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "code": "DOCS.UPDATE.PAGE",
+      "primitive": "UPDATE",
+      "title": "Update the documentation this change invalidates",
+      "executor_kind": "agent",
+      "default_executor": "documentation-agent",
+      "target_kind": "doc",
+      "idempotent": false,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "path",
+          "reason"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "DOCS.GENERATE.RELEASE_NOTES",
+      "primitive": "GENERATE",
+      "title": "Generate release notes covering this change",
+      "executor_kind": "agent",
+      "default_executor": "documentation-agent",
+      "target_kind": "doc",
+      "idempotent": false,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "release"
+        ],
+        "properties": {
+          "release": {
+            "type": "string"
+          }
+        }
+      },
+      "executor_implemented": false
+    },
+    {
+      "code": "REVIEW.REQUEST.HUMAN",
+      "primitive": "REQUEST",
+      "title": "Ask a named role to look at this personally",
+      "executor_kind": "human",
+      "default_executor": "dev-lead",
+      "target_kind": "mr",
+      "idempotent": true,
+      "blocks_merge": true,
+      "parameters": {
+        "type": "object",
+        "required": [
+          "role",
+          "reason"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "dev-lead",
+              "pm",
+              "qa-lead",
+              "architect"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "mr_iid": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    {
+      "code": "NONE.NONE.NO_ACTION",
+      "primitive": "NONE",
+      "title": "No action required",
+      "executor_kind": "none",
+      "default_executor": "",
+      "target_kind": "none",
+      "idempotent": true,
+      "blocks_merge": false,
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

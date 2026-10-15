@@ -1,0 +1,48 @@
+{
+  "id": "problema",
+  "titolo": "Problema segnalato",
+  "quando": "qualcuno dice che qualcosa non va, e non e' ancora chiaro se sia un difetto o una richiesta",
+  "nota": "Si parte dal racconto, non dalla categoria. Chiedere «e' un bug o una migliorìa?» a chi segnala un problema significa chiedergli di fare il triage al posto tuo.",
+  "voci": [
+    {
+      "key": "cv-topic",
+      "gruppo": "Il problema",
+      "question": "Di cosa parliamo, e che tipo di lavoro e'"
+    },
+    {
+      "key": "cv-problema",
+      "gruppo": "Il problema",
+      "question": "Qual e' il problema — non la soluzione"
+    },
+    {
+      "key": "cv-oggi",
+      "gruppo": "Il problema",
+      "question": "Come si fa oggi, e cosa costa farlo cosi'"
+    },
+    {
+      "key": "cv-chi",
+      "gruppo": "Il problema",
+      "question": "Chi lo usa, chi ne subisce le conseguenze, chi paga"
+    },
+    {
+      "key": "cv-numeri",
+      "gruppo": "Il dominio",
+      "question": "Volumi, frequenze, picchi, e quanto ci si aspetta che crescano"
+    },
+    {
+      "key": "cv-eccezioni",
+      "gruppo": "Il dominio",
+      "question": "Cosa puo' andare storto, e cosa deve succedere allora"
+    },
+    {
+      "key": "cv-risultato",
+      "gruppo": "Il problema",
+      "question": "Cosa deve diventare possibile"
+    },
+    {
+      "key": "cv-prove",
+      "gruppo": "Il progetto",
+      "question": "Cosa esiste gia' da guardare: documenti, schermate, registrazioni, dati veri"
+    }
+  ]
+}

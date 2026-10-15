@@ -1,0 +1,1043 @@
+{
+  "$schema": "https://git.bit-farm.it/bit-farm-public/pico/-/raw/main/schema/pico-instructions-catalog.schema.json",
+  "package": "asf-instructions-catalog/1",
+  "version": "1.0.0",
+  "asf_version": "8.4",
+  "header": "header.md",
+  "project_rules": "project-rules.md",
+  "host_placeholders": [
+    {
+      "name": "project_name",
+      "description": "Project name, from the project's product.md or the host"
+    },
+    {
+      "name": "asf_version",
+      "description": "ASF version the project follows"
+    },
+    {
+      "name": "composed_at",
+      "description": "Date of composition (YYYY-MM-DD)"
+    },
+    {
+      "name": "catalog_ref",
+      "description": "Catalog repository and ref the modules come from"
+    }
+  ],
+  "categories": [
+    {
+      "id": "language",
+      "title": "Language",
+      "order": 1,
+      "cardinality": "one",
+      "required": true,
+      "description": "Which language for code, comments, commits and domain terms."
+    },
+    {
+      "id": "localization",
+      "title": "Localization",
+      "order": 2,
+      "cardinality": "one",
+      "required": false,
+      "description": "How user-facing text is managed."
+    },
+    {
+      "id": "principles",
+      "title": "Principles",
+      "order": 3,
+      "cardinality": "one",
+      "required": true,
+      "description": "The non-negotiable engineering principles of ASF."
+    },
+    {
+      "id": "topology",
+      "title": "System topology",
+      "order": 4,
+      "cardinality": "one",
+      "required": true,
+      "description": "How the system is split into deployable units."
+    },
+    {
+      "id": "structure",
+      "title": "Internal structure",
+      "order": 5,
+      "cardinality": "one",
+      "required": false,
+      "description": "How the code inside one deployable unit is organised."
+    },
+    {
+      "id": "communication",
+      "title": "Communication between services",
+      "order": 6,
+      "cardinality": "many",
+      "required": false,
+      "description": "How services talk; only for distributed topologies."
+    },
+    {
+      "id": "frontend",
+      "title": "Frontend stack",
+      "order": 7,
+      "cardinality": "one",
+      "required": false,
+      "description": "Frontend framework and its conventions."
+    },
+    {
+      "id": "backend",
+      "title": "Backend stack",
+      "order": 8,
+      "cardinality": "many",
+      "required": false,
+      "description": "Backend runtimes and frameworks (one per backend)."
+    },
+    {
+      "id": "database",
+      "title": "Database",
+      "order": 9,
+      "cardinality": "one",
+      "required": false,
+      "description": "Primary data store and its conventions."
+    },
+    {
+      "id": "code-style",
+      "title": "Code style",
+      "order": 10,
+      "cardinality": "many",
+      "required": false,
+      "description": "Formatting, linting and naming per language."
+    },
+    {
+      "id": "comments",
+      "title": "Comments and documentation",
+      "order": 11,
+      "cardinality": "one",
+      "required": true,
+      "description": "How code is commented and documented."
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "order": 12,
+      "cardinality": "many",
+      "required": true,
+      "description": "Test strategy and kinds of tests."
+    },
+    {
+      "id": "observability",
+      "title": "Logging and observability",
+      "order": 13,
+      "cardinality": "one",
+      "required": true,
+      "description": "Logging, tracing and metrics."
+    },
+    {
+      "id": "errors",
+      "title": "Errors",
+      "order": 14,
+      "cardinality": "one",
+      "required": true,
+      "description": "How errors are raised, shaped and reported."
+    },
+    {
+      "id": "security",
+      "title": "Security",
+      "order": 15,
+      "cardinality": "many",
+      "required": true,
+      "description": "Security baseline and secrets."
+    },
+    {
+      "id": "git",
+      "title": "Git workflow",
+      "order": 16,
+      "cardinality": "one",
+      "required": true,
+      "description": "Branching, merge requests and commit messages."
+    },
+    {
+      "id": "method",
+      "title": "ASF method",
+      "order": 17,
+      "cardinality": "one",
+      "required": true,
+      "description": "Sprint execution, artifact templates, labels, layer loaders."
+    }
+  ],
+  "modules": [
+    {
+      "id": "language-english",
+      "category": "language",
+      "version": "1.0.0",
+      "title": "English everywhere",
+      "summary": "Identifiers, comments, commits and docs in English; domain terms mapped once in a glossary.",
+      "file": "modules/language/language-english.md",
+      "when": [
+        "international team",
+        "open source",
+        "english"
+      ],
+      "placeholders": [
+        {
+          "name": "business_language",
+          "type": "enum",
+          "description": "Language the business speaks",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "glossary_path",
+          "type": "path",
+          "description": "Path of the domain glossary",
+          "default": "docs/glossary.md"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "language-english-code-local-prose",
+      "category": "language",
+      "version": "1.0.0",
+      "title": "English code, local prose",
+      "summary": "English identifiers; comments, commits and docs in the team's language; glossary for domain terms.",
+      "file": "modules/language/language-english-code-local-prose.md",
+      "when": [
+        "local team",
+        "english code"
+      ],
+      "placeholders": [
+        {
+          "name": "prose_language",
+          "type": "enum",
+          "description": "Language of comments, commits and docs",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "business_language",
+          "type": "enum",
+          "description": "Language the business speaks",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "glossary_path",
+          "type": "path",
+          "description": "Path of the domain glossary",
+          "default": "docs/glossary.md"
+        }
+      ]
+    },
+    {
+      "id": "language-local-domain-terms",
+      "category": "language",
+      "version": "1.0.0",
+      "title": "Domain terms in the business language",
+      "summary": "Technical identifiers in English, domain identifiers in the business language (ubiquitous language), prose in the team's language.",
+      "file": "modules/language/language-local-domain-terms.md",
+      "when": [
+        "ubiquitous language",
+        "domain in italian",
+        "ddd"
+      ],
+      "placeholders": [
+        {
+          "name": "prose_language",
+          "type": "enum",
+          "description": "Language of comments, commits and docs",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "business_language",
+          "type": "enum",
+          "description": "Language the business speaks",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "glossary_path",
+          "type": "path",
+          "description": "Path of the domain glossary",
+          "default": "docs/glossary.md"
+        }
+      ]
+    },
+    {
+      "id": "language-local",
+      "category": "language",
+      "version": "1.0.0",
+      "title": "One local language",
+      "summary": "The whole repository in one local language, ASCII identifiers.",
+      "file": "modules/language/language-local.md",
+      "when": [
+        "single language team"
+      ],
+      "placeholders": [
+        {
+          "name": "prose_language",
+          "type": "enum",
+          "description": "Language of the repository",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "glossary_path",
+          "type": "path",
+          "description": "Path of the domain glossary",
+          "default": "docs/glossary.md"
+        }
+      ]
+    },
+    {
+      "id": "i18n-icu",
+      "category": "localization",
+      "version": "1.0.0",
+      "title": "Multi-locale (ICU)",
+      "summary": "Message catalogs per locale, ICU MessageFormat, locale-aware formatting.",
+      "file": "modules/localization/i18n-icu.md",
+      "when": [
+        "several languages",
+        "international users"
+      ],
+      "placeholders": [
+        {
+          "name": "default_locale",
+          "type": "string",
+          "description": "Default locale",
+          "default": "it-IT"
+        },
+        {
+          "name": "supported_locales",
+          "type": "string",
+          "description": "Supported locales",
+          "default": "it-IT, en-GB"
+        },
+        {
+          "name": "messages_path",
+          "type": "path",
+          "description": "Folder of the message catalogs",
+          "default": "src/locales"
+        }
+      ]
+    },
+    {
+      "id": "single-locale",
+      "category": "localization",
+      "version": "1.0.0",
+      "title": "Single locale",
+      "summary": "One UI language, strings still centralised in one catalog.",
+      "file": "modules/localization/single-locale.md",
+      "when": [
+        "one language ui"
+      ],
+      "placeholders": [
+        {
+          "name": "ui_language",
+          "type": "enum",
+          "description": "Language of the user interface",
+          "default": "Italian",
+          "enum": [
+            "English",
+            "Italian",
+            "Spanish",
+            "French",
+            "German",
+            "Portuguese"
+          ]
+        },
+        {
+          "name": "messages_path",
+          "type": "path",
+          "description": "Folder of the message catalog",
+          "default": "src/locales"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "asf-principles",
+      "category": "principles",
+      "version": "1.0.0",
+      "title": "ASF principles",
+      "summary": "KISS, DRY, YAGNI, SOLID, 12-Factor, fail fast; no magic values, explicit DTOs, co-located types, anti-patterns.",
+      "file": "modules/principles/asf-principles.md",
+      "default": true
+    },
+    {
+      "id": "monolith",
+      "category": "topology",
+      "version": "1.0.0",
+      "title": "Monolith",
+      "summary": "One deployable application, modular inside.",
+      "file": "modules/topology/monolith.md",
+      "when": [
+        "small product",
+        "one team"
+      ]
+    },
+    {
+      "id": "modular-monolith",
+      "category": "topology",
+      "version": "1.0.0",
+      "title": "Modular monolith",
+      "summary": "One deployable made of modules with enforced boundaries — monolith first.",
+      "file": "modules/topology/modular-monolith.md",
+      "when": [
+        "new product",
+        "one or two teams"
+      ],
+      "placeholders": [
+        {
+          "name": "modules_root",
+          "type": "path",
+          "description": "Folder of the modules",
+          "default": "src/modules"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "microservices",
+      "category": "topology",
+      "version": "1.0.0",
+      "title": "Microservices",
+      "summary": "Independently deployable services, one database each, versioned contracts.",
+      "file": "modules/topology/microservices.md",
+      "when": [
+        "several teams",
+        "independent scaling",
+        "independent releases"
+      ],
+      "requires": [
+        [
+          "rest-sync",
+          "async-events",
+          "grpc"
+        ]
+      ],
+      "placeholders": [
+        {
+          "name": "services_root",
+          "type": "path",
+          "description": "Folder (or repo group) of the services",
+          "default": "services/"
+        }
+      ]
+    },
+    {
+      "id": "serverless",
+      "category": "topology",
+      "version": "1.0.0",
+      "title": "Serverless",
+      "summary": "Functions and managed services; stateless, idempotent handlers.",
+      "file": "modules/topology/serverless.md",
+      "when": [
+        "event driven",
+        "spiky load",
+        "cloud functions"
+      ],
+      "placeholders": [
+        {
+          "name": "cloud_provider",
+          "type": "enum",
+          "description": "Cloud provider",
+          "default": "AWS",
+          "enum": [
+            "AWS",
+            "Azure",
+            "Google Cloud"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "layered",
+      "category": "structure",
+      "version": "1.0.0",
+      "title": "Layered (three-tier)",
+      "summary": "Router → service → repository per domain module.",
+      "file": "modules/structure/layered.md",
+      "when": [
+        "crud",
+        "simple domain"
+      ],
+      "placeholders": [
+        {
+          "name": "be_modules_path",
+          "type": "path",
+          "description": "Folder of the backend modules",
+          "default": "src/modules"
+        },
+        {
+          "name": "be_lib_path",
+          "type": "path",
+          "description": "Folder of shared backend utilities",
+          "default": "src/lib"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "hexagonal",
+      "category": "structure",
+      "version": "1.0.0",
+      "title": "Hexagonal (ports and adapters)",
+      "summary": "Pure domain at the centre, ports declared by the application, adapters at the edge.",
+      "file": "modules/structure/hexagonal.md",
+      "when": [
+        "complex domain",
+        "many integrations",
+        "ddd"
+      ]
+    },
+    {
+      "id": "clean",
+      "category": "structure",
+      "version": "1.0.0",
+      "title": "Clean architecture",
+      "summary": "Entities, use cases, interface adapters, frameworks — dependencies inwards.",
+      "file": "modules/structure/clean.md",
+      "when": [
+        "complex domain",
+        "long lived"
+      ]
+    },
+    {
+      "id": "vertical-slice",
+      "category": "structure",
+      "version": "1.0.0",
+      "title": "Vertical slices",
+      "summary": "Code organised by feature/use case, cohesive slices.",
+      "file": "modules/structure/vertical-slice.md",
+      "when": [
+        "many features",
+        "cqrs"
+      ]
+    },
+    {
+      "id": "rest-sync",
+      "category": "communication",
+      "version": "1.0.0",
+      "title": "Synchronous REST",
+      "summary": "OpenAPI contracts, versioned paths, timeouts, retries only when idempotent.",
+      "file": "modules/communication/rest-sync.md",
+      "when": [
+        "request response"
+      ],
+      "requires": [
+        [
+          "microservices",
+          "serverless"
+        ]
+      ],
+      "default": true
+    },
+    {
+      "id": "async-events",
+      "category": "communication",
+      "version": "1.0.0",
+      "title": "Asynchronous events",
+      "summary": "AsyncAPI, transactional outbox, idempotent consumers, dead letters.",
+      "file": "modules/communication/async-events.md",
+      "when": [
+        "events",
+        "eventual consistency",
+        "queues"
+      ],
+      "requires": [
+        [
+          "microservices",
+          "serverless"
+        ]
+      ]
+    },
+    {
+      "id": "grpc",
+      "category": "communication",
+      "version": "1.0.0",
+      "title": "gRPC",
+      "summary": "Protobuf contracts, backward-compatible evolution, deadlines.",
+      "file": "modules/communication/grpc.md",
+      "when": [
+        "internal high throughput"
+      ],
+      "requires": [
+        [
+          "microservices"
+        ]
+      ]
+    },
+    {
+      "id": "fe-react-vite",
+      "category": "frontend",
+      "version": "1.0.0",
+      "title": "React + TypeScript (Vite)",
+      "summary": "React SPA with TanStack Query, Zustand, Zod, Vitest.",
+      "file": "modules/frontend/fe-react-vite.md",
+      "when": [
+        "spa",
+        "react"
+      ],
+      "placeholders": [
+        {
+          "name": "react_version",
+          "type": "version",
+          "description": "React version",
+          "default": "19"
+        },
+        {
+          "name": "node_version",
+          "type": "version",
+          "description": "Node.js version for tooling",
+          "default": "22"
+        },
+        {
+          "name": "fe_src_path",
+          "type": "path",
+          "description": "Frontend source folder",
+          "default": "src"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "fe-nextjs",
+      "category": "frontend",
+      "version": "1.0.0",
+      "title": "Next.js (App Router)",
+      "summary": "Server components first, server actions and route handlers.",
+      "file": "modules/frontend/fe-nextjs.md",
+      "when": [
+        "seo",
+        "ssr",
+        "next"
+      ],
+      "placeholders": [
+        {
+          "name": "next_version",
+          "type": "version",
+          "description": "Next.js version",
+          "default": "15"
+        },
+        {
+          "name": "fe_src_path",
+          "type": "path",
+          "description": "Frontend source folder",
+          "default": "src"
+        }
+      ]
+    },
+    {
+      "id": "be-python-fastapi",
+      "category": "backend",
+      "version": "1.0.0",
+      "title": "Python + FastAPI",
+      "summary": "FastAPI, SQLAlchemy 2, Alembic, Pydantic 2, pytest, mypy strict, ruff.",
+      "file": "modules/backend/be-python-fastapi.md",
+      "when": [
+        "python",
+        "data",
+        "ml"
+      ],
+      "placeholders": [
+        {
+          "name": "python_version",
+          "type": "version",
+          "description": "Python version",
+          "default": "3.13"
+        },
+        {
+          "name": "be_modules_path",
+          "type": "path",
+          "description": "Folder of the backend modules",
+          "default": "app"
+        },
+        {
+          "name": "be_logger_path",
+          "type": "path",
+          "description": "Where the logger is configured",
+          "default": "app/logging.py"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "be-typescript-node",
+      "category": "backend",
+      "version": "1.0.0",
+      "title": "TypeScript + Node.js",
+      "summary": "Node LTS, strict TypeScript, Zod, Vitest.",
+      "file": "modules/backend/be-typescript-node.md",
+      "when": [
+        "node",
+        "typescript",
+        "javascript"
+      ],
+      "placeholders": [
+        {
+          "name": "node_version",
+          "type": "version",
+          "description": "Node.js version",
+          "default": "22"
+        },
+        {
+          "name": "be_framework",
+          "type": "enum",
+          "description": "HTTP framework",
+          "default": "Fastify",
+          "enum": [
+            "Fastify",
+            "Express",
+            "NestJS",
+            "Hono"
+          ]
+        },
+        {
+          "name": "be_orm",
+          "type": "enum",
+          "description": "ORM",
+          "default": "Prisma",
+          "enum": [
+            "Prisma",
+            "Drizzle",
+            "TypeORM"
+          ]
+        },
+        {
+          "name": "be_modules_path",
+          "type": "path",
+          "description": "Folder of the backend modules",
+          "default": "src/modules"
+        },
+        {
+          "name": "be_logger_path",
+          "type": "path",
+          "description": "Where the logger is configured",
+          "default": "src/lib/logger.ts"
+        }
+      ]
+    },
+    {
+      "id": "be-nextjs-bff",
+      "category": "backend",
+      "version": "1.0.0",
+      "title": "Next.js BFF",
+      "summary": "Next.js route handlers as backend for frontend: session, authorization, forwarding.",
+      "file": "modules/backend/be-nextjs-bff.md",
+      "when": [
+        "bff",
+        "session",
+        "next"
+      ]
+    },
+    {
+      "id": "db-postgres",
+      "category": "database",
+      "version": "1.0.0",
+      "title": "PostgreSQL",
+      "summary": "Relational, declared FKs, reviewed migrations, verified indexes.",
+      "file": "modules/database/db-postgres.md",
+      "when": [
+        "relational",
+        "transactions"
+      ],
+      "placeholders": [
+        {
+          "name": "postgres_version",
+          "type": "version",
+          "description": "PostgreSQL version",
+          "default": "16"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "db-mongodb",
+      "category": "database",
+      "version": "1.0.0",
+      "title": "MongoDB",
+      "summary": "Document store with schema validators and access-pattern modelling.",
+      "file": "modules/database/db-mongodb.md",
+      "when": [
+        "documents",
+        "flexible schema"
+      ],
+      "placeholders": [
+        {
+          "name": "mongodb_version",
+          "type": "version",
+          "description": "MongoDB version",
+          "default": "7"
+        }
+      ]
+    },
+    {
+      "id": "style-python",
+      "category": "code-style",
+      "version": "1.0.0",
+      "title": "Python style",
+      "summary": "ruff + mypy strict, typed public functions, no bare except.",
+      "file": "modules/code-style/style-python.md",
+      "when": [
+        "python"
+      ],
+      "placeholders": [
+        {
+          "name": "line_length",
+          "type": "string",
+          "description": "Maximum line length",
+          "default": "100"
+        }
+      ]
+    },
+    {
+      "id": "style-typescript",
+      "category": "code-style",
+      "version": "1.0.0",
+      "title": "TypeScript style",
+      "summary": "strict + noUncheckedIndexedAccess, typescript-eslint, no floating promises.",
+      "file": "modules/code-style/style-typescript.md",
+      "when": [
+        "typescript"
+      ]
+    },
+    {
+      "id": "comments-why-not-what",
+      "category": "comments",
+      "version": "1.0.0",
+      "title": "Why, not what",
+      "summary": "Comments explain the reason; headers for non-obvious decisions; cite requirement ids.",
+      "file": "modules/comments/comments-why-not-what.md",
+      "when": [
+        "explain decisions"
+      ],
+      "default": true
+    },
+    {
+      "id": "comments-docstrings-public-api",
+      "category": "comments",
+      "version": "1.0.0",
+      "title": "Docstrings on public API",
+      "summary": "Contract docstrings on every public symbol, generated docs.",
+      "file": "modules/comments/comments-docstrings-public-api.md",
+      "when": [
+        "library",
+        "public api"
+      ]
+    },
+    {
+      "id": "testing-pyramid",
+      "category": "testing",
+      "version": "1.0.0",
+      "title": "Test pyramid",
+      "summary": "Many unit tests, real-DB integration tests, few E2E.",
+      "file": "modules/testing/testing-pyramid.md",
+      "when": [
+        "backend heavy"
+      ],
+      "excludes": [
+        "testing-trophy"
+      ],
+      "default": true
+    },
+    {
+      "id": "testing-trophy",
+      "category": "testing",
+      "version": "1.0.0",
+      "title": "Testing trophy",
+      "summary": "Static checks, then mostly integration tests.",
+      "file": "modules/testing/testing-trophy.md",
+      "when": [
+        "frontend heavy",
+        "web app"
+      ],
+      "excludes": [
+        "testing-pyramid"
+      ]
+    },
+    {
+      "id": "contract-testing",
+      "category": "testing",
+      "version": "1.0.0",
+      "title": "Contract tests",
+      "summary": "Consumer-driven contracts between services, compatibility checks in CI.",
+      "file": "modules/testing/contract-testing.md",
+      "when": [
+        "services"
+      ],
+      "requires": [
+        [
+          "rest-sync",
+          "async-events",
+          "grpc"
+        ]
+      ]
+    },
+    {
+      "id": "e2e-playwright",
+      "category": "testing",
+      "version": "1.0.0",
+      "title": "E2E with Playwright",
+      "summary": "Main flows in Playwright from BDD acceptance criteria.",
+      "file": "modules/testing/e2e-playwright.md",
+      "when": [
+        "web ui"
+      ]
+    },
+    {
+      "id": "obs-structured-logs",
+      "category": "observability",
+      "version": "1.0.0",
+      "title": "Structured logs with trace id",
+      "summary": "No print/console.log; JSON logs with trace_id and sub.",
+      "file": "modules/observability/obs-structured-logs.md",
+      "when": [
+        "single service"
+      ],
+      "default": true
+    },
+    {
+      "id": "obs-opentelemetry",
+      "category": "observability",
+      "version": "1.0.0",
+      "title": "OpenTelemetry",
+      "summary": "Traces, metrics and logs via OTel, W3C propagation, RED metrics.",
+      "file": "modules/observability/obs-opentelemetry.md",
+      "when": [
+        "distributed",
+        "microservices"
+      ]
+    },
+    {
+      "id": "errors-actionable",
+      "category": "errors",
+      "version": "1.0.0",
+      "title": "Cause, context, action",
+      "summary": "Fail fast; typed domain errors; error / next / reason in APIs.",
+      "file": "modules/errors/errors-actionable.md",
+      "default": true
+    },
+    {
+      "id": "errors-problem-details",
+      "category": "errors",
+      "version": "1.0.0",
+      "title": "Problem Details (RFC 9457)",
+      "summary": "application/problem+json with stable type URIs.",
+      "file": "modules/errors/errors-problem-details.md",
+      "when": [
+        "public api"
+      ]
+    },
+    {
+      "id": "sec-owasp-baseline",
+      "category": "security",
+      "version": "1.0.0",
+      "title": "OWASP baseline",
+      "summary": "Validate input, encode output, authorize every request, SCA and SAST in CI.",
+      "file": "modules/security/sec-owasp-baseline.md",
+      "default": true
+    },
+    {
+      "id": "sec-secrets",
+      "category": "security",
+      "version": "1.0.0",
+      "title": "Secrets management",
+      "summary": "No secrets in git, secret scanning, runtime injection, OIDC in CI.",
+      "file": "modules/security/sec-secrets.md",
+      "default": true
+    },
+    {
+      "id": "git-trunk-mr",
+      "category": "git",
+      "version": "1.0.0",
+      "title": "Trunk-based with merge requests",
+      "summary": "Short-lived branches, green pipeline, ASF commit format.",
+      "file": "modules/git/git-trunk-mr.md",
+      "placeholders": [
+        {
+          "name": "default_branch",
+          "type": "string",
+          "description": "Default branch",
+          "default": "main"
+        }
+      ],
+      "default": true
+    },
+    {
+      "id": "git-flow",
+      "category": "git",
+      "version": "1.0.0",
+      "title": "Git Flow",
+      "summary": "develop/release/hotfix branches — only for parallel maintained versions.",
+      "file": "modules/git/git-flow.md",
+      "when": [
+        "several released versions"
+      ]
+    },
+    {
+      "id": "asf-method",
+      "category": "method",
+      "version": "1.0.0",
+      "title": "ASF method (state.json 2.0.0)",
+      "summary": "ASF 8.3 method for projects whose .asf/state.json has meta.schema_version 2.x (strict state.json, after the 8.3 migration).",
+      "file": "modules/method/asf-method.md",
+      "when": [
+        "state.json schema_version 2.x",
+        "migrated to asf 8.3"
+      ]
+    },
+    {
+      "id": "asf-method-kstudio",
+      "category": "method",
+      "version": "1.0.0",
+      "title": "ASF method (KStudio, state.json 1.x)",
+      "summary": "ASF method as KStudio runs it today: choose it when .asf/state.json has meta.schema_version 1.x (ADR-020).",
+      "file": "modules/method/asf-method-kstudio.md",
+      "when": [
+        "state.json schema_version 1.x",
+        "kstudio project"
+      ],
+      "default": true
+    }
+  ]
+}

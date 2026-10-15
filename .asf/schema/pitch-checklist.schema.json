@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:asf:pitch-checklist:1",
+  "title": "Profilo di copertura di un pitch",
+  "description": "Le cose che un pitch di quel tipo deve toccare, dichiarate per intera quando il pitch si apre. E' configurazione dell'installazione, non contenuto del prompt (stessa regola della checklist del commit gate, D-8.3): chi conduce i pitch decide cosa si chiede, e lo fa senza riaprire un prompt.\n\nI profili vanno tenuti **annidati** dal piu' stretto al piu' largo: e' cio' che permette di aprire un pitch prima di sapere di cosa si parla e allargare poi la checklist senza togliere niente.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "titolo",
+    "quando",
+    "voci"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,31}$"
+    },
+    "titolo": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "quando": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 300,
+      "description": "Quando si sceglie questo profilo invece di un altro."
+    },
+    "nota": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Da dove vengono le voci, e perche' queste e non altre."
+    },
+    "voci": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "gruppo",
+          "question"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^cv-[a-z0-9][a-z0-9-]{0,31}$",
+            "description": "Stabile: e' la chiave con cui lo stato torna indietro. Una chiave che cambia nome fa ricomparire aperta una voce coperta."
+          },
+          "gruppo": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "question": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 300,
+            "description": "La cosa da toccare, scritta come la leggerebbe chi conduce — non come la chiederebbe l'agente: la domanda la formula lui, adattandola a cio' che e' gia' stato detto."
+          }
+        }
+      }
+    }
+  }
+}

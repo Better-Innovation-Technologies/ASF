@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/commit-gate-checklist.schema.json",
+  "title": "ASF™ Commit Gate — checklist entry",
+  "description": "One verification the Commit Gate Agent performs. The checklist is configuration, not prompt: adding a verification is an administrative act, not a release. It is installation-wide policy, and every report carries the checklist version it was judged against.",
+  "type": "object",
+  "required": ["id", "title", "order", "enabled", "category", "severity", "expectation"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z][a-z0-9_]*$",
+      "description": "Stable identifier, category.name — for example asf.linkage. Reports reference it, so it must not change once used."
+    },
+    "title": { "type": "string" },
+    "order": { "type": "integer" },
+    "enabled": { "type": "boolean" },
+    "category": {
+      "type": "string",
+      "enum": ["asf", "test", "quality", "docs", "security", "custom"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["blocker", "high", "medium", "low"]
+    },
+    "applies_to": {
+      "type": "object",
+      "description": "Scope. Without it a test verification fails on a commit that touches only a README, and a gate that cries wolf is ignored within a week.",
+      "properties": {
+        "layers": { "type": "array", "items": { "type": "string", "enum": ["fe", "be", "api", "infra", "docs"] } },
+        "paths": { "type": "array", "items": { "type": "string" }, "description": "Glob patterns; a leading ! excludes." },
+        "branches": { "type": "array", "items": { "type": "string" } },
+        "events": { "type": "array", "items": { "type": "string", "enum": ["push", "merge_request", "manual", "replay"] } }
+      }
+    },
+    "expectation": {
+      "type": "string",
+      "description": "What must be true, in one sentence. This is what the agent judges against."
+    },
+    "how_to_verify": {
+      "type": "string",
+      "description": "Where to look and what counts as evidence."
+    },
+    "action_codes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Which catalogue codes this verification is allowed to emit. Constraining them here is what keeps a checklist entry dispatchable by the caller."
+    },
+    "blocks_merge": {
+      "type": "boolean",
+      "description": "Whether a failure of this entry contributes to a blocking verdict. The gate reports; enforcement belongs to the CI or MR rule."
+    }
+  }
+}

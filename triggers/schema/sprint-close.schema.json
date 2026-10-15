@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "sprint_id": {
+      "type": "integer"
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "triggered_by": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/triggers/sprint-close.schema.json",
+  "title": "ASF™ trigger — sprint-close",
+  "description": "L4 CI activation file. Consumed and deleted by the pipeline."
+}

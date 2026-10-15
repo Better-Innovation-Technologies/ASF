@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.bit-farm.it/asf/decision-log.schema.json",
+  "title": "ASF Decision Log",
+  "description": "Registro unico dei Decision Record (DR) ASF™ — scelte architetturali/ambiguità da ratificare al gate Dev Lead.",
+  "type": "object",
+  "required": ["records"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {"type": "string"},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "date", "agent", "trigger", "options", "decision", "impact", "gate_required", "status"],
+        "additionalProperties": true,
+        "properties": {
+          "id": {"type": "string", "pattern": "^DR-[0-9]{4}$"},
+          "date": {"type": "string"},
+          "agent": {"type": "string"},
+          "epic_ref": {"type": ["string", "null"]},
+          "task_ref": {"type": ["string", "null"]},
+          "trigger": {"type": "string"},
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["label"],
+              "additionalProperties": true,
+              "properties": {
+                "label": {"type": "string"},
+                "pros": {"type": "string"},
+                "cons": {"type": "string"}
+              }
+            }
+          },
+          "decision": {"type": "string"},
+          "impact": {"type": "string"},
+          "gate_required": {"type": "boolean"},
+          "status": {"type": "string", "enum": ["pending", "approved", "rejected", "superseded"]}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+# I pitch sono dati di chi li conduce, non dello standard.
+agents/pitch/host/pitches/
+__pycache__/
+*.pyc
+*.log

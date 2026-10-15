@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASF™ Augmented Software Factory — Operating Mode v8.3</title>
+<style>
+  :root{
+    --ink:#141414; --muted:#5d5d5d; --line:#e0ded9; --bg:#faf9f7; --card:#fff;
+    --accent:#7a1f2b; --human:#1f4e5f; --agent:#7a1f2b; --warn:#8a5a00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .deck{max-width:1000px;margin:0 auto;padding:32px 24px 80px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:10px;
+          padding:32px 34px;margin:0 0 22px}
+  .cover{background:var(--ink);color:#f5f3ef;border-color:var(--ink)}
+  .cover h1{font-size:40px;margin:8px 0 4px;letter-spacing:-.5px}
+  .cover .sub{color:#bdb8b0;font-size:17px;margin:0 0 22px}
+  .brand{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#8f8880}
+  .kpi{display:flex;gap:36px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid #333}
+  .kpi div span{display:block;font-size:32px;font-weight:600;line-height:1}
+  .kpi div small{color:#bdb8b0;font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+  h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  h3{font-size:26px;margin:0 0 18px;letter-spacing:-.3px}
+  h4{font-size:15px;margin:26px 0 8px}
+  p{margin:0 0 14px;color:#2c2c2c}
+  .lede{font-size:18px;color:#333}
+  table{width:100%;border-collapse:collapse;margin:12px 0 6px;font-size:14.5px;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  code{background:#f2f0ec;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:8px}
+  .box{border:1px solid var(--line);border-radius:8px;padding:16px 18px;background:#fdfcfb}
+  .box b{display:block;margin-bottom:5px}
+  .box small{color:var(--muted);font-size:13.5px;line-height:1.55;display:block}
+  .stack{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:0 0 14px}
+  .stack b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+  .stack small{display:block;color:var(--muted)}
+  .tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+       padding:2px 7px;border-radius:3px;font-weight:600}
+  .H{background:#e4eef2;color:var(--human)} .A{background:#f4e6e8;color:var(--agent)}
+  .note{border-left:3px solid var(--warn);background:#fdf8ef;padding:12px 16px;margin:16px 0;
+        font-size:14.5px;color:#463617}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;padding-top:8px}
+  @media (prefers-color-scheme: dark){
+    :root{--ink:#eceae6;--muted:#a09a92;--line:#33312e;--bg:#151412;--card:#1d1c1a;--accent:#d98a96}
+    .cover{background:#000;border-color:#000}
+    code{background:#262421}
+    .box{background:#211f1d}
+    .note{background:#241f16;color:#e0d5c0}
+    .H{background:#1f3540;color:#9fc7d6} .A{background:#3a2226;color:#e6a9b3}
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="cover">
+  <div class="brand">Better Innovation Technologies</div>
+  <h1>ASF™ — Augmented Software Factory</h1>
+  <p class="sub">Operating Mode · Mixed Human + AI teams · SCRUM-AI™ · Prompt Stack L0→L4</p>
+  <div class="brand">v8.3 · October 2026 · Confidential</div>
+  <div class="kpi">
+    <div><span>30</span><small>days to first staging delivery</small></div>
+    <div><span>1</span><small>week per sprint</small></div>
+    <div><span>12</span><small>months minimum engagement</small></div>
+  </div>
+</section>
+
+<section>
+  <h2>Executive summary</h2>
+  <h3>An operating model, not a tool</h3>
+  <p class="lede">ASF™ builds and runs software teams in which human operators and AI agents hold
+  <strong>roles that are not interchangeable</strong>. Humans own domain, client relationship and
+  accountability; agents own speed, consistency and parallelism.</p>
+  <div class="grid">
+    <div class="box"><b>People &amp; skills</b><small>Four human roles, fifteen agents. Every actor has a
+      perimeter, a trigger and the artifacts it owns. The boundary is accountability.</small></div>
+    <div class="box"><b>Method</b><small>A multi-layer Prompt Stack (L0→L4) and SCRUM-AI™: Scrum compressed
+      to one week, with explicit human decision gates.</small></div>
+    <div class="box"><b>Technology</b><small>GitLab Premium as the operating infrastructure, a DevSecOps
+      stack on Kubernetes, and coding agents that are <em>provider-agnostic by decision</em>.</small></div>
+  </div>
+  <div class="note"><strong>Changed in v8.0:</strong> the entry point of the Prompt Stack is
+  <code>AGENTS.md</code>, not a file named after one vendor's tool. ASF is a methodology; binding its
+  first file to a product was a dependency nobody had chosen deliberately.</div>
+</section>
+
+<section>
+  <h2>The centre of the model</h2>
+  <h3><code>state.json</code> — the single source of truth</h3>
+  <p>Every status, planning decision, reference and signature of a project lives in one file: sprints,
+  roadmap stages, epics with their tasks, requirements, user stories, bugs, and the signatures of the
+  Prompt Stack files. The Markdown files hold only text, and nothing is copied between the two. What can be
+  computed is stored nowhere: velocity, burndown, epic points and Quality Gate L1 are derived from the file
+  and its git history. Agents and people change it through commits; kStudio reads it; the dashboard shows it.</p>
+  <p><strong>Two invariants protect it.</strong> An agent that writes <code>state.json</code> commits in
+  the same CI job — a write without a commit is a state that exists nowhere. And every write follows
+  <em>read-SHA → mutate → commit-with-SHA-verify</em>, because two CI jobs writing the source of truth
+  concurrently is not a rare case, it is Tuesday.</p>
+  <div class="note">If <code>state.json</code> and the repository disagree, every number computed
+  afterwards is quietly wrong — velocity, burndown, gate status. This is what the <strong>Commit Gate</strong>
+  exists to catch, at the commit, where it still costs one line to fix.</div>
+</section>
+
+<section>
+  <h2>The Prompt Stack</h2>
+  <h3>L0 → L4 — why agents stay coherent</h3>
+  <div class="stack"><b>L0 · AGENTS.md</b><small>Universal context, cross-project patterns, anti-patterns.
+    The collective technical memory. Owner: Dev Lead BIT.</small></div>
+  <div class="stack"><b>L1 · .asf/architecture.json · product.md · deployment.md · instructions.md · Roadmap.md · ProductLog.md</b>
+    <small>Tech stack, product identity, environments, development rules, the product's direction and the
+    ordering of what gets built. Binding, and not negotiable by an agent. Owner: Dev Lead + PM (Roadmap.md and
+    ProductLog.md: PM).</small></div>
+  <div class="stack"><b>L1.5 · requirements/RF-XX.md · RNF-XX.md</b><small>One file per requirement: a
+    functional one with its full acceptance criteria, a non-functional one with its threshold and how it is
+    measured. Resolution is mandatory: no RF, no implementation.</small></div>
+  <div class="stack"><b>L2 · epics/EpicXXX.md</b><small>The text of a feature: objective, scope, AC. Its
+    tasks, dependencies and status live in <code>state.json</code>. Owner: Epic Agent, validated by the Dev Lead.</small></div>
+  <div class="stack"><b>L3 · tasks/Task.EpicXX.N.md</b><small>The atomic unit, with a deterministic prompt
+    seed. This is what instructs a code-generating agent on every run.</small></div>
+  <div class="stack"><b>L4 · triggers/*.json</b><small>CI activation files, consumed and deleted by the
+    pipeline. This is how an agent starts without a human starting it.</small></div>
+  <p><strong>The hierarchy is strict.</strong> A lower layer never overrides a higher one, and a conflict
+  is surfaced rather than resolved silently — an agent that quietly picks a winner has made an
+  architectural decision nobody recorded.</p>
+</section>
+
+<section>
+  <h2>One architectural artifact</h2>
+  <h3><code>architecture.json</code> — state and rationale together</h3>
+  <p>Until v8.0 the architecture lived in two files: a JSON holding the state and a Markdown holding the
+  reasons, with a rule saying which one won when they disagreed. <strong>That rule is only necessary
+  because two files can disagree at all.</strong></p>
+  <p>The KArchitecture schema now carries tech stack, repository layout, components, integrations,
+  patterns, domain rules, the LLM policy — and an ADR log holding its own <code>context</code>,
+  <code>options</code>, <code>rationale</code> and <code>consequences</code>. There is nothing left to
+  reconcile.</p>
+  <div class="note"><strong>The risk, stated:</strong> prose is less comfortable in a JSON field than in a
+  document, and the temptation is to write two-line ADRs. The schema says a thin rationale is a defect,
+  not brevity. If the log degrades into a list of titles, that is the decision to revisit.</div>
+</section>
+
+<section>
+  <h2>Roles</h2>
+  <h3>Four humans, fifteen agents — perimeters that do not overlap</h3>
+  <table>
+    <tr><th>Human — accountability</th><th>Agent — execution</th></tr>
+    <tr>
+      <td><span class="tag H">H</span> <b>Product Owner / PM</b><br><small>Stakeholders, RF elicitation,
+        CR signature, Roadmap</small></td>
+      <td><span class="tag A">A</span> <b>Pitch Agent</b> · Scrum Master Agent · Epic &amp; Task Agent ·
+        Task Generation Agent</td>
+    </tr>
+    <tr>
+      <td><span class="tag H">H</span> <b>Dev Lead / Tech Lead</b><br><small>Architecture, Quality Gate L1,
+        MR gate, L0–L1 ownership, <b>Action Catalogue and commit gate checklist</b></small></td>
+      <td><span class="tag A">A</span> Code Review Agent · RIB Delta Engine · <b>Commit Gate Agent</b></td>
+    </tr>
+    <tr>
+      <td><span class="tag H">H</span> <b>Developer Senior</b><br><small>Task execution, validating agent
+        output, opening MRs</small></td>
+      <td><span class="tag A">A</span> Code Generation Agent (interactive) · <b>ASF Dev Agent</b> (unattended)</td>
+    </tr>
+    <tr>
+      <td><span class="tag H">H</span> <b>QA Lead</b><br><small>AC definition, test strategy, acceptance
+        gate</small></td>
+      <td><span class="tag A">A</span> Test Generation Agent · Documentation Agent · Infrastructure Agent</td>
+    </tr>
+  </table>
+  <p><strong>No agent has merge authority</strong>, and in v8.0 that stopped being a sentence in a prompt.
+  Reading agents hold no tool that can write; acting agents hold no tool that can publish. The rule is
+  enforced by the permission set, so it holds even when an instruction is ignored.</p>
+</section>
+
+<section>
+  <h2>Quality Gate Layer 1</h2>
+  <h3>Every L0/L1 file signed before the first sprint</h3>
+  <p>The gate is passed when every L0/L1 file carries its signature: the Dev Lead signs
+  <code>AGENTS.md</code>, <code>architecture.json</code>, <code>instructions.md</code> and
+  <code>deployment.md</code>; the PM signs <code>product.md</code>, <code>Roadmap.md</code> and
+  <code>ProductLog.md</code>. Before signing, the signers verify five points — no partial credit:</p>
+  <table>
+    <tr><th>#</th><th>Certification</th></tr>
+    <tr><td>1</td><td><code>architecture.json</code> initialised with components, tech stack and the first ADRs</td></tr>
+    <tr><td>2</td><td><code>product.md</code> complete: vision, target user, look &amp; feel, linked design files, draft AC for candidate epics</td></tr>
+    <tr><td>3</td><td><code>deployment.md</code> aligned with the pipeline actually in <code>infra/</code></td></tr>
+    <tr><td>4</td><td><code>AGENTS.md</code> initialised for every layer repository, with context, conventions and domain rules</td></tr>
+    <tr><td>5</td><td>Epic Board populated with at least three sprints of backlog</td></tr>
+  </table>
+  <p>If one point is missing, Startup is extended. <strong>Never start a sprint before the gate.</strong>
+  Each signature is recorded in <code>state.json</code>, belongs to a person and is not delegable to an
+  agent, and must be given again when its file changes after it was signed.</p>
+</section>
+
+<section>
+  <h2>New in v8.0</h2>
+  <h3>The Commit Gate — conformance at the commit</h3>
+  <p>An analysis that runs on <strong>every push, on any branch</strong>, including the first push of a new
+  branch, and judges one commit against a configurable checklist: is it attached to its epic and task, did
+  the change need tests, were tests actually run, does it warrant static analysis, does it invalidate
+  documentation.</p>
+  <div class="grid">
+    <div class="box"><b>It reads; it does not enforce</b><small>The verdict is advisory. Whether a
+      <code>block</code> stops a merge is a CI or MR rule the project owns. An agent that both judged and
+      enforced would leave no independent record of what it found.</small></div>
+    <div class="box"><b>The checklist is policy, not prompt</b><small>Versioned configuration, edited from
+      an administration surface. Adding a verification is an administrative act, not a release — and every
+      report states the checklist version it was judged against.</small></div>
+    <div class="box"><b>Five outcomes, not two</b><small><code>pass</code>, <code>warn</code>,
+      <code>fail</code>, <code>not_applicable</code>, and <code>not_verifiable</code> — evidence that could
+      not be read. Collapsing the last into a failure accuses people of what the agent could not see.</small></div>
+  </div>
+</section>
+
+<section>
+  <h2>New in v8.0</h2>
+  <h3>The Action Catalogue — findings that can be dispatched</h3>
+  <p>A recommendation written in prose is readable by a human and by an agent, and dispatchable by neither.
+  Hooking a finding to an API function requires a <strong>stable identifier and typed parameters</strong>.</p>
+  <table>
+    <tr><th>Concept</th><th>What it is</th></tr>
+    <tr><td><b>Primitive</b></td><td>One of eight verbs: <code>LINK</code>, <code>CREATE</code>,
+      <code>UPDATE</code>, <code>RUN</code>, <code>GENERATE</code>, <code>REQUEST</code>,
+      <code>ESCALATE</code>, <code>NONE</code>. A caller that implements the primitives can dispatch codes
+      added later, with no new integration.</td></tr>
+    <tr><td><b>Action code</b></td><td><code>DOMAIN.PRIMITIVE.OBJECT</code> — for example
+      <code>ASF.LINK.COMMIT_TO_EPIC</code>. Each carries an executor, a target, an idempotency flag and a
+      JSON Schema for its parameters.</td></tr>
+    <tr><td><b>Next Best Action</b></td><td>One emitted action, ranked across the whole report, so "what to
+      do next" is <code>rank: 1</code> and not a judgement left to the reader. It names an executor, and is
+      never carried out by the agent that emitted it.</td></tr>
+  </table>
+  <div class="note"><strong>An agent selects a code; it never invents one.</strong> A situation the
+  catalogue does not cover is reported as a finding with no action, and the catalogue gains an entry. An
+  improvised code silently breaks every caller that mapped it — a failure with no error message.</div>
+</section>
+
+<section>
+  <h2>New in v8.1</h2>
+  <h3>The Pitch — requirements gathered as a conversation</h3>
+  <p>Requirements do not arrive written. They arrive as a person describing a problem, usually someone who
+  has never written a requirement and should not have to learn. The Pitch Agent interviews that person and
+  <strong>writes the document while they talk</strong>, so the interlocutor sees the effect of every answer
+  instead of answering into a void.</p>
+  <div class="grid">
+    <div class="box"><b>Every value says where it came from</b><small>The person said it, a material
+      carried it, or <b>the agent inferred it and nobody said it</b>. The three look different, always. A
+      document that presents an inference with the authority of an answer lies by omission to whoever signs
+      it.</small></div>
+    <div class="box"><b>It holds no tool at all</b><small>It never touches a repository, to read or to
+      write. Nothing it produces reaches one without a host that applies its patches and a human who signs —
+      which is why no action code can be dispatched to it, and it emits none.</small></div>
+    <div class="box"><b>The checklist is declared at the opening</b><small>Thirty-one things a new product
+      must touch, architecture included, every one of them open on day one. A checklist that appears in
+      pieces never says what is missing. An <code>open</code> entry blocks delivery; a <code>deferred</code>
+      one does not.</small></div>
+  </div>
+  <p>What comes out is a <strong>package that knows nothing about ASF</strong>: no <code>RF-XX</code>, no
+  <code>EpicNNN</code>, no path. Turning one into ASF artifacts is a separate agent — named in the catalogue,
+  not yet built. An elicitation agent that knows its target format writes toward it, and the first thing lost
+  is the question nobody asked because the template had no field for it.</p>
+</section>
+
+<section>
+  <h2>New in v8.3</h2>
+  <h3>One fact, one place</h3>
+  <p>Until v8.2 a status could be written in several places — <code>state.json</code>, the requirement index
+  in <code>product.md</code>, the header of an epic file — with a precedence rule saying which one won.
+  <strong>A rule about which copy wins is only necessary because there are copies.</strong> v8.3 removes
+  them.</p>
+  <div class="grid">
+    <div class="box"><b>State in one file, text in the others</b><small>Statuses, planning decisions and
+      references live in <code>state.json</code>; the Markdown files keep titles, descriptions and acceptance
+      criteria, and their frontmatter is strict. Each reference is stored once, by the side that receives
+      it.</small></div>
+    <div class="box"><b>Derived, never stored</b><small>Velocity, burndown, the points of an epic, the RFs
+      it covers, Quality Gate L1: computed from <code>state.json</code> and the git history. A stored number
+      can fall behind; a computed one cannot.</small></div>
+    <div class="box"><b>A signature lives on what it signs</b><small>An epic is done when a person signs it
+      in <code>state.json</code>; each L0/L1 file has its own signature; a non-functional requirement is
+      verified by someone, at a date.</small></div>
+    <div class="box"><b>Every artifact has a home</b><small>Functional and non-functional requirements in
+      <code>requirements/</code>, epics, tasks — and, new, <code>bugs/</code> and <code>stories/</code> — each
+      with its id form and a fixed frontmatter.</small></div>
+  </div>
+  <div class="note"><strong>The schema is the contract.</strong> <code>.asf/schema/state.schema.json</code>
+  is written in the standard and tools follow it; a key it does not list is an error.
+  <code>tools/validate-stack.py</code> checks the schemas and the rules across files, and a project runs it
+  in CI. A v8.2 project migrates once, with <code>tools/migrate-to-8.3.py</code>; the steps are in
+  <code>CHANGELOG.md</code>.</div>
+</section>
+
+<section>
+  <h2>The cycle</h2>
+  <h3>SCRUM-AI™ — one week, with explicit human gates</h3>
+  <table>
+    <tr><th>Ceremony</th><th>When</th><th>The gate</th></tr>
+    <tr><td><b>Sprint Planning</b><br><small>PM presents candidate epics; the Epic Agent decomposes them
+      into tasks with AC and prompt seeds</small></td><td>Day 1, ~2h</td>
+      <td><span class="tag H">H</span> Dev Lead approves every Task.md before commit</td></tr>
+    <tr><td><b>Sprint Execution</b><br><small>Developers drive the code agents; CI runs tests and security
+      scans; the Commit Gate reports on every push</small></td><td>Days 2–5</td>
+      <td><span class="tag H">H</span> Dev Lead signs every MR before merge</td></tr>
+    <tr><td><b>Sprint Review</b><br><small>Demonstration on real staging, not a mock-up</small></td>
+      <td>Day 5</td><td><span class="tag H">H</span> PM signs acceptance before release freeze</td></tr>
+    <tr><td><b>Retrospective</b><br><small>Patterns found in one project are promoted into the Prompt
+      Stack</small></td><td>Day 5</td>
+      <td><span class="tag H">H</span> Dev Lead decides every promotion</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Governance</h2>
+  <h3>Decision Records — nothing is resolved silently</h3>
+  <p>When an agent meets a non-obvious architectural choice, an ambiguous requirement, or a conflict
+  between Prompt Stack layers, it writes a <strong>Decision Record before proceeding</strong>: the trigger,
+  the options with their trade-offs, the decision, the impact, and whether a gate is required.</p>
+  <p>A DR is created with status <code>pending</code>. <strong>An agent never writes
+  <code>approved</code></strong> — ratification is Dev Lead territory. Where the record says a gate is
+  required, work halts until it is signed.</p>
+  <div class="note"><strong>Why it is in the operating model and not in a style guide:</strong> the
+  expensive failure in an AI-augmented team is not a wrong decision, it is a decision nobody knows was
+  taken. Six months later the code shows what was chosen and nothing shows why, or that there was a
+  choice at all.</div>
+</section>
+
+<section>
+  <h2>Engagement</h2>
+  <h3>What the client has at the end</h3>
+  <div class="grid">
+    <div class="box"><b>30 days — first delivery</b><small>Real output, tested, deployed to staging. Not a
+      prototype. Possible because Startup initialises the Prompt Stack before the first sprint.</small></div>
+    <div class="box"><b>1 week — sprint</b><small>Sustainable because the bottleneck moves from execution
+      to validation. Conditional on L1 being current <em>before</em> planning, not during it.</small></div>
+    <div class="box"><b>12 months — the factory</b><small>Documented methodology, developers trained on the
+      agents, a configured Prompt Stack, the code and the IP. Not a finished project: a system that keeps
+      working.</small></div>
+  </div>
+  <p>The Dev Lead is the one role agents do not scale — the guardian of coherence, and the signature on
+  every technical gate.</p>
+</section>
+
+<section>
+  <h2>Reference</h2>
+  <h3>Where the normative text lives</h3>
+  <table>
+    <tr><th>Topic</th><th>File</th></tr>
+    <tr><td>Factory model, agent catalogue, roles, Quality Gate L1, vocabulary</td><td><code>asf-overview.md</code></td></tr>
+    <tr><td><code>state.json</code>, its rules and the artifacts</td><td><code>product.md</code> · <code>.asf/schema/state.schema.json</code> · <code>.asf/schema/frontmatter.schema.json</code></td></tr>
+    <tr><td>Validating a project</td><td><code>tools/validate-stack.py</code></td></tr>
+    <tr><td>Upgrading a project from v8.2</td><td><code>CHANGELOG.md</code> (v8.3 entry) · <code>tools/migrate-to-8.3.py</code></td></tr>
+    <tr><td>Universal agent context — the entry point</td><td><code>AGENTS.md</code> (L0)</td></tr>
+    <tr><td>Agent specifications and their importable definitions</td><td><code>agents/&lt;agent&gt;/</code></td></tr>
+    <tr><td>Action codes and primitives</td><td><code>.asf/action-catalog.json</code></td></tr>
+    <tr><td>Commit Gate payload, report, checklist</td><td><code>triggers/schema/</code> · <code>.asf/schema/</code></td></tr>
+    <tr><td>The model explained in full, as a document</td><td><code>official/</code></td></tr>
+    <tr><td>Pitch package, coverage profiles</td><td><code>.asf/schema/pitch-package.schema.json</code> ·
+      <code>.asf/pitch-checklists/</code></td></tr>
+    <tr><td>Decisions about the standard, how it is versioned, how a release is cut</td><td><code>CHANGELOG.md</code></td></tr>
+  </table>
+  <p class="foot">This document is generated from the standard. Where it disagrees with the files above,
+  <strong>the files are right</strong> — and the disagreement is a defect to be reported.</p>
+</section>
+
+<div class="foot">ASF™ Augmented Software Factory · Better Innovation Technologies · bit-farm.it · v8.3 ·
+Confidential © 2026</div>
+
+</div>
+</body>
+</html>
