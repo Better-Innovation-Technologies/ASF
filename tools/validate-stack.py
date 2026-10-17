@@ -8,6 +8,8 @@ Checks:
   2. every artifact frontmatter validates against `frontmatter.schema.json` (`$defs` by folder);
   3. every cited id (R-, ADR-, DR-, RF-, RNF-, BUG-, US-, Epic, Task) is defined;
   4. every path cited in a .md exists;
+  4b. every `attachments` entry is a flat name under docs/attachments/, under 5 MB, cited by
+     someone; every `links` entry is an http(s) URL (never opened: no check uses the network);
   5. every `file` -> *Title* reference points to a heading that exists;
   6. the cross-file rules of state.json that the schema cannot express: unique ids, resolving
      references, task id prefixes, sprint/roadmap/epic membership, dependency graphs, repos and
@@ -712,6 +714,59 @@ for p in docs_md:
             target = base / tail if tail else base
             if not target.exists():
                 err(f"{rel(p)}:{n}", f"cited path does not exist: {cand}")
+
+# ---------------------------------------------------------------- 4b. attachments and links
+
+# Attachments live in git, in one flat folder: the same file may be cited by several artifacts, so
+# there is nowhere else to put it. An entry is a pointer and nothing else — no size, no media type:
+# both are known when the file is served, and written in an artifact they would age. Check 4 already
+# proves the file exists; only what it cannot know is below.
+ATTACH_DIR_REL = "docs/attachments"
+ATTACH_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
+ATTACH_MAX_BYTES = 5 * 1024 * 1024  # per file: an error
+ATTACH_DIR_SOFT_BYTES = 50 * 1024 * 1024  # per folder: a warning, every clone pays for it
+
+attachments_dir = CITED_PREFIXES["docs"] / "attachments"
+cited_attachments: set[str] = set()
+
+for p, _defname, fm, _ in artifacts:
+    for entry in str_list(fm.get("attachments")):
+        if not entry.startswith(ATTACH_DIR_REL + "/"):
+            err(rel(p), f"frontmatter `attachments`: {entry} is outside {ATTACH_DIR_REL}/ "
+                        f"- move the file there and cite it as {ATTACH_DIR_REL}/<name>")
+            continue
+        name = entry[len(ATTACH_DIR_REL) + 1:]
+        if not ATTACH_NAME_RE.match(name):
+            err(rel(p), f"frontmatter `attachments`: {entry} has an unusable name - rename "
+                        f"the file to match ^[a-z0-9][a-z0-9._-]*$ (one flat name, lower case, "
+                        f"no spaces: a cited path stops at a space, and the check would read "
+                        f"it truncated)")
+            continue
+        cited_attachments.add(name)
+    for entry in str_list(fm.get("links")):
+        if not entry.startswith(("http://", "https://")):
+            err(rel(p), f"frontmatter `links`: {entry} is not an http(s) URL - write the whole URL, "
+                        f"scheme included; a file kept in git belongs to `attachments`, not here "
+                        f"(no check ever reaches the network to open a link)")
+
+if attachments_dir.is_dir():
+    total_bytes = 0
+    for f in sorted(attachments_dir.iterdir()):
+        if not f.is_file():
+            warn(f"{ATTACH_DIR_REL}/{f.name}", f"{ATTACH_DIR_REL}/ is flat, so nothing inside this "
+                 f"folder can be cited: move the files up one level")
+            continue
+        size = f.stat().st_size
+        total_bytes += size
+        if size > ATTACH_MAX_BYTES:
+            err(f"{ATTACH_DIR_REL}/{f.name}", f"attachment of {size / 1048576:.1f} MB, over the "
+                f"5 MB limit: shrink it, or keep it outside git and cite the URL in `links`")
+        if f.name not in cited_attachments:
+            warn(f"{ATTACH_DIR_REL}/{f.name}", "orphan attachment: no artifact cites it in its "
+                 "`attachments` - cite it or delete it")
+    if total_bytes > ATTACH_DIR_SOFT_BYTES:
+        warn(ATTACH_DIR_REL, f"the folder holds {total_bytes / 1048576:.0f} MB, over the ~50 MB "
+             f"advised: every clone pays for it, move what is not evidence outside git")
 
 # ---------------------------------------------------------------- 5. section references
 

@@ -1,6 +1,6 @@
 # product.md — {project_name}
 
-> **ASF v8.4** · 2026-10-05 · _Instructions from a catalog_ · Francesco Bellifemine
+> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: PM (Dev Lead gate)**
 > The product identity document — the first source of truth for AI agents and the ASF™ team.
@@ -253,21 +253,22 @@ Each artifact tracked in `state.json` has one `.md` file, in one folder per kind
 
 | Artifact | File | Frontmatter (`*` = required) | Body |
 |---|---|---|---|
-| RF | `docs/requirements/RF-XX.md` — or only its row in the RF index (§7) | `id`*, `title`*, `owner` | description, BDD AC |
-| RNF | `docs/requirements/RNF-XX.md` (RNF live next to the RF; there is no `nfr/` folder) | `id`*, `title`*, `category`, `metric`, `threshold`, `verification`*, `owner` | the requirement, how it is measured, its scope |
-| Epic | `docs/epics/EpicXXX.md` | `id`*, `title`* | objective, scope, epic AC |
-| Task | `docs/tasks/Task.EpicXXX.N.md` | `id`*, `title`*, `adr`*, `rules`*, `reads`* (lists, possibly empty) | context, BDD AC, prompt seed |
-| Bug | `docs/bugs/BUG-XXX.md` | `id`*, `title`*, `area`, `found_in`, `reported_by`, `reported_at`, `regression_test` | symptom, cause, expected behaviour, regression test |
-| User story | `docs/stories/US-XXX.md` | `id`*, `title`*, `actor`, `owner` | "As a … I want … so that …" |
+| RF | `docs/requirements/RF-XX.md` — or only its row in the RF index (§7) | `id`*, `title`*, `owner`, `attachments`, `links` | description, BDD AC |
+| RNF | `docs/requirements/RNF-XX.md` (RNF live next to the RF; there is no `nfr/` folder) | `id`*, `title`*, `category`, `metric`, `threshold`, `verification`*, `owner`, `attachments`, `links` | the requirement, how it is measured, its scope |
+| Epic | `docs/epics/EpicXXX.md` | `id`*, `title`*, `attachments`, `links` | objective, scope, epic AC |
+| Task | `docs/tasks/Task.EpicXXX.N.md` | `id`*, `title`*, `adr`*, `rules`*, `reads`* (lists, possibly empty), `attachments`, `links` | context, BDD AC, prompt seed |
+| Bug | `docs/bugs/BUG-XXX.md` | `id`*, `title`*, `area`, `found_in`, `reported_by`, `reported_at`, `regression_test`, `attachments`, `links` | symptom, cause, expected behaviour, regression test |
+| User story | `docs/stories/US-XXX.md` | `id`*, `title`*, `actor`, `owner`, `attachments`, `links` | "As a … I want … so that …" |
 
 - RNF `category`: `performance` · `security` · `reliability` · `usability` · `maintainability` · `compliance` · `observability` · `portability` · `cost`. Bug `area`: a list of layers (`fe` · `be` · `api` · `core` · `worker` · `deployer` · `notify` · `infra` · `docs`); `reported_at` is a date. Story `actor`: a role, not a person.
+- **`attachments` and `links`** (both optional, since 8.5): `attachments` cites files committed in the flat folder `docs/attachments/` — flat because one file may be cited by several artifacts — as pointers in the form `docs/attachments/<name>`, the name lower case and without spaces (the cited-path check stops at a space and would read the path truncated). No size and no media type: both are known when the file is served, and written in an artifact they would age. A mockup attached to a task is evidence for whoever writes the code, declared like the files in `reads` — an agent opens png, jpg, webp and pdf natively. Allowed extensions, a closed list: `md` `txt` `csv` `json` `yaml` `yml` `html` `css` `js` `pdf` `docx` `xlsx` `png` `jpg` `jpeg` `webp` `gif` `svg` `fig`; not archives (`zip`, `tar`, `gz`: they hide their contents from every check), not media (`mp4`, `mp3`, `wav`, `webm`: that is the object-storage class), and never git-LFS (a mirror read gets the pointer, not the file). Over 5 MB in one file is an error, about 50 MB in the folder a warning, a file nobody cites a warning (orphan). `links` holds http(s) URLs of material that lives outside — a Figma project, a Miro board — and no tool ever reaches the network to check them; a downloaded `.fig` is an ordinary attachment, while the URL of the Figma project is a `links` entry. **Neither field is in `state.json`:** both are artifact text, like the title.
 - **Frontmatter is strict**, like `state.json`: any other key (a `status`, an `epic`, a `priority`…) is an error. The frontmatter `id` equals the file name; the first H1 is exactly `# <id> — <title>` (em dash).
-- **No `.md` repeats state or references:** no `**Status**` or `**Layer**` lines, no `Validated by` / `Area` / `RF covered` / `Dependencies` header lines, no "RF in scope" tables, no lists of a story's requirements, no ✅ or status columns. KStudio renders the links in both directions.
+- **No `.md` repeats state or references:** no `**Status**` or `**Layer**` lines, no `Validated by` / `Area` / `RF covered` / `Dependencies` header lines, no "RF in scope" tables, no lists of a story's requirements, no ✅ or status columns. KStudio renders the cross-references in both directions.
 - **AC:** RF and Task files have at least one AC, numbered `**AC-01**`, `**AC-02**`… (unique, progressive), as checkbox lines in BDD form. The checkboxes stay: they are AC text. A task AC that implements an RF AC cites it as `` `RF-XX/AC-NN` ``, and that RF must be in the task's `rf_refs`.
-- ADR and planning-archive frontmatter is unchanged: they are not in `state.json` and keep their own status.
+- ADR and planning-archive frontmatter is otherwise unchanged: they are not in `state.json` and keep their own status. An ADR too may carry `attachments` and `links`; the planning archive may not.
 - Every artifact in `state.json` has its file and every artifact file has its `state.json` entry (an RF may have only its index row).
 
-**Validation.** `tools/validate-stack.py` (each project copies it into the `tools/` folder of its docs repo and runs it in CI) validates `state.json` and every frontmatter against their schemas, plus the cross-file rules: unique ids; every reference resolves; a task id starts with its epic id; an epic in at most one sprint and one roadmap stage; a story in at most one epic; no dependency cycles between epics or between tasks; repo names unique and every `files` glob starting with one; `prompt_stack` files exist; artifact files ↔ `state.json` entries; frontmatter `id` = file name; H1 = `# <id> — <title>`; the RF index of `product.md` = the RFs of `state.json`. Usage and exit codes: `AGENTS.md` (JSON contracts & validation).
+**Validation.** `tools/validate-stack.py` (each project copies it into the `tools/` folder of its docs repo and runs it in CI) validates `state.json` and every frontmatter against their schemas, plus the cross-file rules: unique ids; every reference resolves; a task id starts with its epic id; an epic in at most one sprint and one roadmap stage; a story in at most one epic; no dependency cycles between epics or between tasks; repo names unique and every `files` glob starting with one; `prompt_stack` files exist; artifact files ↔ `state.json` entries; frontmatter `id` = file name; H1 = `# <id> — <title>`; the RF index of `product.md` = the RFs of `state.json`; every `attachments` entry flat, named and under 5 MB, with a warning for a file in `docs/attachments/` that no artifact cites, and every `links` entry an http(s) URL in shape — never opened. Usage and exit codes: `AGENTS.md` (JSON contracts & validation).
 
 ### 12.4 Requirements — RF and RNF
 

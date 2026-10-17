@@ -2,7 +2,7 @@
   "$schema": "https://git.bit-farm.it/bit-farm-public/pico/-/raw/main/schema/pico-instructions-catalog.schema.json",
   "package": "asf-instructions-catalog/1",
   "version": "1.0.0",
-  "asf_version": "8.4",
+  "asf_version": "8.5",
   "header": "header.md",
   "project_rules": "project-rules.md",
   "host_placeholders": [
@@ -1017,7 +1017,7 @@
     {
       "id": "asf-method",
       "category": "method",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "title": "ASF method (state.json 2.0.0)",
       "summary": "ASF 8.3 method for projects whose .asf/state.json has meta.schema_version 2.x (strict state.json, after the 8.3 migration).",
       "file": "modules/method/asf-method.md",

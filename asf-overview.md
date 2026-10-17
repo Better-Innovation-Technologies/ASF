@@ -1,6 +1,6 @@
 # ASF™ Overview — reference, load on demand
 
-> **ASF v8.4** · 2026-10-05 · _Instructions from a catalog_ · Francesco Bellifemine
+> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
 
 > **This file is NOT a layer of the Prompt Stack.**
 > Load it only when you need to understand the factory model itself: the agent

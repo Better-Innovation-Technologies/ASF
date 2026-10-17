@@ -75,6 +75,88 @@ looking.
 
 ---
 
+## v8.5 — 2026-10-17
+
+Every artifact may carry **attachments and links**, and a project may start with empty collections.
+
+### D-8.22 — An artifact may point at a file, and at something that lives outside
+
+**Context.** An RF is agreed on a mockup, a task is implemented against a design, a bug is reported
+with a screenshot. Until 8.4 the standard had nowhere to put them. The `.md` could name a path in
+prose, which no field declares and no check reads as evidence, and `state.json` deliberately stopped
+carrying `attachments` and `links` in 8.3 — correctly, because a reference to material belongs where
+the text is, not in the state. So the material stayed in a chat thread, and whoever wrote the code
+worked without it.
+
+**Decision.** Two optional fields on all seven artifact `$defs` of `frontmatter.schema.json` — `rf`,
+`rnf`, `epic`, `task`, `bug`, `us` and `adr`, the last for symmetry, since it is the one definition
+without `additionalProperties: false`.
+
+`attachments` holds files committed with the repository, in one flat folder, `docs/attachments/`.
+Flat, because the same attachment may be cited by several artifacts and there is no folder that
+belongs to all of them. An entry is a pointer and nothing else: no size and no media type, because
+both are known at the moment the file is served, and written in an artifact they would age. The name
+is lower case and without spaces (`^[a-z0-9][a-z0-9._-]*$`), because the validator's cited-path
+check stops at a space and would report a name holding one as a truncated path that does not exist.
+Allowed extensions, a closed list: `md` `txt` `csv` `json` `yaml` `yml` `html` `css` `js` `pdf`
+`docx` `xlsx` `png` `jpg` `jpeg` `webp` `gif` `svg` `fig`. Archives (`zip`, `tar`, `gz`) are
+excluded because they hide their contents from every check that reads the repository; media (`mp4`,
+`mp3`, `wav`, `webm`) are the object-storage class and do not belong in git. No git-LFS either: a
+mirror read gets the pointer instead of the file. Over 5 MB in one file is an error, about 50 MB in
+the folder a warning, and a file in the folder that no artifact cites a warning — an orphan.
+
+`links` holds http(s) URLs of material that lives outside: a Figma project, a Miro board. **No tool
+ever reaches the network to check them** — not in CI, not anywhere; only their shape is validated. A
+downloaded `.fig` is an ordinary attachment, while the URL of the Figma project is a `links` entry.
+
+**Consequences.** A mockup attached to a task is evidence for whoever writes the code, declared like
+the files in `reads:`; a coding agent opens png, jpg, webp and pdf natively, so an attachment is not
+decoration for humans. `tools/validate-stack.py` gains one check, 4b, which adds only what the
+cited-path check cannot know: that the entry is under `docs/attachments/`, that the name is usable,
+the 5 MB error, the folder warning, the orphan warning, and the shape of a link. Both fields live in
+the artifact frontmatter and **nowhere else: they are not in `state.json`**, and `state.schema.json`
+gains nothing — the names `attachments` and `links` that 8.3 removed from the state stay removed,
+and this decision does not reverse that one. `instructions.md` §16, `product.md` §12.3 and the
+`asf-method` instructions module carry the two fields; the legacy module
+`instructions/modules/method/asf-method-kstudio.md`, which the catalog still ships as the default,
+describes projects whose `state.json` is 1.x and stays at 8.3, templates included.
+
+### D-8.23 — A project may be born with nothing in it
+
+**Context.** A project created from the standard gets a `state.json` whose `epics` and
+`requirements.functional` are empty — there is nothing else it could get — and, in the same commit,
+a schema that rejects it: both carried `minItems: 1`. The first consolidation, the only act that
+would create the first epic and the first requirement, is blocked by the emptiness it exists to
+fill. Found on a live project on 2026-10-17.
+
+**Decision.** `minItems: 1` is removed from `properties.epics` and from
+`properties.requirements.properties.functional` in `.asf/schema/state.schema.json`. Both keys stay
+`required`: the collection must be present, and may be empty. Nothing else moves — every other
+`minItems` in the schema stands, and so does the rule that an optional array is absent rather than
+empty. These two are not optional: they are the spine of the project, and an empty spine is a stage
+of its life, not an omission.
+
+**Consequences.** A new project validates from its first commit, so the validator is usable while
+the stack is being filled instead of only after it is full. Nothing that validated before stops
+validating: this is a loosening. An empty `epics[]` is now a legal state, so whatever reads
+`state.json` — a report, a dashboard, a derived count — handles zero epics and zero functional
+requirements rather than assuming one.
+
+### Upgrade note — v8.5
+
+- **Must** — nothing.
+- **May** — attach material to any artifact: take the new `.asf/schema/frontmatter.schema.json` and
+  `tools/validate-stack.py`, create `docs/attachments/`, and cite a file as
+  `docs/attachments/<name>` in the artifact's `attachments`, a URL in its `links`. Also take the new
+  `.asf/schema/state.schema.json` if the project wants an empty `epics[]` or
+  `requirements.functional[]` to validate — a project whose collections are already populated needs
+  nothing.
+- **Stops being true** — nothing. In particular the v8.3 decision stands: `attachments` and `links`
+  are not keys of `state.json`, and nothing here adds them back to `state.schema.json` — they are
+  artifact frontmatter, which is text, and the state knows nothing about them.
+
+---
+
 ## v8.4 — 2026-10-05
 
 `instructions.md` can be **composed from a catalog of modules** instead of being filled in by hand.

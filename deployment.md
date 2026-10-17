@@ -1,6 +1,6 @@
 # deployment.md — {project_name}
 
-> **ASF v8.4** · 2026-10-05 · _Instructions from a catalog_ · Francesco Bellifemine
+> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead + Infrastructure Agent**
 > This file is the human-readable operational runbook.

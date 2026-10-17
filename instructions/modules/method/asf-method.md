@@ -277,6 +277,11 @@ exactly `# <id> — <title>` (em dash), with the frontmatter title. Statuses, pr
 references live in `state.json`, never in the file. Folders, ids and lifecycle → `product.md` §12.
 Ids below are placeholders: write the real id, which is also the file name. AC carry a bold,
 progressive id (`**AC-01**`, `**AC-02**`, …); RF and Task files need at least one.
+Since 8.5 every artifact may also carry `attachments` — files committed in the flat
+`docs/attachments/` folder, cited as pointers: a mockup attached to a task is evidence for
+whoever writes the code, declared like the files in `reads:` — and `links`, http(s) URLs of what
+lives outside (Figma, Miro), which no check ever opens. Both are artifact text, not state: they
+never appear in `state.json`.
 
 ### 16.1 RF-XX.md (`requirements/`)
 
@@ -285,6 +290,10 @@ progressive id (`**AC-01**`, `**AC-02**`, …); RF and Task files need at least 
 id: RF-XX                     # RF-NN, same as the file name
 title: Search projects by name
 owner: Name Surname <name.surname@example.com>   # optional
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # RF-XX — Search projects by name
@@ -314,6 +323,10 @@ metric: p95 latency of GET /projects            # optional
 threshold: "< 300 ms"         # optional
 verification: k6 load test in the staging pipeline, at every release   # required
 owner: Name Surname <name.surname@example.com>   # optional
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # RNF-XX — Project list latency
@@ -343,6 +356,10 @@ id: US-XXX                    # US-NNN, same as the file name
 title: Find a project quickly
 actor: Project manager        # optional · the «as a …»: a role, not a person
 owner: Name Surname <name.surname@example.com>   # optional
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # US-XXX — Find a project quickly
@@ -359,6 +376,10 @@ its status is derived from its RFs; the epic that delivers it cites it in `user_
 ---
 id: EpicXXX                   # EpicNNN, same as the file name
 title: Project discovery
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # EpicXXX — Project discovery
@@ -400,6 +421,10 @@ rules: [R-XX]                 # rules (R-NN) the task must follow — [] if none
 reads:                        # files to read before starting — [] if none
   - docs/.asf/architecture.json
   - be/app/projects/service.py
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # Task.EpicXXX.N — Project search endpoint
@@ -442,6 +467,10 @@ found_in: v0.4.1 on staging   # optional · release, environment or commit that 
 reported_by: Name Surname <name.surname@example.com>   # optional
 reported_at: 2026-10-01       # optional · YYYY-MM-DD
 regression_test: be/tests/integration/test_projects.py::test_archived_hidden   # optional · fails before the fix, passes after
+attachments:                  # optional · files committed in docs/attachments/ (flat folder)
+  - docs/attachments/<name>.png
+links:                        # optional · http(s) URLs of material outside git, never fetched
+  - https://www.figma.com/design/<id>/<name>
 ---
 
 # BUG-XXX — Archived projects appear in the project list

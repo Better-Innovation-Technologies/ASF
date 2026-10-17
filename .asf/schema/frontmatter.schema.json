@@ -80,6 +80,26 @@
           "type": "string",
           "minLength": 2,
           "description": "Who answers for the requirement."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -132,6 +152,26 @@
           "type": "string",
           "minLength": 2,
           "description": "Who answers for the requirement."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -152,6 +192,26 @@
           "type": "string",
           "minLength": 3,
           "description": "Title; the first H1 of the file is `# <id> — <title>`."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -197,6 +257,26 @@
             "minLength": 3
           },
           "description": "Files to read before starting."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -240,6 +320,26 @@
         "regression_test": {
           "type": "string",
           "description": "The test that fails before the fix and passes after it. A bug closed without one is closed on trust."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -269,6 +369,26 @@
           "type": "string",
           "minLength": 2,
           "description": "Who answers for the story."
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       }
     },
@@ -340,6 +460,26 @@
           "items": {
             "$ref": "#/$defs/dr_id"
           }
+        },
+        "attachments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^docs/attachments/[a-z0-9][a-z0-9._-]*$"
+          },
+          "description": "Optional, since ASF 8.5. Files committed with the repository in the flat folder docs/attachments/ — flat because the same attachment may be cited by several artifacts. Pointers only: no size and no media type, because both are known when the file is served and in a file they would age. The name allows no spaces, since the validator's cited-path check stops at a space and would report a truncated path that does not exist."
+        },
+        "links": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://"
+          },
+          "description": "Optional, since ASF 8.5. http(s) URLs of material that lives outside the repository — a Figma project, a Miro board. Never validated over the network: no tool reaches the network to check them. A downloaded .fig file is an ordinary attachment; the link to the Figma project is an entry here."
         }
       },
       "allOf": [

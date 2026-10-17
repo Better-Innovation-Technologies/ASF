@@ -260,7 +260,6 @@
     },
     "epics": {
       "type": "array",
-      "minItems": 1,
       "uniqueItems": true,
       "items": {
         "type": "object",
@@ -479,7 +478,6 @@
       "properties": {
         "functional": {
           "type": "array",
-          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "object",
