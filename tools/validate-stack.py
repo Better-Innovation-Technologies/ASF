@@ -725,6 +725,14 @@ ATTACH_DIR_REL = "docs/attachments"
 ATTACH_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 ATTACH_MAX_BYTES = 5 * 1024 * 1024  # per file: an error
 ATTACH_DIR_SOFT_BYTES = 50 * 1024 * 1024  # per folder: a warning, every clone pays for it
+#: The closed list of allowed extensions (`DR-0141`). Closed because git is the warehouse: a file
+#: can be committed by hand, without passing the upload route that also checks this, and then this
+#: is the only check there is. Archives are out because they hide their contents from every check
+#: that reads the repository, media because they are the object-storage class and do not belong in
+#: git — the reason is written here so that nobody adds one back believing it an oversight.
+ATTACH_ALLOWED_EXTENSIONS = frozenset(
+    "md txt csv json yaml yml html css js pdf docx xlsx png jpg jpeg webp gif svg fig".split()
+)
 
 attachments_dir = CITED_PREFIXES["docs"] / "attachments"
 cited_attachments: set[str] = set()
@@ -741,6 +749,14 @@ for p, _defname, fm, _ in artifacts:
                         f"the file to match ^[a-z0-9][a-z0-9._-]*$ (one flat name, lower case, "
                         f"no spaces: a cited path stops at a space, and the check would read "
                         f"it truncated)")
+            continue
+        suffix = name.rsplit(".", 1)[-1] if "." in name else ""
+        if suffix not in ATTACH_ALLOWED_EXTENSIONS:
+            err(rel(p), f"frontmatter `attachments`: {entry} is not an allowed format "
+                        f"({suffix or 'no extension'}) - the list is closed: "
+                        f"{' '.join(sorted(ATTACH_ALLOWED_EXTENSIONS))}. An archive hides its "
+                        f"contents from every check that reads the repo, and a media file belongs "
+                        f"in object storage, not in git")
             continue
         cited_attachments.add(name)
     for entry in str_list(fm.get("links")):
