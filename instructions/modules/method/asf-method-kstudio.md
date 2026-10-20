@@ -154,7 +154,7 @@ When `tasks_done == tasks_total`:
 | `state.json → user_stories.items[]` (v8.3) | `status` recomputed from the RF it points to — derived, never typed in |
 | `state.json → nfrs.items[]` (v8.3) | `status`, `verified_at`, `verified_by` after a verification run. Never `done` |
 | `docs/bugs/BUG-NNN.md` (v8.3) | `status: done` only with the regression test named in the file |
-| `docs/nfr/RNF-NNN.md` (v8.3) | `status` and `verified_at` after each verification — including back to `violated` |
+| `docs/requirements/RNF-NNN.md` (v8.3) | `status` and `verified_at` after each verification — including back to `violated` |
 
 **Conflict resolution priority:** `state.json` > `product.md` > `RF-XX.md` > `EpicXXX.md`.
 
@@ -258,7 +258,7 @@ Do not modify anything — proposal for Dev Lead approval.
 
 **A user story.** The PM writes `docs/stories/US-NNN.md` before or during Planning, and it must point at **at least one** `RF-XX` — that is what turns a need into something the factory can build and test. The epic's «User story» section then lists references (`→ US-001, US-002`), and the story text lives in one place only.
 
-**A non-functional requirement.** Declared once, in `docs/nfr/RNF-NNN.md`, with `scope: system` unless it genuinely belongs to a single epic. It is **verified, not completed**: every verification run writes `status` and `verified_at`, and a run that finds it `violated` opens a `BUG-NNN` — it does not reopen the epic delivered under it and does not change the requirement. A system-scope RNF is part of the DoD of every task that could break it, which is why §15.4bis lists it below.
+**A non-functional requirement.** Declared once, in `docs/requirements/RNF-NNN.md`, with `scope: system` unless it genuinely belongs to a single epic. It is **verified, not completed**: every verification run writes `status` and `verified_at`, and a run that finds it `violated` opens a `BUG-NNN` — it does not reopen the epic delivered under it and does not change the requirement. A system-scope RNF is part of the DoD of every task that could break it, which is why §15.4bis lists it below.
 
 **DoD additions (v8.3), on top of §15.4bis:**
 
@@ -550,7 +550,7 @@ person used — that is the part a requirement cannot carry.]
 
 ### 16.7 RNF-NNN.md (v8.3)
 
-`docs/nfr/RNF-NNN.md` · frontmatter `$defs/rnf` · id `^RNF-[0-9]{2,3}$`
+`docs/requirements/RNF-NNN.md` · frontmatter `$defs/rnf` · id `^RNF-[0-9]{2,3}$`
 
 ````markdown
 ---

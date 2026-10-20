@@ -13,7 +13,8 @@ Checks:
   5. every `file` -> *Title* reference points to a heading that exists;
   6. the cross-file rules of state.json that the schema cannot express: unique ids, resolving
      references, task id prefixes, sprint/roadmap/epic membership, dependency graphs, repos and
-     `files` globs, Prompt Stack files, artifact files <-> state.json entries, frontmatter id and
+     `files` globs, project layers (D-8.24: architecture.json `path`, undeclared `area`/`affects`
+     warn), Prompt Stack files, artifact files <-> state.json entries, frontmatter id and
      H1, the RF index of product.md;
   7. ACs have unique, progressive ids, and `RF-XX/AC-NN` references resolve;
   8. ADR supersession is reciprocal; RF statuses agree with the tasks citing them (warnings).
@@ -592,6 +593,39 @@ for epic_where, task in tasks:
             err(STATE_REL, f"{epic_where}.tasks[{sid(task)}].files: {glob!r} must start with a "
                            f"repo name of project.repos ({known})")
 
+# ---------------------------------------------------------------- 6f-bis. project layers
+# A layer is a node of the project tree that one agent can own (D-8.24). The names are the
+# project's: every repo of project.repos, and every architecture.json component with a `path`
+# inside one of them. A name cited but not declared is a warning, not an error, so a project
+# that has not declared its paths yet keeps validating.
+
+ARCH_REL = "docs/.asf/architecture.json"
+layers: dict[str, str] = {name: name for name in repo_urls}
+arch_doc = json_docs.get(ASF / "architecture.json")
+for comp in dicts(arch_doc.get("components")) if isinstance(arch_doc, dict) else []:
+    path = comp.get("path")
+    if not isinstance(path, str) or not path:
+        continue
+    cid = str(comp.get("id"))
+    if path.split("/", 1)[0] not in repo_urls:
+        known = ", ".join(sorted(repo_urls)) or "none declared"
+        err(ARCH_REL, f"components[{cid}].path: {path!r} must start with a repo name of "
+                      f"project.repos ({known})")
+        continue
+    if cid in layers and layers[cid] != path:
+        err(ARCH_REL, f"components[{cid}].path: layer {cid!r} already means {layers[cid]!r}")
+        continue
+    layers[cid] = path
+if layers:
+    declared_layers = ", ".join(sorted(layers))
+    for p, _defname, fm, _ in artifacts:
+        for key in ("area", "affects"):
+            for value in str_list(fm.get(key)):
+                if value not in layers:
+                    warn(rel(p), f"{key}: layer {value!r} is not declared — give the component "
+                                 f"{value!r} a `path` in docs/.asf/architecture.json, or use one "
+                                 f"of: {declared_layers}")
+
 # ---------------------------------------------------------------- 6g. prompt stack files
 
 for entry in dicts(state.get("prompt_stack")):
@@ -697,18 +731,34 @@ for p in docs_md:
 
 # ---------------------------------------------------------------- 4. cited paths
 
+def module_lines(text: str) -> set[int]:
+    out, inside = set(), False
+    for i, line in enumerate(text.splitlines(), 1):
+        s = line.strip()
+        if s.startswith("<!-- asf:module"):
+            inside = True
+        elif s.startswith("<!-- /asf:module"):
+            inside = False
+        elif inside:
+            out.add(i)
+    return out
+
+
 for p in docs_md:
     if p == ARCHIVE:
         continue
+    skip = module_lines(texts[p])
     for n, line in enumerate(texts[p].splitlines(), 1):
+        if n in skip:
+            continue
         for cand in sorted(set(PATH_RE.findall(line))):
             cand = cand.rstrip(".,;:)`")
             if cand.endswith("/"):
                 continue  # a cited folder: git keeps no empty folder, it may legitimately be absent
             if any(c in cand for c in "<>*{}") or TEMPLATE_TOKEN_RE.search(cand):
                 continue  # pattern or template (`<id>`, `*`, `{fe,be}`, `YYYY-WW`)
-            if PLACEHOLDER.search(cand) or re.search(r"\bXX+\b|\.N\.md$", cand):
-                continue  # example form (RF-XX, EpicXXX, Task.EpicXX.N)
+            if PLACEHOLDER.search(cand) or re.search(r"\bXX+\b|NNN|\.N\.md$", cand):
+                continue  # example form (RF-XX, EpicXXX, Task.EpicXX.N, BUG-NNN)
             head, _, tail = cand.partition("/")
             base = CITED_PREFIXES[head]
             target = base / tail if tail else base

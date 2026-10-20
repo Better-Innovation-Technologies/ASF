@@ -1,6 +1,6 @@
 # product.md — {project_name}
 
-> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
+> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: PM (Dev Lead gate)**
 > The product identity document — the first source of truth for AI agents and the ASF™ team.

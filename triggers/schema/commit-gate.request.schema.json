@@ -29,8 +29,8 @@
         "name": { "type": "string" },
         "layer": {
           "type": "string",
-          "enum": ["fe", "be", "api", "infra", "docs"],
-          "description": "Which ASF layer repository this is. Checklist entries scope themselves by layer."
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Which project layer this repository is: its repo name (D-8.24). Checklist entries scope themselves by layer."
         },
         "default_branch": { "type": "string" }
       }

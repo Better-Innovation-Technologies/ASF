@@ -1,6 +1,6 @@
 # instructions.md — {project_name}
 
-> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
+> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead**
 > Development rules, code conventions and quality standards for this project.
@@ -313,8 +313,11 @@ Startup → Planning → Sprint Execution → Sprint Closure (Review + Retrospec
 9. Approved → Sprint Execution starts.
 
 **Task decomposition rules:**
-- 1 task = 1 layer (fe OR be OR api OR docs): every glob in its `files` starts with the same
-  repository name. The layer is not a field — it is read from `files`.
+- 1 task = 1 layer: every glob in its `files` starts inside the same layer. The layer is not a
+  field — it is read from `files`. **Layers belong to the project** (D-8.24): every repo of
+  `project.repos`, and every `.asf/architecture.json` component with a `path` (`core` →
+  `api/core`). A layer is what one agent can own while another works elsewhere, on another
+  machine: the finer the layers, the more tasks run in parallel.
 - `files` = the globs the task is expected to touch, relative to the folder holding the repos
   (`<repo>/<path>`, `<repo>/<folder>/**`; `<repo>` is the last segment of its URL in
   `project.repos`, without `.git`). Two tasks with no file in common and no `depends_on` between
@@ -707,7 +710,7 @@ it as `` `RF-NN/AC-NN` ``, and that RF must be in the task's `rf_refs`.
 ---
 id: BUG-XXX                   # BUG-NNN, same as the file name
 title: Archived projects appear in the project list
-area: [fe, be]                # optional · layers where it shows: fe | be | api | core | worker | deployer | notify | infra | docs
+area: [fe, be]                # optional · project layers where it shows (D-8.24): repo names or architecture.json components with a path
 found_in: v0.4.1 on staging   # optional · release, environment or commit that reproduces it
 reported_by: Name Surname <name.surname@example.com>   # optional
 reported_at: 2026-10-01       # optional · YYYY-MM-DD
@@ -891,8 +894,8 @@ Created by the Infrastructure Agent at bootstrap Block ③, at Group level.
 
 ### 18.1 Single source — `docs/instructions/<layer>.md`
 
-Each application layer has its own file, `docs/instructions/<layer>.md` (`<layer>` = `fe`, `be`,
-`api`). Owner: **Dev Lead** (L1, gated). Updated **at the end of every epic**
+Each application layer has its own file, `docs/instructions/<layer>.md` (`<layer>` = a project
+layer, e.g. `fe`, `be`, `api`). Owner: **Dev Lead** (L1, gated). Updated **at the end of every epic**
 (the same cadence as `product.md`) as rules and patterns emerge. Seven sections:
 
 ```markdown

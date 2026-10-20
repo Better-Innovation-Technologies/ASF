@@ -5,17 +5,9 @@
   "description": "ASF 8.3 — the YAML frontmatter of the markdown artifacts under docs/. It holds only what state.json does not have: id, title and descriptive fields. Statuses, references and priorities are in state.json, and what can be computed is stored nowhere. Strict like state.json: a key not listed is an error, so a `status` in an RF, RNF, epic, task, bug or story fails. An artifact validates against the $def matching its directory: requirements/RF-* -> rf, requirements/RNF-* -> rnf, epics/ -> epic, tasks/ -> task, bugs/ -> bug, stories/ -> us, decisions/ADR-* -> adr, decisions/planning-archive.md -> archive. ADRs and the archive are not in state.json and keep their own status. The root is a pure $defs container: callers select a def with {\"$ref\": \"#/$defs/<kind>\"}.",
   "$defs": {
     "layer": {
-      "enum": [
-        "fe",
-        "be",
-        "api",
-        "core",
-        "worker",
-        "deployer",
-        "notify",
-        "infra",
-        "docs"
-      ]
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "A layer of the project: a node of its tree that one agent can own while another works elsewhere. The names belong to the project, not to ASF: every repo of `state.json` project.repos is a layer, and so is every `.asf/architecture.json` component that declares a `path` (D-8.24)."
     },
     "rf_id": {
       "type": "string",

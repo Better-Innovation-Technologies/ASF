@@ -1,6 +1,6 @@
 # AGENTS.md — [Project Name]
 
-> **ASF v8.5** · 2026-10-17 · _Attachments on every artifact_ · Francesco Bellifemine
+> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
 
 > **L0 — Project Layer · Better Innovation Technologies**
 > This file is the first context every AI agent loads before any operation on this codebase.

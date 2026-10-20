@@ -27,7 +27,7 @@
       "type": "object",
       "description": "Scope. Without it a test verification fails on a commit that touches only a README, and a gate that cries wolf is ignored within a week.",
       "properties": {
-        "layers": { "type": "array", "items": { "type": "string", "enum": ["fe", "be", "api", "infra", "docs"] } },
+        "layers": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }, "description": "Project layers (D-8.24): repo names of project.repos or architecture.json components with a path." },
         "paths": { "type": "array", "items": { "type": "string" }, "description": "Glob patterns; a leading ! excludes." },
         "branches": { "type": "array", "items": { "type": "string" } },
         "events": { "type": "array", "items": { "type": "string", "enum": ["push", "merge_request", "manual", "replay"] } }

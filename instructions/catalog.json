@@ -2,7 +2,7 @@
   "$schema": "https://git.bit-farm.it/bit-farm-public/pico/-/raw/main/schema/pico-instructions-catalog.schema.json",
   "package": "asf-instructions-catalog/1",
   "version": "1.0.0",
-  "asf_version": "8.5",
+  "asf_version": "8.6",
   "header": "header.md",
   "project_rules": "project-rules.md",
   "host_placeholders": [

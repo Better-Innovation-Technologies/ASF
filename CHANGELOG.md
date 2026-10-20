@@ -75,6 +75,63 @@ looking.
 
 ---
 
+## v8.6 — 2026-10-20
+
+**Layers belong to the project**: ASF stops listing them. With it, the corrections to the validator
+and to one catalog module that were circulating internally as 8.5.1.
+
+This release also reconciles two lines of work. The public distribution published v8.5 on
+2026-10-17 (attachments and links, empty collections: D-8.22 and D-8.23), while the internal source
+had prepared a different v8.5 around project layers, numbered D-8.22 as well. A decision number is
+never reused, and a version that is already public is not rewritten: v8.5 stays the public one, and
+the layer decision ships here as **D-8.24**.
+
+### D-8.24 — A layer is a node of the project tree, named by the project
+
+**Context.** `frontmatter.schema.json` closed the layer to nine names (`fe`, `be`, `api`, `core`,
+`worker`, `deployer`, `notify`, `infra`, `docs`), and `commit-gate` schemas to five. A project with
+a desktop app, a mobile app or a CLI could not name it without changing the standard — KStudio
+did, touching five files for one word (its DR-0155). Yet the standard already knew what a layer
+is: what one agent can own while another works elsewhere, possibly on another machine. That is
+the scope of `tasks[].files`, and `instructions.md` already reads the layer from it.
+
+**Decision.** `$defs.layer` becomes a format, `^[a-z][a-z0-9-]*$`. The names are declared by the
+project, in two places it already has: every repo of `state.json` project.repos is a layer, and
+so is every `.asf/architecture.json` component that declares the new optional `path`
+(`<repo>` or `<repo>/<dir>`, e.g. `core` → `api/core`). Components without code (a database, an
+external service) have no path and are not layers. The commit gate's `layers` and `repo.layer`
+become the same format. `tools/validate-stack.py` checks that a `path` starts with a repo and
+that each layer name means one path, and **warns** when a bug `area` or an ADR `affects` cites
+an undeclared layer.
+
+**Consequences.** A bug `area`, an ADR `affects`, an `area::` label and a commit scope draw on one
+vocabulary, the project's. Finer layers mean more tasks that can run in parallel; scheduling
+them is the subject of a separate study.
+
+### Corrections
+
+- **The validator no longer checks cited paths inside catalog modules.** An `instructions.md`
+  composed from the catalog (D-8.21) carries the text of each module between
+  `<!-- asf:module … -->` and `<!-- /asf:module -->`; the paths cited there are the standard's
+  examples (`docs/ProductLog.md`, `triggers/epic-ready.json`), not the project's files, and the
+  validator reported each of them as missing. The project's own text — every line outside a module,
+  and the **Project rules** section — is checked as before.
+- **`NNN` is an example form**, like `XX` and `.N.md`: `docs/bugs/BUG-NNN.md` is not a path that
+  should exist.
+- **`asf-method-kstudio` cited `docs/nfr/RNF-NNN.md`** in three places, against D-8.18 (RNF live in
+  `requirements/`, next to the RF). Now `docs/requirements/RNF-NNN.md`.
+
+### Upgrade note — v8.6
+
+- **Must** — nothing. Every name valid before is still valid; an undeclared one is a warning.
+- **May** — give `path` to the architecture.json components that hold code, so that the warnings
+  go and sub-repo layers (`core`, `worker`) mean a place in the tree.
+- **Stops being true** — —
+- **May** — also copy `tools/validate-stack.py` into the project and recompose `instructions.md`
+  to pick up the corrected `asf-method-kstudio` module.
+
+---
+
 ## v8.5 — 2026-10-17
 
 Every artifact may carry **attachments and links**, and a project may start with empty collections.

@@ -136,6 +136,11 @@
             "required": true,
             "description": "Responsabilità principale del componente"
           },
+          "path": {
+            "type": "string",
+            "required": false,
+            "description": "Where the component's code lives in the project tree: `<repo>` or `<repo>/<dir>`, the repo being a name of state.json project.repos. A component with a path is a layer (D-8.24): its id can be cited in a bug `area`, an ADR `affects`, an `area::` label and a commit scope. Components without code (a database, an external service) have no path."
+          },
           "techStack": {
             "type": "array",
             "required": false,

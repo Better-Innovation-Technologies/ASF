@@ -1,12 +1,12 @@
 # ASF™ Prompt Stack — standard
 
-> **ASF v8.5** · Attachments on every artifact · Francesco Bellifemine · Better Innovation Technologies
+> **ASF v8.6** · Attachments and project layers · Francesco Bellifemine · Better Innovation Technologies
 
 ## About this repository
 
 This is the **public distribution** of the ASF™ standard, published by Better Innovation
 Technologies. It carries the Prompt Stack templates, the JSON contracts and the validators — what
-you need to adopt ASF in your own projects — and it is **tagged per release** (`v8.5`, …): a tool
+you need to adopt ASF in your own projects — and it is **tagged per release** (`v8.6`, …): a tool
 that instantiates a project reads a tag, never the head of `main`.
 
 Two things are deliberately **not** here: the agent definitions and hosts, which are products of

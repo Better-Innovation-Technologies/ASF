@@ -16,7 +16,10 @@ derived or kept elsewhere is reported as `dropped_value_lost`, with its value.
 Without `--out` or `--write` it is a dry run (report only). `--out` writes a converted copy of the
 whole tree (without `.git`); items with blockers are left out of `state.json` and their files are
 copied unconverted. `--write` converts in place and refuses when there are blockers.
-Exit 0 ok, 1 blockers, 2 usage or IO error.
+A tree whose `state.json` already declares `meta.schema_version` 2.0.0 is not read further and
+nothing is written, in any mode: the conversion is done, and reading 8.3 as v8.2 only produces
+false blockers.
+Exit 0 ok or already 8.3, 1 blockers, 2 usage or IO error.
 """
 
 from __future__ import annotations
@@ -1777,6 +1780,17 @@ def human_report(mig: Migration, mode: str, exit_code: int) -> str:
     return "\n".join(lines) + "\n"
 
 
+def already_migrated(docs: Path) -> bool:
+    """`state.json` already declares the 8.3 schema version. An unreadable file is not decided
+    here: the migration reports it with its own error."""
+    try:
+        state = json.loads((docs / ".asf" / "state.json").read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return False
+    meta = state.get("meta") if isinstance(state, dict) else None
+    return isinstance(meta, dict) and meta.get("schema_version") == SCHEMA_VERSION
+
+
 def main(argv: list[str]) -> int:
     try:
         args = parse_args(argv)
@@ -1793,6 +1807,17 @@ def main(argv: list[str]) -> int:
                 raise UsageError(f"{args.out}: --out must be outside --docs")
             if out.exists() and (not out.is_dir() or any(out.iterdir())):
                 raise UsageError(f"{args.out}: exists and is not an empty directory")
+        if already_migrated(args.docs):
+            message = (f"{args.docs}: .asf/state.json is already at schema_version {SCHEMA_VERSION} "
+                       f"(ASF {ASF_VERSION}): nothing to migrate, nothing written. "
+                       "Check the tree with tools/validate-stack.py --docs DIR")
+            if args.report:
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                args.report.write_text(json.dumps({"docs": str(args.docs), "mode": "already 8.3", "exit_code": 0,
+                                                   "message": message, "blockers": [], "warnings": []},
+                                                  ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(message)
+            return 0
         mig = Migration(args)
         mig.run()
         blockers = bool(mig.report.blockers)
