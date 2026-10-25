@@ -1,0 +1,302 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "asf.dev-plan/2",
+  "title": "ASF Dev Agent — implementation plan",
+  "description": "The implementation map a Dev Lead signs before work starts: what gets touched, in which order, what is already there, what is deliberately left out, and what still needs deciding. This file in docs/.asf/schema/ is the single source: KStudio validates against it and the coding CLI writes against it. Version 2 drops the bookkeeping that version 1 required — the log of files read, and the file list repeated inside impacts — and no longer requires a test command to be stated, because a repo's test commands belong to the repo (its CLAUDE.md and .gitlab-ci.yml), not to a plan. A plan is read by a person: produce the map, not an inventory of your own work.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "epic",
+    "understanding",
+    "steps",
+    "impacts",
+    "tests",
+    "risks",
+    "questions",
+    "out_of_plan"
+  ],
+  "properties": {
+    "schema": {
+      "enum": [
+        "asf.dev-plan/1",
+        "asf.dev-plan/2"
+      ],
+      "description": "Write `asf.dev-plan/2`. Version 1 is still accepted when reading: plans written before 2026-10-04 are stored in sessions, and a reader that rejected them would make a signed plan unreadable by the thing that validated it."
+    },
+    "epic": {
+      "type": "string",
+      "pattern": "^Epic[0-9]{3}$"
+    },
+    "understanding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 4000,
+          "description": "What the epic asks for and what already exists, in prose. Name the contradictions you found between documents here: that is what the signer cannot get anywhere else."
+        },
+        "existing": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "description": "What already exists and must not be redone, by name — a module, an endpoint, a table."
+        },
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "description": "Optional and not expected: the paths you read. Tracking this costs more than it is worth to the signer. Leave it out."
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 60,
+      "description": "The map. One step is one layer of one repo, and carries the files it touches: this is what the Dev Lead signs, and what makes the work reviewable before it exists.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "repo",
+          "files",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^S[0-9]{1,3}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "task": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^Task\\.Epic[0-9]{3}\\.[0-9]+$"
+          },
+          "repo": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+$"
+          },
+          "files": {
+            "type": "array",
+            "description": "The files this step touches. A file that does not exist yet is named as you intend to create it — no need to verify a path you are about to write.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "change"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "change": {
+                  "enum": [
+                    "new",
+                    "modify",
+                    "delete"
+                  ]
+                }
+              }
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^S[0-9]{1,3}$"
+            }
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "doing",
+              "done",
+              "blocked"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      }
+    },
+    "impacts": {
+      "type": "array",
+      "description": "The same work seen by module instead of by step: it answers «what does this epic disturb», which a list of steps does not. The files stay in the steps — do not repeat them here.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repo",
+          "module",
+          "kinds"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+$"
+          },
+          "module": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Optional and ignored: the files belong to the steps. Here they would be a second list to keep in sync with the first."
+          },
+          "kinds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "code",
+                "api_contract",
+                "db_migration",
+                "architecture",
+                "l0_l1",
+                "config",
+                "test"
+              ]
+            }
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "description": "Which levels of test this epic needs, and where. State them; do not run anything to find out — the commands live in each repo's CLAUDE.md and .gitlab-ci.yml.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repo",
+          "level"
+        ],
+        "properties": {
+          "repo": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._-]+$"
+          },
+          "level": {
+            "enum": [
+              "unit",
+              "integration",
+              "contract",
+              "e2e"
+            ]
+          },
+          "command": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 300,
+            "description": "Optional: only if it differs from the repo's own."
+          },
+          "covers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The acceptance criteria this test level covers, as RF-NN/AC-NN."
+          }
+        }
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      }
+    },
+    "questions": {
+      "type": "array",
+      "description": "What you could not decide and a person must clarify. Empty is a claim, not a default: it says every contradiction you met is resolved in the summary. Questions never block signing: they are clarifications, answered at any time in the chat. A question is a string, or an object with a stable id (Q1, Q2, ...) once it has to carry its answer: when the person answers Qn, write their words in `risposta` and the date in `risposta_at`, never delete or renumber a question, and change steps/impacts/out_of_plan only if the answer changes them.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 3
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "testo"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^Q[0-9]+$"
+              },
+              "testo": {
+                "type": "string",
+                "minLength": 3
+              },
+              "risposta": {
+                "type": "string",
+                "minLength": 1
+              },
+              "risposta_at": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "out_of_plan": {
+      "type": "array",
+      "description": "Work this epic deliberately leaves out, named and justified. Silence here is the expensive kind.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task",
+          "reason"
+        ],
+        "properties": {
+          "task": {
+            "type": "string",
+            "pattern": "^Task\\.Epic[0-9]{3}\\.[0-9]+$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3
+          }
+        }
+      }
+    }
+  }
+}

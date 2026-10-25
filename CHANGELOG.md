@@ -75,6 +75,44 @@ looking.
 
 ---
 
+## v8.7 — 2026-10-25
+
+**The implementation plan gets its schema.** `.asf/schema/dev-plan.schema.json` joins the standard:
+it was the one contract a project could not receive, and an agent asked to write a plan had nothing
+to write against.
+
+### D-8.25 — The dev plan's shape is an artifact of the standard, not of a product
+
+**Context.** `asf/plan.json` is the map a Dev Lead signs before work starts, and its schema —
+`asf.dev-plan/2` — says of itself that «this file in `docs/.asf/schema/` is the single source:
+KStudio validates against it and the coding CLI writes against it». The standard never carried it.
+Instantiating a project copies `.asf/schema/` whole, so a project was born with eight schemas and
+not this one; the product that implements the flow kept its own copy, and a second copy of a
+contract diverges at the first touch — on 2026-10-25 the two had already drifted by 237 bytes.
+Observed on a project with one epic: the agent asked to regenerate the plan found the session's
+`asf/` directory holding `plan.json` and no schema beside it, and asked **the person** to paste
+the format. A contract the method knows and does not deliver is a contract that gets invented.
+
+**Decision.** `.asf/schema/dev-plan.schema.json` is part of the standard, at `$id: asf.dev-plan/2`,
+and is the single source of the plan's shape. Whoever validates a plan reads the project's copy of
+it. A copy held anywhere else — in a product, in a service — is a copy: it is generated from this
+one and checked against it, never edited on its own.
+
+**Consequences.** A project instantiated from here receives the contract with the other schemas. A
+project already born may copy it, and from that moment its agents write a plan that something can
+check. The plan stops being the only artifact of the flow whose shape lived outside the standard.
+
+### Upgrade note — v8.7
+
+- **Must** — nothing. No file that existed changes shape, and a project that does not use a dev
+  plan does not need to know.
+- **May** — copy `.asf/schema/dev-plan.schema.json` into the project if its tooling writes or
+  validates an implementation plan. It costs one file, and it is what the agent reads instead of
+  asking.
+- **Stops being true** — —
+
+---
+
 ## v8.6 — 2026-10-20
 
 **Layers belong to the project**: ASF stops listing them. With it, the corrections to the validator

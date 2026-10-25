@@ -1,6 +1,6 @@
 # ASF™ Overview — reference, load on demand
 
-> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
+> **ASF v8.7** · 2026-10-25 · _The dev plan has a schema_ · Francesco Bellifemine
 
 > **This file is NOT a layer of the Prompt Stack.**
 > Load it only when you need to understand the factory model itself: the agent

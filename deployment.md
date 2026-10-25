@@ -1,6 +1,6 @@
 # deployment.md — {project_name}
 
-> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
+> **ASF v8.7** · 2026-10-25 · _The dev plan has a schema_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead + Infrastructure Agent**
 > This file is the human-readable operational runbook.

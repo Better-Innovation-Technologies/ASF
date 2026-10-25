@@ -1,6 +1,6 @@
 # AGENTS.md — [Project Name]
 
-> **ASF v8.6** · 2026-10-20 · _Attachments and project layers_ · Francesco Bellifemine
+> **ASF v8.7** · 2026-10-25 · _The dev plan has a schema_ · Francesco Bellifemine
 
 > **L0 — Project Layer · Better Innovation Technologies**
 > This file is the first context every AI agent loads before any operation on this codebase.
