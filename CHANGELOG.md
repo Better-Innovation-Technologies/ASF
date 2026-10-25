@@ -75,6 +75,43 @@ looking.
 
 ---
 
+## v8.8 — 2026-10-25
+
+**The plan schema also travels where the bundle reads it.** v8.7 put `dev-plan.schema.json` in
+`.asf/schema/`, which is the copy a project receives; the toolchain that hands the schema to a
+coding agent reads `triggers/schema/`, and found nothing there.
+
+### D-8.26 — The plan schema sits in both places it is consumed from, and both are the `/2`
+
+**Context.** v8.7 (D-8.25) brought the contract into the standard at `.asf/schema/dev-plan.schema.json`
+— the copy a project is instantiated with. It is not the copy a running agent gets: the preparation
+bundle embeds the schema at build time from `triggers/schema/dev-plan.schema.json` (`DR-0131` of the
+implementing product), and that path held nothing in the published standard. So the session's `asf/`
+directory still arrived with a plan and no schema beside it: v8.7 was right and, for the agent,
+inert. Worse, the copy that used to live at that path in an older working tree was **`asf.dev-plan/1`**,
+which requires `understanding.read` and `tests[].command` and takes a question as a string: an agent
+handed the `/1` writes a plan that a product validating the `/2` rejects.
+
+**Decision.** `triggers/schema/dev-plan.schema.json` is part of the standard and is byte-identical to
+`.asf/schema/dev-plan.schema.json`, at `$id: asf.dev-plan/2`. Two paths, one content, because the two
+consumers are different: a project copies `.asf/schema/`, a toolchain bundles `triggers/schema/`.
+Neither is edited on its own; a change goes into both in the same commit, and `/1` is not shipped
+anywhere again.
+
+**Consequences.** A coding agent asked to write an implementation plan receives the same contract the
+product validates against. The duplication inside the standard is deliberate and narrow — one file,
+two paths, same bytes — and it is the price of the two consumption paths; whoever unifies them (a
+bundle that reads `.asf/schema/`) removes it with a decision of its own.
+
+### Upgrade note — v8.8
+
+- **Must** — nothing. No file that existed changes shape.
+- **May** — rebuild any toolchain bundle that embeds the plan schema, to pick it up; a project that
+  copied `.asf/schema/dev-plan.schema.json` at v8.7 already has the same bytes.
+- **Stops being true** — —
+
+---
+
 ## v8.7 — 2026-10-25
 
 **The implementation plan gets its schema.** `.asf/schema/dev-plan.schema.json` joins the standard:

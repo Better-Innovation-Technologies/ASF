@@ -1,6 +1,6 @@
 # AGENTS.md — [Project Name]
 
-> **ASF v8.7** · 2026-10-25 · _The dev plan has a schema_ · Francesco Bellifemine
+> **ASF v8.8** · 2026-10-25 · _The plan schema reaches the agent_ · Francesco Bellifemine
 
 > **L0 — Project Layer · Better Innovation Technologies**
 > This file is the first context every AI agent loads before any operation on this codebase.

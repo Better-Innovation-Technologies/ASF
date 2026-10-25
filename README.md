@@ -1,6 +1,6 @@
 # ASF™ Prompt Stack — standard
 
-> **ASF v8.7** · The dev plan has a schema · Francesco Bellifemine · Better Innovation Technologies
+> **ASF v8.8** · The plan schema reaches the agent · Francesco Bellifemine · Better Innovation Technologies
 
 ## About this repository
 
