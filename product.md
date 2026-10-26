@@ -1,6 +1,6 @@
 # product.md — {project_name}
 
-> **ASF v8.8** · 2026-10-25 · _The plan schema reaches the agent_ · Francesco Bellifemine
+> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: PM (Dev Lead gate)**
 > The product identity document — the first source of truth for AI agents and the ASF™ team.
@@ -29,7 +29,7 @@
 |---|---|
 | `docs/requirements/functional-analysis/` | User flows, per-module specifications |
 | `docs/requirements/architecture/` | System diagrams — ADRs are not here: the ADR log is `adLog[]` in `docs/.asf/architecture.json`, with optional `docs/decisions/ADR-XXX.md` files |
-| `docs/requirements/ux/` | Wireframes, HTML proofs of concept, Figma prototypes |
+| `docs/requirements/ux/` | `DESIGN.md` — the UX guidelines (§3 *Look & feel*) — next to wireframes, HTML proofs of concept, Figma prototypes |
 
 ---
 
@@ -69,6 +69,12 @@
 ## 3. Look & feel
 
 *(to be completed with the PM / UX during Startup, before Quality Gate Layer 1)*
+
+This section is the **summary** a stakeholder reads. The UX guidelines an agent builds an interface
+from live in **`docs/requirements/ux/DESIGN.md`** — theme, colour roles, type, icons, spacing and
+radii, mobile patterns, component states, microcopy, accessibility, and where the design tokens are
+kept as code. Every interface task starts from that file; when the two disagree, `DESIGN.md` wins and
+this summary is corrected.
 
 **Tone:** [e.g. professional and direct / friendly and simple / technical and precise]
 

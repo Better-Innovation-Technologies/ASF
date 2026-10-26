@@ -27,7 +27,9 @@ The contract is written in the PICO repository (`bit-farm-public/pico`):
 3. The host checks cardinality, `requires` (every inner list is *any of*, all lists must hold) and
    `excludes`, and sends violations back to the agent.
 4. The host writes, in category order: `header.md`, every chosen module between
-   `<!-- asf:module id=… version=… -->` and `<!-- /asf:module -->` markers, then Project rules.
+   `<!-- asf:module id=… version=… -->` and `<!-- /asf:module -->` markers, then
+   `<!-- asf:project-rules -->` and Project rules — everything after that marker is kept verbatim
+   at the next composition, which is why the hand-written template carries it too.
    It records the choice in `.asf/instructions.json` with a hash of every composed section, so that
    a later recomposition **reports** a section edited by hand instead of overwriting it.
 
@@ -43,23 +45,34 @@ modules that use `{{be_modules_path}}` get the same value. `project_name`, `asf_
 
 | Order | Category | Cardinality | Required |
 |---|---|---|---|
-| 1 | Language | one | yes |
+| 1 | Language | one | no default — stated at composition (D-8.30) |
 | 2 | Localization | one | no |
 | 3 | Principles | one | yes |
 | 4 | System topology | one | yes |
 | 5 | Internal structure | one | no |
 | 6 | Communication between services | many | no (only distributed topologies) |
 | 7 | Frontend stack | one | no |
-| 8 | Backend stack | many | no |
-| 9 | Database | one | no |
-| 10 | Code style | many | no |
-| 11 | Comments and documentation | one | yes |
-| 12 | Testing | many | yes |
-| 13 | Logging and observability | one | yes |
-| 14 | Errors | one | yes |
-| 15 | Security | many | yes |
-| 16 | Git workflow | one | yes |
-| 17 | ASF method | one | yes |
+| 8 | UX guidelines | one | no |
+| 9 | Backend stack | many | no |
+| 10 | Database | one | no |
+| 11 | Code style | many | no |
+| 12 | Comments and documentation | one | yes |
+| 13 | Testing | many | yes |
+| 14 | Logging and observability | one | yes |
+| 15 | Errors | one | yes |
+| 16 | Security | many | yes |
+| 17 | Git workflow | one | yes |
+| 18 | ASF method | one | yes |
+
+**The languages are stated, never defaulted (D-8.30).** No `language` module is the default, and
+`prose_language` and `business_language` have no default value: the language the team writes its
+documents in, and the one the business speaks, are facts about the project that a default can only
+guess. Ask them as their own question — *in which language do you write documents, comments and
+commits?* — and do not deduce the prose from the language of the code: `language-english` means the
+Prompt Stack documents are in English too. `tools/validate-instructions-catalog.py` keeps it so.
+
+**UX guidelines** (`ux-design-guidelines`) bind interface work to `docs/requirements/ux/DESIGN.md`,
+the skeleton every project is born with, and to the design tokens in the code (D-8.27).
 
 **Topology and internal structure are two choices, not one**: microservices (topology) whose
 services are each hexagonal (structure) is a normal combination.

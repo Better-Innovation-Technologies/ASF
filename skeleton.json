@@ -1,0 +1,46 @@
+{
+  "package": "asf-skeleton/1",
+  "description": "What an ASF project is born with (D-8.28): the files and folders a host copies from this repository into the root of the project's docs repo at a tagged ref, the empty folders it creates, and the files it generates. A stack born from exactly this validates with zero errors — tools/test-skeleton.py proves it at every change.",
+  "files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "asf-overview.md",
+    "product.md",
+    "deployment.md",
+    "instructions.md",
+    "Roadmap.md",
+    "ProductLog.md",
+    "glossary.md",
+    "requirements/ux/DESIGN.md",
+    "decisions/decision-log.json",
+    "decisions/decision-log.schema.json",
+    ".asf/architecture.json",
+    ".asf/action-catalog.json",
+    "tools/validate-stack.py"
+  ],
+  "dirs": [
+    ".asf/schema",
+    ".asf/pitch-checklists",
+    "triggers/schema"
+  ],
+  "empty_dirs": [
+    "epics",
+    "requirements",
+    "stories",
+    "tasks",
+    "bugs",
+    "retro"
+  ],
+  "generated": {
+    ".asf/state.json": "meta.schema_version (the one state.schema.json accepts) and meta.asf_version, project.name, and the two required collections empty: epics [] and requirements.functional []"
+  },
+  "placeholders": {
+    "[Project Name]": "the project name",
+    "{project_name}": "the project name",
+    "{asf_version}": "the adopted version, without the leading v",
+    "{date}": "the date of birth, YYYY-MM-DD"
+  },
+  "host_files": {
+    ".gitlab-ci.yml": "the docs pipeline, written by the host because it carries the host's runners: at least the validate-stack job of deployment.md §8.4"
+  }
+}

@@ -4,7 +4,9 @@
 Standard library only. Checks what the JSON schema cannot: every referenced file exists and nothing
 else is in `modules/`; the placeholders a module declares are exactly the `{{name}}` it uses (host
 placeholders excluded); `requires` and `excludes` name real modules; ids are unique and match their
-file; every required category has exactly one default module, and a `one` category at most one.
+file; every required category has exactly one default module, and a `one` category at most one;
+the languages of a project are stated, never defaulted (D-8.30): no `prose_language` or
+`business_language` placeholder carries a default, and no `language` module is the default.
 
 Exits 0 with `Instructions catalog valid.`, or 1 with `N ERRORS:` and one line each.
 """
@@ -17,6 +19,8 @@ import sys
 from pathlib import Path
 
 PLACEHOLDER = re.compile(r"\{\{([a-z][a-z0-9_]*)\}\}")
+#: Facts about the team that a default would deduce instead of asking (D-8.30).
+STATED_PLACEHOLDERS = ("prose_language", "business_language")
 
 
 def check(root: Path) -> list[str]:
@@ -58,6 +62,12 @@ def check(root: Path) -> list[str]:
             errors.append(f"{m['file']}: uses `{{{{{name}}}}}` but `{m['id']}` does not declare it")
         for name in sorted(declared - used):
             errors.append(f"{where}: declares `{name}` but {m['file']} never uses it")
+        for p in m.get("placeholders", []):
+            if p["name"] in STATED_PLACEHOLDERS and "default" in p:
+                errors.append(f"{where}: `{p['name']}` has a default, but a language is stated at "
+                              f"composition, never deduced (D-8.30)")
+        if m["category"] == "language" and m.get("default"):
+            errors.append(f"{where}: a `language` module is never the default (D-8.30)")
         for group in m.get("requires", []):
             for ref in group:
                 if ref not in known:

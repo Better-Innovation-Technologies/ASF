@@ -1,19 +1,6 @@
 # ASF™ Prompt Stack — standard
 
-> **ASF v8.8** · The plan schema reaches the agent · Francesco Bellifemine · Better Innovation Technologies
-
-## About this repository
-
-This is the **public distribution** of the ASF™ standard, published by Better Innovation
-Technologies. It carries the Prompt Stack templates, the JSON contracts and the validators — what
-you need to adopt ASF in your own projects — and it is **tagged per release** (`v8.6`, …): a tool
-that instantiates a project reads a tag, never the head of `main`.
-
-Two things are deliberately **not** here: the agent definitions and hosts, which are products of
-their own, and the superseded operating models. What you find is the standard, not our factory.
-
-Licensed under Apache-2.0 — see `LICENSE`. Issues and pull requests are welcome. The canonical
-source lives inside BIT and is exported here at every release tag.
+> **ASF v8.10** · A task cites the modules it follows · Francesco Bellifemine · Better Innovation Technologies
 
 This repository holds the **ASF™ (Augmented Software Factory) standard**: the *Prompt Stack*
 files every ASF project instantiates under `docs/`, the L0/L1 templates, and the JSON schemas
@@ -34,6 +21,10 @@ L3 → L4.
 | `product.md` | L1 | Product identity, ASF™ process model, RF index |
 | `deployment.md` | L1 | K8s runbook, triggers, pipelines, GitLab integration |
 | `instructions.md` | L1 | Dev rules, sprint execution, artifact formats, testing, label system — composable from `instructions/` (v8.4) |
+| `Roadmap.md` · `ProductLog.md` | L1 | Skeletons of the PM's narratives: the delivery stages and the prioritized backlog. The name is `Roadmap.md`, with the capital (D-8.29) |
+| `glossary.md` | — | Skeleton of the domain glossary the language section of `instructions.md` points to |
+| `requirements/ux/DESIGN.md` | L1.5 | Skeleton of the UX guidelines every interface task loads (D-8.27) |
+| `skeleton.json` | — | **What a project is born with**: the files and folders a host copies, the empty folders it creates, the files it writes itself or generates (D-8.28). Not copied into projects |
 | `CHANGELOG.md` | — | Decisions taken about **the standard itself** — not a project template. Also **how the standard is versioned**: what a number costs a project already instantiated, the upgrade note every version carries, and how a release is cut |
 | `operating-mode/` | reference | The Operating Mode presentation of the standard (`index.html`, self-contained). Versioned here so it cannot drift silently |
 | `agents/` | reference | **Agent specifications**, one directory per agent: what it is for (`.md`), how to install it (`.import.yaml`), and — where the agent's contract asks a caller to do half the work — a reference `host/`. Conventions in `agents/README.md` |
@@ -43,7 +34,7 @@ L3 → L4.
 | `.asf/action-catalog.json` | — | The Action Catalogue: the closed set of remediation action codes and their primitives |
 | `.asf/pitch-checklists/` | — | The coverage profiles a pitch is opened with: what that kind of conversation must touch. Installation configuration, not prompt content (D-8.9) |
 | `.asf/schema/` | — | Schemas for `state.json` (single source of truth), the frontmatter of the artifact `.md` files (`frontmatter.schema.json`, one `$def` per folder), `llm-config.json`, the Action Catalogue, the Commit Gate checklist, the **pitch package** (the contract between a pitch and whatever translates it) and the pitch coverage profiles |
-| `tools/` | — | `validate-stack.py`, the Prompt Stack validator: both schemas plus the cross-file rules they cannot express. **Projects copy it to `docs/tools/` and run it in CI.** `migrate-to-8.3.py` converts a v8.2 `docs/` tree once; it is run from here, never copied |
+| `tools/` | — | `validate-stack.py`, the Prompt Stack validator: both schemas plus the cross-file rules they cannot express. **Projects copy it to `docs/tools/` and run it in CI.** `migrate-to-8.3.py` converts a v8.2 `docs/` tree once; it is run from here, never copied. `validate-instructions-catalog.py` and `test-skeleton.py` test the standard itself: the catalog, and a stack born from `skeleton.json` — composed with every module — validating with zero errors |
 | `official/` | — | The **Operating Model**: the standard described in full — the manual and the diagram — as documents rather than as files. What circulates outside the team |
 | `official/old/` | — | Superseded editions, kept because a project may still be running on one |
 
@@ -57,8 +48,8 @@ in them describes this repository. Decisions about the standard go in `CHANGELOG
 
 ## Use
 
-Instantiate the stack on a new project: copy these files under `docs/`, `tools/validate-stack.py`
-under `docs/tools/`, resolve the L1 `{placeholder}` values, then have the Dev Lead and the PM sign
+Instantiate the stack on a new project: copy what `skeleton.json` lists into the root of the
+`docs` repository, resolve the L1 `{placeholder}` values, then have the Dev Lead and the PM sign
 the L0/L1 files in `state.json` `prompt_stack[]` — **Quality Gate Layer 1** — before the first
 sprint. The full model, the agent catalogue and the standard repository layout are in
 `asf-overview.md`. A project on v8.2 moves with `tools/migrate-to-8.3.py`; the upgrade note is in

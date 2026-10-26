@@ -1,7 +1,10 @@
 ## Language
 
 Everything written in the repository is in **English**: identifiers, comments, docstrings,
-commit messages, merge request titles and descriptions, technical documentation, log messages.
+commit messages, merge request titles and descriptions, technical documentation, log messages —
+**and the documents of the Prompt Stack** (`product.md`, requirements, epics, tasks, bugs, stories,
+ADRs). The prose language of this project is English by choice, not by default: if the team writes
+its documents in another language, this is the wrong module.
 English is the lingua franca of the tooling, of the libraries and of most reviewers; mixing
 languages inside one codebase forces every reader to translate twice.
 

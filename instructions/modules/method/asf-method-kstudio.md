@@ -258,7 +258,7 @@ Do not modify anything — proposal for Dev Lead approval.
 
 **A user story.** The PM writes `docs/stories/US-NNN.md` before or during Planning, and it must point at **at least one** `RF-XX` — that is what turns a need into something the factory can build and test. The epic's «User story» section then lists references (`→ US-001, US-002`), and the story text lives in one place only.
 
-**A non-functional requirement.** Declared once, in `docs/requirements/RNF-NNN.md`, with `scope: system` unless it genuinely belongs to a single epic. It is **verified, not completed**: every verification run writes `status` and `verified_at`, and a run that finds it `violated` opens a `BUG-NNN` — it does not reopen the epic delivered under it and does not change the requirement. A system-scope RNF is part of the DoD of every task that could break it, which is why §15.4bis lists it below.
+**A non-functional requirement.** Declared once, in `docs/requirements/RNF-NNN.md`. It is system-wide unless an epic claims it in its `rnf_refs` — scope is that reference, not a frontmatter field. It is **verified, not completed**: every verification run writes `status` and `verified_at` (in `state.json`), and a run that finds it `violated` opens a `BUG-NNN` — it does not reopen the epic delivered under it and does not change the requirement. A system-wide RNF is part of the DoD of every task that could break it, which is why §15.4bis lists it below.
 
 **DoD additions (v8.3), on top of §15.4bis:**
 
@@ -309,7 +309,7 @@ Do not modify anything — proposal for Dev Lead approval.
 - RF-YY — [titolo requirement]
 
 **Non-functional (v8.3):**
-- RNF-NNN — [title] (`scope: epic`) · system-scope RNF apply here too and are not listed epic by epic
+- RNF-NNN — [title] (claimed in this epic's `rnf_refs`) · system-wide RNF apply here too and are not listed epic by epic
 
 **Out of scope:**
 - [explicitly excluded features]
@@ -453,19 +453,13 @@ Do not modify anything — proposal for Dev Lead approval.
 
 ### 16.5 BUG-NNN.md (v8.3)
 
-`docs/bugs/BUG-NNN.md` · frontmatter `$defs/bug` · id `^BUG-[0-9]{2,3}$`
+`docs/bugs/BUG-NNN.md` · frontmatter `$defs/bug` · id `^BUG-[0-9]{2,3}$`. `status`, `severity`, `points`, `rf_refs` and the container epic live in `state.json` → `bugs[]`, not in the frontmatter.
 
 ````markdown
 ---
 id: BUG-NNN
 title: "[what fails, from the user's side — not the cause]"
-status: triage          # triage | todo | in_progress | review | done | blocked
-                        # | not_reproducible | wont_fix | duplicate
-severity: major         # blocker | critical | high | low | trivial
-epic: EpicNNN           # the CONTAINER epic of the sprint it was FOUND in
-points: 3               # Fibonacci — bugs count in velocity
 area: [be]
-requirements: [RF-XX]   # what it violates, if known. Evidence, not ownership
 found_in: "v0.4.2 · staging · commit a1b2c3d"
 reported_by: "[name or role]"
 reported_at: YYYY-MM-DD
@@ -510,17 +504,13 @@ an empty section is honest, a guessed cause sends the fix to the wrong place.]
 
 ### 16.6 US-NNN.md (v8.3)
 
-`docs/stories/US-NNN.md` · frontmatter `$defs/us` · id `^US-[0-9]{2,3}$`
+`docs/stories/US-NNN.md` · frontmatter `$defs/us` · id `^US-[0-9]{2,3}$`. `status` (derived from its RFs), `rf_refs` (at least one) and `priority` live in `state.json` → `user_stories[]`, not in the frontmatter.
 
 ````markdown
 ---
 id: US-NNN
 title: "[the need in one line]"
-status: todo            # derived from the RF it points to — do not type it in
-requirements: [RF-XX, RF-YY]   # at least one. This is what makes it deliverable
 actor: "[role — who has the need]"
-epic: EpicNNN           # optional
-priority: high
 owner: "[PM]"
 ---
 
@@ -550,24 +540,17 @@ person used — that is the part a requirement cannot carry.]
 
 ### 16.7 RNF-NNN.md (v8.3)
 
-`docs/requirements/RNF-NNN.md` · frontmatter `$defs/rnf` · id `^RNF-[0-9]{2,3}$`
+`docs/requirements/RNF-NNN.md` · frontmatter `$defs/rnf` · id `^RNF-[0-9]{2,3}$`. `status`, `priority`, `verified_by`/`verified_at` live in `state.json` → `requirements.non_functional[]`; scope is which epics cite it in `epics[].rnf_refs`, not a field.
 
 ````markdown
 ---
 id: RNF-NNN
 title: "[the quality, stated as a constraint]"
-status: unverified      # unverified | satisfied | at_risk | violated | waived — never done
-scope: system           # system | epic (epic requires the epic field)
-epic: null
-category: security      # performance | security | reliability | usability | maintainability
-                        # | compliance | observability | portability | cost
+category: security
 metric: "[what is measured]"
 threshold: "[the value that separates satisfied from violated]"
 verification: "[the test, scan, check or measurement that establishes it]"
-verified_at: null
-verified_by: null
 owner: "[Dev Lead]"
-priority: high
 ---
 
 # RNF-NNN — [title]

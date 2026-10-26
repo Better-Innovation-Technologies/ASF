@@ -5,7 +5,8 @@ Checks:
   1. every JSON parses; `.asf/state.json` declares a `meta.schema_version` accepted by
      `.asf/schema/state.schema.json` and validates against it; the other known JSON files
      validate against their schema;
-  2. every artifact frontmatter validates against `frontmatter.schema.json` (`$defs` by folder);
+  2. every artifact frontmatter validates against `frontmatter.schema.json` (`$defs` by folder),
+     and every module id a task's `rules` cites is a module of `instructions.md`;
   3. every cited id (R-, ADR-, DR-, RF-, RNF-, BUG-, US-, Epic, Task) is defined;
   4. every path cited in a .md exists;
   4b. every `attachments` entry is a flat name under docs/attachments/, under 5 MB, cited by
@@ -14,7 +15,7 @@ Checks:
   6. the cross-file rules of state.json that the schema cannot express: unique ids, resolving
      references, task id prefixes, sprint/roadmap/epic membership, dependency graphs, repos and
      `files` globs, project layers (D-8.24: architecture.json `path`, undeclared `area`/`affects`
-     warn), Prompt Stack files, artifact files <-> state.json entries, frontmatter id and
+     warn), Prompt Stack files and the spelling of the L1 files (D-8.29), artifact files <-> state.json entries, frontmatter id and
      H1, the RF index of product.md;
   7. ACs have unique, progressive ids, and `RF-XX/AC-NN` references resolve;
   8. ADR supersession is reciprocal; RF statuses agree with the tasks citing them (warnings).
@@ -384,6 +385,26 @@ elif isinstance(fm_schema, dict):
         for e in validator_for({"$ref": f"{fm_uri}#/$defs/archive"}).iter_errors(fm or {}):
             err(rel(ARCHIVE), f"frontmatter: {schema_message(e)}")
 
+# ------------------------------------------- 2b. task `rules` -> instructions.md modules
+
+# A task's `rules` cites the numbered rules (R-NN) of the L0 and, since the stack of a project
+# lives in the modules of `instructions.md`, the ids of the modules it must follow. The schema can
+# only check the shape, and a typo has the shape of a module id: `be-pyhton-fastapi` is a valid
+# `module_id` and would pass unnoticed, so only a check between the two files catches it. R-NN
+# values are left to check 3, which resolves every cited id against the L0 rule table.
+MODULE_MARKER_RE = re.compile(r"<!--\s*asf:module\s+id=([^\s>]+)")
+RULE_ID_RE = re.compile(r"R-[0-9]{2}")
+
+instructions_modules = set(MODULE_MARKER_RE.findall(texts.get(DOCS / "instructions.md", "")))
+for p, defname, fm, _ in artifacts:
+    if defname != "task":
+        continue
+    cited = fm.get("rules") if isinstance(fm.get("rules"), list) else []
+    for value in [x for x in cited if isinstance(x, str)]:
+        if RULE_ID_RE.fullmatch(value) or value in instructions_modules:
+            continue
+        err(rel(p), f"rules: module {value!r} is not in instructions.md")
+
 # ---------------------------------------------------------------- state.json index
 
 
@@ -633,6 +654,16 @@ for entry in dicts(state.get("prompt_stack")):
     if isinstance(filename, str) and filename and not (DOCS / filename).exists():
         err(STATE_REL, f"prompt_stack[{filename}].filename: docs/{filename} does not exist")
 
+# The L1 files the standard names keep its spelling (D-8.29): `Roadmap.md`, not `roadmap.md`. On a
+# case-sensitive file system the two are different files, and the reader looking for the standard's
+# name finds nothing. A warning, so that a project written before 8.9 can rename at its pace.
+L1_NAMES = ("Roadmap.md", "ProductLog.md")
+for f in sorted(DOCS.iterdir()) if DOCS.is_dir() else []:
+    for name in L1_NAMES:
+        if f.is_file() and f.name != name and f.name.casefold() == name.casefold():
+            warn(f"docs/{f.name}", f"the standard's name is docs/{name} (D-8.29): rename it, "
+                 f"with `git mv`, and update what cites it")
+
 # ---------------------------------------------------------------- 6h. artifact files <-> state
 
 product_path = DOCS / "product.md"
@@ -695,6 +726,22 @@ if not product_path.exists():
 
 # ---------------------------------------------------------------- 3. cited ids
 
+def module_lines(text: str) -> set[int]:
+    """Lines inside `<!-- asf:module … -->` blocks of a composed instructions.md (D-8.21). Their
+    text is the standard's, the same in every project: the ids and paths it cites are examples of
+    the standard, never this project's, so checks 3 and 4 skip them (D-8.28)."""
+    out, inside = set(), False
+    for i, line in enumerate(text.splitlines(), 1):
+        s = line.strip()
+        if s.startswith("<!-- asf:module"):
+            inside = True
+        elif s.startswith("<!-- /asf:module"):
+            inside = False
+        elif inside:
+            out.add(i)
+    return out
+
+
 defined: dict[str, str] = {}
 for p, _defname, fm, _ in artifacts:
     if fm.get("id"):
@@ -723,26 +770,16 @@ if isinstance(architecture, dict):
 for p in docs_md:
     if p == ARCHIVE:
         continue
+    skip = module_lines(texts[p])
     for n, line in enumerate(texts[p].splitlines(), 1):
+        if n in skip:
+            continue
         clean = PLACEHOLDER.sub("", line)
         for id_ in sorted(set(ID_RE.findall(clean))):
             if id_ not in defined:
                 err(f"{rel(p)}:{n}", f"cited id is not defined: {id_}")
 
 # ---------------------------------------------------------------- 4. cited paths
-
-def module_lines(text: str) -> set[int]:
-    out, inside = set(), False
-    for i, line in enumerate(text.splitlines(), 1):
-        s = line.strip()
-        if s.startswith("<!-- asf:module"):
-            inside = True
-        elif s.startswith("<!-- /asf:module"):
-            inside = False
-        elif inside:
-            out.add(i)
-    return out
-
 
 for p in docs_md:
     if p == ARCHIVE:
@@ -841,10 +878,12 @@ SECTION_SEPARATORS = (" \u2014 ", " \u2013 ", " - ", ":", " (")
 
 
 def section_name(text: str) -> str:
-    """Heading or cited name, compared without numbering, emphasis, backticks or extra spaces."""
+    """Heading or cited name, compared without numbering, emphasis, backticks, extra spaces or case
+    (`Git Workflow` cites `Git workflow — trunk-based…`: the catalog modules write headings in
+    sentence case, older templates in title case, and the reader means the same section)."""
     text = re.sub(r"[`*]|(?<!\w)_+|_+(?!\w)", "", text)
     text = " ".join(text.split())
-    return SECTION_NUMBER_RE.sub("", text)
+    return SECTION_NUMBER_RE.sub("", text).casefold()
 
 
 def has_section(names: set[str], want: str) -> bool:

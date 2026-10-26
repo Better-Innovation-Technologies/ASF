@@ -1,6 +1,6 @@
 # ASF™ Overview — reference, load on demand
 
-> **ASF v8.8** · 2026-10-25 · _The plan schema reaches the agent_ · Francesco Bellifemine
+> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
 
 > **This file is NOT a layer of the Prompt Stack.**
 > Load it only when you need to understand the factory model itself: the agent
@@ -55,10 +55,12 @@ If even a single point is missing, the files it concerns are not signed and Star
 │   ├── AGENTS.md        # L0 — universal agent context
 │   ├── product.md       # L1 — product identity, ASF™ process model, RF index
 │   ├── requirements/    # L1.5 — RF-NN.md and RNF-NN.md, one per requirement (v0.4+)
+│   │   └── ux/DESIGN.md # v8.9 — UX guidelines, loaded by every interface task
 │   ├── deployment.md    # L1 — K8s runbook, triggers, pipelines
 │   ├── instructions.md  # L1 — dev rules, sprint execution, artifact formats
 │   ├── Roadmap.md       # Strategic direction (PM-owned)
 │   ├── ProductLog.md    # Prioritized backlog (PM-owned)
+│   ├── glossary.md      # Domain glossary: business term → name in code → definition
 │   ├── epics/           # L2 — EpicXXX.md per feature
 │   ├── tasks/           # L3 — Task.EpicXX.N.md per task
 │   ├── bugs/            # v8.3 — BUG-XXX.md per bug (status and references in state.json)

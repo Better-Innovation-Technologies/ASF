@@ -45,6 +45,11 @@
       "type": "string",
       "pattern": "^R-[0-9]{2}$"
     },
+    "module_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Id of a module of docs/instructions.md, as its `<!-- asf:module id=\u2026 -->` marker declares it (`be-python-fastapi`). Lowercase and hyphens: no module id can be mistaken for a rule id, so the two live in the same list without ambiguity. The shape is all a schema can check \u2014 that the module is really in instructions.md is a cross-file check of validate-stack.py."
+    },
     "date": {
       "type": "string",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
@@ -238,9 +243,16 @@
         "rules": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/rule_id"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/rule_id"
+              },
+              {
+                "$ref": "#/$defs/module_id"
+              }
+            ]
           },
-          "description": "Rules (R-NN) the task must follow."
+          "description": "Rules (R-NN) or instructions.md module ids the task must follow."
         },
         "reads": {
           "type": "array",

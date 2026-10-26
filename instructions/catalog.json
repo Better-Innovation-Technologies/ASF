@@ -1,8 +1,8 @@
 {
   "$schema": "https://git.bit-farm.it/bit-farm-public/pico/-/raw/main/schema/pico-instructions-catalog.schema.json",
   "package": "asf-instructions-catalog/1",
-  "version": "1.0.0",
-  "asf_version": "8.6",
+  "version": "1.1.0",
+  "asf_version": "8.9",
   "header": "header.md",
   "project_rules": "project-rules.md",
   "host_placeholders": [
@@ -29,8 +29,8 @@
       "title": "Language",
       "order": 1,
       "cardinality": "one",
-      "required": true,
-      "description": "Which language for code, comments, commits and domain terms."
+      "required": false,
+      "description": "Which language for code, comments, commits, documents and domain terms. No default on purpose (D-8.30): the prose language is a fact about the team, stated at composition, never deduced."
     },
     {
       "id": "localization",
@@ -81,9 +81,17 @@
       "description": "Frontend framework and its conventions."
     },
     {
+      "id": "ux",
+      "title": "UX guidelines",
+      "order": 8,
+      "cardinality": "one",
+      "required": false,
+      "description": "How interface work follows the project's UX guidelines and design tokens."
+    },
+    {
       "id": "backend",
       "title": "Backend stack",
-      "order": 8,
+      "order": 9,
       "cardinality": "many",
       "required": false,
       "description": "Backend runtimes and frameworks (one per backend)."
@@ -91,7 +99,7 @@
     {
       "id": "database",
       "title": "Database",
-      "order": 9,
+      "order": 10,
       "cardinality": "one",
       "required": false,
       "description": "Primary data store and its conventions."
@@ -99,7 +107,7 @@
     {
       "id": "code-style",
       "title": "Code style",
-      "order": 10,
+      "order": 11,
       "cardinality": "many",
       "required": false,
       "description": "Formatting, linting and naming per language."
@@ -107,7 +115,7 @@
     {
       "id": "comments",
       "title": "Comments and documentation",
-      "order": 11,
+      "order": 12,
       "cardinality": "one",
       "required": true,
       "description": "How code is commented and documented."
@@ -115,7 +123,7 @@
     {
       "id": "testing",
       "title": "Testing",
-      "order": 12,
+      "order": 13,
       "cardinality": "many",
       "required": true,
       "description": "Test strategy and kinds of tests."
@@ -123,7 +131,7 @@
     {
       "id": "observability",
       "title": "Logging and observability",
-      "order": 13,
+      "order": 14,
       "cardinality": "one",
       "required": true,
       "description": "Logging, tracing and metrics."
@@ -131,7 +139,7 @@
     {
       "id": "errors",
       "title": "Errors",
-      "order": 14,
+      "order": 15,
       "cardinality": "one",
       "required": true,
       "description": "How errors are raised, shaped and reported."
@@ -139,7 +147,7 @@
     {
       "id": "security",
       "title": "Security",
-      "order": 15,
+      "order": 16,
       "cardinality": "many",
       "required": true,
       "description": "Security baseline and secrets."
@@ -147,7 +155,7 @@
     {
       "id": "git",
       "title": "Git workflow",
-      "order": 16,
+      "order": 17,
       "cardinality": "one",
       "required": true,
       "description": "Branching, merge requests and commit messages."
@@ -155,7 +163,7 @@
     {
       "id": "method",
       "title": "ASF method",
-      "order": 17,
+      "order": 18,
       "cardinality": "one",
       "required": true,
       "description": "Sprint execution, artifact templates, labels, layer loaders."
@@ -165,9 +173,9 @@
     {
       "id": "language-english",
       "category": "language",
-      "version": "1.0.0",
-      "title": "English everywhere",
-      "summary": "Identifiers, comments, commits and docs in English; domain terms mapped once in a glossary.",
+      "version": "1.1.0",
+      "title": "English everywhere, documents included",
+      "summary": "Identifiers, comments, commits, docs and the Prompt Stack documents in English; domain terms mapped once in a glossary. Only when the team writes its documents in English.",
       "file": "modules/language/language-english.md",
       "when": [
         "international team",
@@ -179,7 +187,6 @@
           "name": "business_language",
           "type": "enum",
           "description": "Language the business speaks",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -195,8 +202,7 @@
           "description": "Path of the domain glossary",
           "default": "docs/glossary.md"
         }
-      ],
-      "default": true
+      ]
     },
     {
       "id": "language-english-code-local-prose",
@@ -214,7 +220,6 @@
           "name": "prose_language",
           "type": "enum",
           "description": "Language of comments, commits and docs",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -228,7 +233,6 @@
           "name": "business_language",
           "type": "enum",
           "description": "Language the business speaks",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -263,7 +267,6 @@
           "name": "prose_language",
           "type": "enum",
           "description": "Language of comments, commits and docs",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -277,7 +280,6 @@
           "name": "business_language",
           "type": "enum",
           "description": "Language the business speaks",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -310,7 +312,6 @@
           "name": "prose_language",
           "type": "enum",
           "description": "Language of the repository",
-          "default": "Italian",
           "enum": [
             "English",
             "Italian",
@@ -668,6 +669,28 @@
       ]
     },
     {
+      "id": "ux-design-guidelines",
+      "category": "ux",
+      "version": "1.0.0",
+      "title": "Design guidelines and tokens",
+      "summary": "Every interface task follows docs/requirements/ux/DESIGN.md; colour, type, spacing and radii come from the design tokens, never literal values; components ship with all their states.",
+      "file": "modules/ux/ux-design-guidelines.md",
+      "when": [
+        "user interface",
+        "frontend",
+        "mobile app",
+        "design system",
+        "ux"
+      ],
+      "placeholders": [
+        {
+          "name": "tokens_path",
+          "type": "path",
+          "description": "Where the design tokens live in the code (file or package)"
+        }
+      ]
+    },
+    {
       "id": "be-python-fastapi",
       "category": "backend",
       "version": "1.0.0",
@@ -844,7 +867,7 @@
     {
       "id": "comments-why-not-what",
       "category": "comments",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "title": "Why, not what",
       "summary": "Comments explain the reason; headers for non-obvious decisions; cite requirement ids.",
       "file": "modules/comments/comments-why-not-what.md",
@@ -1029,7 +1052,7 @@
     {
       "id": "asf-method-kstudio",
       "category": "method",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "title": "ASF method (KStudio, state.json 1.x)",
       "summary": "ASF method as KStudio runs it today: choose it when .asf/state.json has meta.schema_version 1.x (ADR-020).",
       "file": "modules/method/asf-method-kstudio.md",

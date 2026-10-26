@@ -1,6 +1,6 @@
 # instructions.md — {project_name}
 
-> **ASF v8.8** · 2026-10-25 · _The plan schema reaches the agent_ · Francesco Bellifemine
+> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead**
 > Development rules, code conventions and quality standards for this project.
@@ -665,7 +665,7 @@ epic's points and the RFs it covers are derived from its tasks.
 id: Task.EpicXXX.N            # same as the file name
 title: Project search endpoint
 adr: [ADR-XXX]                # ADRs the task must follow — [] if none
-rules: [R-XX]                 # rules (R-NN) the task must follow — [] if none
+rules: [R-XX, be-python-fastapi]   # rules (R-NN) and instructions.md module ids — [] if none
 reads:                        # files to read before starting — [] if none
   - docs/.asf/architecture.json
   - be/app/projects/service.py
@@ -701,8 +701,12 @@ DoD: the checklist of §15.4bis — verified on the MR, not ticked in this file.
 ```
 
 Status, points, `rf_refs`, `bug_refs`, `depends_on` and `files` → `state.json → epics[].tasks[]`;
-its epic is the one whose id starts its own. An AC that implements an RF acceptance criterion cites
-it as `` `RF-NN/AC-NN` ``, and that RF must be in the task's `rf_refs`.
+its epic is the one whose id starts its own. `rules` cites the numbered rules of the L0 **and**
+the ids of the `instructions.md` modules the task must follow (`be-python-fastapi`): the stack of a
+project lives in those modules, and the validator checks that every module id cited is really one of
+them — a typo like `be-pyhton-fastapi` has the shape of a module id and nothing else would
+catch it. An AC that implements an RF acceptance criterion cites it as `` `RF-NN/AC-NN` ``, and
+that RF must be in the task's `rf_refs`.
 
 ### 16.6 BUG-XXX.md (`bugs/`)
 
@@ -935,3 +939,11 @@ repository file that stays a stable pointer.
 
 *Inizializzato da KStudio Bootstrap · {bootstrap_date}*
 *Per the ASF™ Operating Model · v8.0*
+
+<!-- asf:project-rules -->
+## Project rules
+
+Rules that belong to this project only — decisions recorded in ADRs, constraints of a customer, a
+convention the team chose. This section is **never recomposed**: what is written here stays.
+
+_None yet._

@@ -75,6 +75,177 @@ looking.
 
 ---
 
+## v8.10 — 2026-10-26
+
+**A task cites the modules it follows.** The `rules` of a task may now name the ids of the
+`instructions.md` modules — the stack and style contract the implementation obeys — and a cited id
+that is not in `instructions.md` is an error instead of a typo nobody sees. With it, the v8.9 work
+becomes public.
+
+### D-8.31 — A task's `rules` accept module ids, and a cited module must exist
+
+**Context.** `instructions.md` is composed from the catalog, and each module carries its id in
+`<!-- asf:module id=… version=… -->`: `fe-react-vite`, `be-python-fastapi`, `db-postgres`. A task is
+implementation, and what it must obey is exactly those modules — but `$defs.task.properties.rules`
+pointed at `$defs.rule_id` alone, `^R-[0-9]{2}$`, so a Dev Lead who wrote
+`rules: [be-python-fastapi]` got `does not match '^R-[0-9]{2}$'` from the validator. The modules
+could only be named in `reads` or in the prose, where no tool checks them.
+
+**Decision.** A new `$defs.module_id`, `^[a-z0-9]+(-[a-z0-9]+)*$`, and the items of a task's `rules`
+become `anyOf` of `rule_id` and `module_id`. `rule_id` stays strict, so the numbered rules keep being
+resolvable. `tools/validate-stack.py` gains the cross-file check: a module id cited in `rules` must
+exist as `asf:module id=<id>` in `docs/instructions.md`, otherwise
+`rules: module '<id>' is not in instructions.md` — without it a typo (`be-pyhton-fastapi`) passes
+validation and nobody notices. The §16.5 task template shows a module id next to `R-NN`.
+
+**The ADR keeps `R-NN` only.** An ADR binds a decision to the **method** rules of the L0; a module is
+the contract of stack and style that the implementation follows. The task implements and needs the
+modules; the ADR does not execute them, and if a decision really depends on one it says so in its
+prose and in `affects`.
+
+**Consequences.** What a task must obey is declared in a field a tool reads, and a misspelled module
+is caught where it is written instead of where it is missing.
+
+### Upgrade note — v8.10
+
+- **Must** — nothing. Every `rules` value valid before is still valid.
+- **May** — copy `.asf/schema/frontmatter.schema.json` and `tools/validate-stack.py` into the project
+  to cite modules in the tasks' `rules`; both files are copied from here anyway. Note that a project
+  whose copies are ahead of the standard — attachments and links on five `$defs`, for instance —
+  applies the **delta** (`$defs.module_id` plus the `anyOf`, and the new check), not the whole file.
+- **Stops being true** — —
+
+---
+
+## v8.9 — 2026-10-25
+
+**UX has a place, and a project is born valid.** Four gaps found by starting a real project from
+the standard (born at v8.4, instructions composed from the catalog): its interface guidelines had no
+file to live in, the validator reported eleven errors on the untouched stack, the roadmap had two
+spellings, and the project's documents ended up in a language nobody had chosen. Nothing that
+project chose enters the standard: only the places and the rules it was missing.
+
+### D-8.27 — The UX guidelines have a file, and interface work loads it
+
+**Context.** `product.md` §3 *Look & feel* is five template lines for a stakeholder; the
+*Attachment index* named `docs/requirements/ux/` for wireframes and prototypes; nothing named a
+document of guidelines, `AGENTS.md` §5 did not say what an interface task loads, and the catalog had
+no category for it. A project that wrote its guidelines had to invent a path and wire it by hand into
+three files so that no agent would miss it.
+
+**Decision.** The standard ships the skeleton **`docs/requirements/ux/DESIGN.md`**: guiding principle,
+theme, colour by role, type, icons, spacing and radii, mobile patterns, components with their states,
+microcopy, accessibility, tokens as code, to be decided. `product.md` §3 stays the stakeholder's
+summary and points to it — when they disagree, `DESIGN.md` wins. `AGENTS.md` §5 loads it for a task
+that touches the interface and says where the topic lives; §2 lists it among the supporting files.
+The catalog gains the category **`ux`** (`one`, not required, ordered after the frontend) with the
+module **`ux-design-guidelines`**: interface work follows `DESIGN.md`, colour, type, spacing and radii
+come from the tokens in `{{tokens_path}}` by role and never as literal values, a component ships with
+all its states.
+
+**Consequences.** An interface built by an agent starts from a declared source instead of the last
+screenshot in a chat. The categories after the frontend move down one place in the composition
+order; no section number of the ASF method changes.
+
+### D-8.28 — A project is born with the validator at zero
+
+**Context.** `validate-stack.py` on a project fresh from kickoff — before anyone touched it —
+reported eleven errors. Example ids in a catalog module (`RF-12`, `BUG-031`, `ADR-004`) were checked
+as real ones; `AGENTS.md` cited `docs/Roadmap.md` and `docs/ProductLog.md`, which nothing created, and
+three sections of `instructions.md` — *Logging*, *Reference stack*, *Git Workflow* — that a composed
+file does not have under those names; the language modules pointed to a glossary that did not exist.
+A validator that is red from the first commit teaches a team to ignore it.
+
+**Decision.** For every citation, one of three: the file is born, the citation goes, or the name
+follows what is actually produced.
+- **Born as skeletons:** `Roadmap.md`, `ProductLog.md`, `glossary.md` and `requirements/ux/DESIGN.md`.
+- **What a project is born with is declared** in **`skeleton.json`**: the files and folders a host
+  copies, the empty folders, the files the host writes itself (the docs pipeline) and the ones it
+  generates (`.asf/state.json`), and the literal placeholders it resolves. Until now that list lived
+  only in the host's code.
+- **`AGENTS.md` cites sections both shapes of `instructions.md` have**: *Principles* for the code
+  rules, *Project rules* for the project's own commands, *Git workflow*. The hand-written template
+  gains the **Project rules** section, after the `<!-- asf:project-rules -->` marker a composition
+  keeps verbatim — so the first composition of a hand-written file keeps its rules.
+- **The validator** skips the ids inside `asf:module` blocks, as v8.6 did for paths — the standard's
+  text, the same in every project, cites the standard's examples — and compares section names
+  without regard to case. The module `comments-why-not-what` (1.0.1) writes its examples as `RF-NN`,
+  `BUG-NNN`, `ADR-NNN`.
+- **`tools/test-skeleton.py`** builds a stack from `skeleton.json` and validates it, then recomposes
+  `instructions.md` until every module of the catalog has been composed once, validating each
+  time. It fails on the eleven errors above, and on the next module that cites something a born
+  stack does not have.
+
+**Consequences.** A new project's first pipeline is green, and a red one means something happened.
+A host that copies a fixed list must add the four skeletons; one that reads `skeleton.json` follows
+the standard by itself.
+
+### D-8.29 — The roadmap is `Roadmap.md`
+
+**Context.** The standard says `docs/Roadmap.md` everywhere — `AGENTS.md`, `asf-overview.md`, the
+ASF method, the Operating Model — while the plan delivery of the reference host writes
+`docs/roadmap.md`. On a case-sensitive file system they are two files, and a reader looking for the
+standard's name finds nothing.
+
+**Decision.** The name is **`Roadmap.md`**, with the capital, as the standard has always written it
+and like its sibling `ProductLog.md`. The standard ships it as a skeleton (D-8.28), and
+`validate-stack.py` **warns** on a `docs/roadmap.md` — or any other casing of the two L1 names — with
+the rename to make.
+
+**Consequences.** KStudio aligns its plan delivery to `docs/Roadmap.md` and renames the file in the
+projects it already wrote. A warning, not an error: a project written before 8.9 stays valid and
+renames at its pace.
+
+### D-8.30 — The prose language is stated at composition, never deduced
+
+**Context.** `language-english` was the default module of a required category, and
+`business_language` and `prose_language` carried defaults. A project took «English everywhere» and
+an English business language, and wrote its documents in Italian: the composition had recorded a
+choice nobody made about the prose, and the instructions said one thing while the documents did
+another.
+
+**Decision.** The category `language` has **no default module** and is no longer required — so a
+composition never fills it silently — and **`prose_language` and `business_language` have no
+default** in any module, so the composer asks them. `language-english` (1.1.0) says that the Prompt
+Stack documents are in English too, and that a team writing them in another language has the wrong
+module. `validate-instructions-catalog.py` rejects a default on either placeholder and a default
+`language` module. The catalog README tells the composer to ask the prose language as its own
+question, never derived from the language of the code.
+
+**Consequences.** One more question at composition for a new project; none for a project already
+composed, whose manifest holds its values. A composition may now leave out the language section;
+the composer is told to ask, and the host still checks every rule it checked before.
+
+### Corrections
+
+- **The ASF Compliance Agent gained a guardrail against three false findings** observed in a
+  KStudio field report: recommending a move to `docs/nfr/`, recommending a `scope` field on an RNF,
+  and, in general, any recommendation a conforming project's own `validate-stack.py` or frontmatter
+  `$def` would reject. `asf-compliance.md` §4 now carries *Findings the agent must not invent*.
+- **`asf-method-kstudio` §16.5/16.6/16.7 templates carried state fields in the frontmatter** —
+  `status`, `severity`, `scope`, `epic`, `points`, `priority`, `verified_*` — which the strict
+  `$defs` (`additionalProperties: false`) reject, so a bug, story or RNF authored from them would
+  not validate; this is also where the `scope`-on-RNF false finding came from. The templates now
+  carry only the schema's descriptive fields; state lives in `state.json`, and an RNF's scope is
+  which epics cite it in `epics[].rnf_refs`.
+- **`asf-method-kstudio` is 1.0.1.** Its text changed in v8.6 and again above without its catalog
+  version moving, so a recomposition could not see the change.
+
+### Upgrade note — v8.9
+
+- **Must** — nothing. Every file that was valid stays valid; the new check on the roadmap's
+  spelling is a warning.
+- **May** — copy `Roadmap.md`, `ProductLog.md`, `glossary.md` and `requirements/ux/DESIGN.md` where
+  the project lacks them; move UX guidelines kept elsewhere to `requirements/ux/DESIGN.md` and add
+  `ux-design-guidelines` at the next recomposition; rename `docs/roadmap.md` to `docs/Roadmap.md`;
+  copy `tools/validate-stack.py`, whose errors on a composed `instructions.md` and on section names
+  that differ only in case go away. **Hosts:** copy the four new skeletons at kickoff (or read
+  `skeleton.json`), write the roadmap as `Roadmap.md`, and ask `prose_language` and
+  `business_language` at composition.
+- **Stops being true** — —
+
+---
+
 ## v8.8 — 2026-10-25
 
 **The plan schema also travels where the bundle reads it.** v8.7 put `dev-plan.schema.json` in
