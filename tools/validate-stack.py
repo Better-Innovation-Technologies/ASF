@@ -7,8 +7,8 @@ Checks:
      validate against their schema;
   2. every artifact frontmatter validates against `frontmatter.schema.json` (`$defs` by folder),
      and every module id a task's `rules` cites is a module of `instructions.md`;
-  3. every cited id (R-, ADR-, DR-, RF-, RNF-, BUG-, US-, Epic, Task) is defined;
-  4. every path cited in a .md exists;
+  3. every id (R-, ADR-, DR-, RF-, RNF-, BUG-, US-, Epic, Task) cited in an ASF document is defined;
+  4. every path cited in an ASF document exists;
   4b. every `attachments` entry is a flat name under docs/attachments/, under 5 MB, cited by
      someone; every `links` entry is an http(s) URL (never opened: no check uses the network);
   5. every `file` -> *Title* reference points to a heading that exists;
@@ -54,6 +54,16 @@ ARTIFACTS: dict[str, str] = {
     "stories/US-*.md": "us",
     "decisions/ADR-*.md": "adr",
 }
+# The documents the standard defines (D-8.32), as patterns under docs/: the L0 and L1 files, the
+# UX guidelines, the glossary, the layer instructions (instructions.md §18), the retrospectives and
+# the artifacts. With the `.md` files a project declares in state.json `prompt_stack[]`, they are
+# all checks 3 and 4 read: the standard verifies its own documents, and the rest of docs/ (notes,
+# design material, attachments, what a tool writes there) belongs to the project or to its tools.
+ASF_DOCUMENTS: tuple[str, ...] = (
+    *L0_FILES, "asf-overview.md", "product.md", "deployment.md", "instructions.md", "Roadmap.md",
+    "ProductLog.md", "glossary.md", "requirements/ux/DESIGN.md", "instructions/*.md", "retro/*.md",
+    *ARTIFACTS,
+)
 # Artifact kinds that state.json tracks, with the folder of their file.
 STATE_KINDS: dict[str, str] = {
     "rf": "requirements", "rnf": "requirements", "epic": "epics", "task": "tasks",
@@ -116,7 +126,7 @@ CREDENTIALS_RE = re.compile(r"(://)[^/\s@'\"]+@")  # never echo `://user:pass@` 
 
 
 def err(where: str, msg: str) -> None:
-    """One error = one line starting with `docs/`: PICO and the ERRORS count rely on it."""
+    """One error = one line starting with `docs/`: tools that read the output and the ERRORS count rely on it."""
     msg = " ".join(msg.splitlines())
     errors.append(where + ": " + CREDENTIALS_RE.sub(r"\1***@", msg))
 
@@ -767,8 +777,15 @@ if isinstance(architecture, dict):
         if isinstance(adr.get("id"), str) and adr["id"]:
             defined.setdefault(adr["id"], "docs/.asf/architecture.json")
 
+# Checks 3 and 4 read the ASF documents only (D-8.32): the patterns above, plus the `.md` files the
+# project itself declares as Prompt Stack files.
+asf_documents = {p for pattern in ASF_DOCUMENTS for p in DOCS.glob(pattern)}
+asf_documents |= {DOCS / e["filename"] for e in dicts(state.get("prompt_stack"))
+                  if isinstance(e.get("filename"), str) and e["filename"]}
+asf_documents.discard(ARCHIVE)  # the planning archive stays out, as before
+
 for p in docs_md:
-    if p == ARCHIVE:
+    if p not in asf_documents:
         continue
     skip = module_lines(texts[p])
     for n, line in enumerate(texts[p].splitlines(), 1):
@@ -782,7 +799,7 @@ for p in docs_md:
 # ---------------------------------------------------------------- 4. cited paths
 
 for p in docs_md:
-    if p == ARCHIVE:
+    if p not in asf_documents:
         continue
     skip = module_lines(texts[p])
     for n, line in enumerate(texts[p].splitlines(), 1):

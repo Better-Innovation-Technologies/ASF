@@ -75,6 +75,57 @@ looking.
 
 ---
 
+## v8.11 — 2026-11-02
+
+**The validator checks the standard's own documents.** Cited ids and cited paths are resolved in the
+documents ASF defines; the rest of `docs/` belongs to the project and to its tools.
+
+### D-8.32 — Checks 3 and 4 read the ASF documents only
+
+**Context.** Check 3 (cited ids) and check 4 (cited paths) read every `.md` under `docs/`, so any
+text a project or a tool kept there had to resolve against the project's ids and files. It surfaced
+when a conversation tool archived its transcripts in `docs/.pico/pitches/` and an id a person had
+typed in chat turned the docs pipeline red. Excluding that folder would have made the standard name
+a tool, and the next one would need the same exception: design notes, free notes, a `README.md` and
+an attachment written in Markdown are in the same position.
+
+**Decision.** Checks 3 and 4 read only the documents the standard defines, listed once in
+`tools/validate-stack.py` as `ASF_DOCUMENTS`:
+
+- the L0 files `AGENTS.md` and `CLAUDE.md` (the L0 of older projects);
+- the L1 files and the reference: `product.md`, `deployment.md`, `instructions.md`, `Roadmap.md`,
+  `ProductLog.md`, `asf-overview.md`;
+- `glossary.md` and `requirements/ux/DESIGN.md`;
+- the layer instructions `instructions/*.md` (`instructions.md` §18) and the retrospectives
+  `retro/*.md`;
+- the artifacts: `requirements/RF-*.md`, `requirements/RNF-*.md`, `epics/Epic*.md`,
+  `tasks/Task.*.md`, `bugs/BUG-*.md`, `stories/US-*.md`, `decisions/ADR-*.md`;
+- every `.md` the project declares in `state.json` `prompt_stack[].filename`, which is how a project
+  makes one of its own files a Prompt Stack document.
+
+`decisions/planning-archive.md` stays out, as before. Every other check is unchanged: frontmatter,
+JSON, schemas, artifacts ↔ `state.json`, sections and ACs read what they read before.
+
+**Consequences.** A project or a tool may keep any Markdown under `docs/` without its words being
+taken for references, and the standard names no tool to allow it. A wrong id or path written into
+an ASF document is still caught where it lands. `tools/test-skeleton.py` covers both sides: two
+`.md` files outside the ASF documents citing an unknown id and path validate, and the same line in
+`glossary.md` fails.
+
+### Upgrade note — v8.11
+
+- **Must** — nothing. Every tree valid before is still valid.
+- **May** — copy `tools/validate-stack.py` into the project; a project whose copy is ahead of the
+  standard applies the delta (`ASF_DOCUMENTS` and the `asf_documents` filter of checks 3 and 4), not
+  the whole file. A project that wants one of its own files checked declares it in `prompt_stack[]`.
+- **Stops being true** — ids and paths cited in a `.md` that is not an ASF document are checked: the
+  `.md` files at the root other than the L0/L1 files (`README.md`, for instance), `design/`,
+  `triggers/`, `attachments/`, `decisions/` other than `ADR-*.md`, `requirements/` other than
+  `RF-*`, `RNF-*` and `ux/DESIGN.md`, dot folders such as `.pico/`, and any other folder the
+  standard does not define.
+
+---
+
 ## v8.10 — 2026-10-26
 
 **A task cites the modules it follows.** The `rules` of a task may now name the ids of the

@@ -1,6 +1,6 @@
 # deployment.md — {project_name}
 
-> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
+> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead + Infrastructure Agent**
 > This file is the human-readable operational runbook.

@@ -1,6 +1,6 @@
 # ASF™ Prompt Stack — standard
 
-> **ASF v8.10** · A task cites the modules it follows · Francesco Bellifemine · Better Innovation Technologies
+> **ASF v8.11** · The validator checks the standard's own documents · Francesco Bellifemine · Better Innovation Technologies
 
 This repository holds the **ASF™ (Augmented Software Factory) standard**: the *Prompt Stack*
 files every ASF project instantiates under `docs/`, the L0/L1 templates, and the JSON schemas

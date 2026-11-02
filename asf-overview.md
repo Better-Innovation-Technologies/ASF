@@ -1,6 +1,6 @@
 # ASF™ Overview — reference, load on demand
 
-> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
+> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
 
 > **This file is NOT a layer of the Prompt Stack.**
 > Load it only when you need to understand the factory model itself: the agent

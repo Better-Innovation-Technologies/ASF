@@ -7,14 +7,16 @@ resolved — and runs `tools/validate-stack.py` on it. Then it recomposes `instr
 catalog the way a host does (header, every module between `asf:module` markers, Project rules) and
 validates again, enough times that **every module of the catalog** is composed at least once:
 a module whose text cites an id, a path or a section the born stack does not have fails here, not
-in the first project that chooses it.
+in the first project that chooses it. Last, `.md` files that are not ASF documents may cite an
+unknown id and path (D-8.32), while the same line in `glossary.md` must fail.
 
 The compositions check text, not choices: they rotate through the modules of each category and do
 not honour `requires`/`excludes`, which the host checks and which change no line of the result.
 
 Usage:  python3 tools/test-skeleton.py
-Needs what validate-stack.py needs (`pyyaml`, `jsonschema>=4.18`). Exits 0 with
-`Skeleton valid: N stacks.`, or 1 with the validator's output of the first stack that fails.
+Needs what validate-stack.py needs (`pyyaml`, `jsonschema>=4.18`). Exits 0 with `Skeleton valid:
+N stacks, project documents unchecked.`, or 1 with the validator's output of the first stack that
+fails.
 """
 from __future__ import annotations
 
@@ -120,6 +122,30 @@ def validate(docs: Path, label: str) -> bool:
     return True
 
 
+def project_documents(docs: Path) -> bool:
+    """Checks 3 and 4 read the ASF documents only (D-8.32): what a tool or the project writes
+    elsewhere under docs/ may cite anything, and the same citation in an ASF document still fails."""
+    said = "Follow ADR-999 and read docs/nope/missing.md first.\n"
+    extra = [docs / ".tool/x/session.md", docs / "notes/free.md"]
+    for p in extra:
+        p.parent.mkdir(parents=True)
+        p.write_text(f"# {p.stem}\n\n{said}", encoding="utf-8")
+    if not validate(docs, "project documents citing an unknown id and path"):
+        return False
+    glossary = docs / "glossary.md"
+    original = glossary.read_text(encoding="utf-8")
+    glossary.write_text(original + "\n" + said, encoding="utf-8")
+    run = subprocess.run([sys.executable, str(docs / "tools/validate-stack.py"), "--docs", str(docs)],
+                         capture_output=True, text=True)
+    out = run.stdout + run.stderr
+    cited = [line for line in out.splitlines() if "ADR-999" in line or "nope/missing.md" in line]
+    if not (run.returncode == 1 and len(cited) == 2
+            and all(line.startswith("docs/glossary.md:") for line in cited)):
+        print(f"the same citation in glossary.md must fail there, and only there\n{out}")
+        return False
+    return True
+
+
 def main() -> int:
     version = asf_version()
     catalog = json.loads((CATALOG / "catalog.json").read_text(encoding="utf-8"))
@@ -138,7 +164,9 @@ def main() -> int:
             composed |= {m["id"] for m in chosen}
         missing = {m["id"] for m in catalog["modules"]} - composed
         assert not missing, f"modules never composed: {sorted(missing)}"
-    print(f"Skeleton valid: {stacks} stacks.")
+        if not project_documents(docs):
+            return 1
+    print(f"Skeleton valid: {stacks} stacks, project documents unchecked.")
     return 0
 
 

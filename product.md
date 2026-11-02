@@ -1,6 +1,6 @@
 # product.md — {project_name}
 
-> **ASF v8.10** · 2026-10-26 · _A task cites the modules it follows_ · Francesco Bellifemine
+> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: PM (Dev Lead gate)**
 > The product identity document — the first source of truth for AI agents and the ASF™ team.
