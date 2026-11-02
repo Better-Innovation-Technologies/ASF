@@ -1,6 +1,6 @@
 # AGENTS.md — [Project Name]
 
-> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
+> **ASF v8.12** · 2026-11-02 · _Java and Spring Boot in the instructions catalog_ · Francesco Bellifemine
 
 > **L0 — Project Layer · Better Innovation Technologies**
 > This file is the first context every AI agent loads before any operation on this codebase.

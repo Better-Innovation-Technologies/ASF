@@ -1,6 +1,6 @@
 # instructions.md — {project_name}
 
-> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
+> **ASF v8.12** · 2026-11-02 · _Java and Spring Boot in the instructions catalog_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead**
 > Development rules, code conventions and quality standards for this project.

@@ -75,6 +75,54 @@ looking.
 
 ---
 
+## v8.12 — 2026-11-02
+
+**Java and Spring Boot in the instructions catalog.** A Java project can compose its
+`instructions.md` from the catalog like a Python or TypeScript one; nothing that exists changes.
+
+### D-8.33 — The catalog gains a Java backend and a Java code style
+
+**Context.** The backend category offered Python + FastAPI, TypeScript + Node.js and a Next.js BFF,
+and the code-style category Python and TypeScript. A Java team composing its instructions found no
+module for its stack: it had to leave the backend and the style out, or write them by hand into
+Project rules, where no recomposition ever improves them and no other project shares them.
+
+**Decision.** Two modules, written to the same shape and depth as their siblings:
+
+- **`be-java-spring-boot`** (`backend`, 1.0.0): Java `{{java_version}}` (default 21) and Spring Boot
+  `{{spring_boot_version}}` (default 4.1, the line with open-source support today), built with
+  `{{build_tool}}` (Maven or Gradle) and migrated with `{{be_migration_tool}}` (Flyway or
+  Liquibase). One package per domain module under `{{be_modules_path}}`; thin controllers, logic
+  in `@Service` classes, DTOs as `record`s, constructor injection; Bean Validation at the boundary;
+  Spring Data JPA with every relation mapped, `open-in-view` off and N+1 avoided with fetch joins
+  or entity graphs; `@Transactional` on the service method that owns a multi-step operation;
+  `@ConfigurationProperties` bound from the environment; SLF4J configured once in
+  `{{be_logger_path}}` with the trace id in the MDC; one `@RestControllerAdvice`; integration tests
+  on the real database through Testcontainers.
+- **`style-java`** (`code-style`, 1.0.0): google-java-format through Spotless and Checkstyle,
+  blocking CI; no wildcard imports; JSpecify nullability; records and sealed types; no empty
+  `catch`.
+
+Neither is a default and neither declares `requires` or `excludes`, like the Python and TypeScript
+modules. `be_modules_path` and `be_logger_path` are the names the other backend modules already
+use, so the placeholder namespace does not grow. The catalog is **1.2.0** (`asf_version` 8.12):
+new modules are a minor.
+
+**Consequences.** A Java backend gets the same rules in every project that chooses it, and an
+improvement reaches them at their next recomposition. A host sees the modules only once it reads
+the catalog at a ref that contains them.
+
+### Upgrade note — v8.12
+
+- **Must** — nothing. No module that existed changes, and a composed `instructions.md` stays as it
+  is.
+- **May** — a Java project composes, or recomposes, `instructions.md` with `be-java-spring-boot`
+  and `style-java`, moving the Java rules it kept in Project rules out of it. **Hosts:** read the
+  catalog at a ref that contains v8.12.
+- **Stops being true** — —
+
+---
+
 ## v8.11 — 2026-11-02
 
 **The validator checks the standard's own documents.** Cited ids and cited paths are resolved in the

@@ -1,6 +1,6 @@
 # deployment.md — {project_name}
 
-> **ASF v8.11** · 2026-11-02 · _The validator checks the standard's own documents_ · Francesco Bellifemine
+> **ASF v8.12** · 2026-11-02 · _Java and Spring Boot in the instructions catalog_ · Francesco Bellifemine
 
 > **Layer L1 · Owner: Dev Lead + Infrastructure Agent**
 > This file is the human-readable operational runbook.

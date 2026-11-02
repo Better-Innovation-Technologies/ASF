@@ -1,8 +1,8 @@
 {
   "$schema": "https://git.bit-farm.it/bit-farm-public/pico/-/raw/main/schema/pico-instructions-catalog.schema.json",
   "package": "asf-instructions-catalog/1",
-  "version": "1.1.0",
-  "asf_version": "8.9",
+  "version": "1.2.0",
+  "asf_version": "8.12",
   "header": "header.md",
   "project_rules": "project-rules.md",
   "host_placeholders": [
@@ -794,6 +794,66 @@
       ]
     },
     {
+      "id": "be-java-spring-boot",
+      "category": "backend",
+      "version": "1.0.0",
+      "title": "Java + Spring Boot",
+      "summary": "Spring Boot, Spring Data JPA + Hibernate, Flyway or Liquibase, Bean Validation, JUnit 5, Testcontainers.",
+      "file": "modules/backend/be-java-spring-boot.md",
+      "when": [
+        "java",
+        "spring",
+        "spring boot",
+        "jvm"
+      ],
+      "placeholders": [
+        {
+          "name": "java_version",
+          "type": "version",
+          "description": "Java version (LTS)",
+          "default": "21"
+        },
+        {
+          "name": "spring_boot_version",
+          "type": "version",
+          "description": "Spring Boot version",
+          "default": "4.1"
+        },
+        {
+          "name": "build_tool",
+          "type": "enum",
+          "description": "Build tool",
+          "default": "Maven",
+          "enum": [
+            "Maven",
+            "Gradle"
+          ]
+        },
+        {
+          "name": "be_migration_tool",
+          "type": "enum",
+          "description": "Database migration tool",
+          "default": "Flyway",
+          "enum": [
+            "Flyway",
+            "Liquibase"
+          ]
+        },
+        {
+          "name": "be_modules_path",
+          "type": "path",
+          "description": "Folder of the backend modules (the root package)",
+          "default": "src/main/java/com/example/app"
+        },
+        {
+          "name": "be_logger_path",
+          "type": "path",
+          "description": "Where the logger is configured",
+          "default": "src/main/resources/logback-spring.xml"
+        }
+      ]
+    },
+    {
       "id": "db-postgres",
       "category": "database",
       "version": "1.0.0",
@@ -862,6 +922,17 @@
       "file": "modules/code-style/style-typescript.md",
       "when": [
         "typescript"
+      ]
+    },
+    {
+      "id": "style-java",
+      "category": "code-style",
+      "version": "1.0.0",
+      "title": "Java style",
+      "summary": "google-java-format via Spotless + Checkstyle, JSpecify nullability, records, no wildcard imports.",
+      "file": "modules/code-style/style-java.md",
+      "when": [
+        "java"
       ]
     },
     {
